@@ -27,14 +27,7 @@ namespace ItemMagnetPlus
                 case ItemMagnetPlusMessageType.Magnet:
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        try
-                        {
-                            Console.WriteLine("echo recieved a magnet packet");
-                        }
-                        catch (Exception)
-                        {
-                            playernumber = 0; //dummy
-                        }
+                        //Console.WriteLine("echo recieved a magnet packet");
                     }
                     playernumber = reader.ReadByte();
                     Player magnetPlayer = Main.player[playernumber];
@@ -42,15 +35,11 @@ namespace ItemMagnetPlus
                     int magnetScale = reader.ReadInt32();
                     int magnetActive = reader.ReadInt32();
                     ItemMagnetPlusPlayer mPlayer = magnetPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
-                    try
+                    if (Main.netMode == NetmodeID.Server)
                     {
-                        Console.WriteLine("radius " + magnetGrabRadius);
-                        Console.WriteLine("scale " + magnetScale);
-                        Console.WriteLine("active " + magnetActive);
-                    }
-                    catch(Exception)
-                    {
-                        playernumber = 0; //dummy
+                        //Console.WriteLine("radius " + magnetGrabRadius);
+                        //Console.WriteLine("scale " + magnetScale);
+                        //Console.WriteLine("active " + magnetActive);
                     }
                     mPlayer.magnetGrabRadius = magnetGrabRadius;
                     mPlayer.magnetScale = magnetScale;
@@ -67,4 +56,15 @@ namespace ItemMagnetPlus
     {
         Magnet,
     }
+
+    /*TODO
+     * -somehow display current radius on buff or item tooltip
+     * -change player.magnetMaxGrabRange to 10 on final release
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     */
 }

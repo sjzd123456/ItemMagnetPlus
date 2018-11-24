@@ -1,1 +1,5 @@
-Visit https://github.com/direwolf420/ItemMagnetPlus#itemmagnetplus for more information.
+on this test version maxgrabrange is set to the whole screen for demonstration purposes, on the final version it will be 10 blocks initially. 
+
+tinker around with the config values for your own pleasure. My favorite values are velocity: 16 and acceleration: 20. 
+
+ctivate by using the magnet (like a magic mirror or potion), deactivate by either right clicking the buff icon, dropping the magnet, or using the magnet again. 

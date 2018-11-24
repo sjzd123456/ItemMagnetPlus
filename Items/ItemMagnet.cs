@@ -24,6 +24,7 @@ namespace ItemMagnetPlus.Items
             item.useTime = 10;
             item.useStyle = 4;
             item.consumable = false;
+            item.buffType = mod.BuffType("ItemMagnetBuff");
         }
 
         public override void AddRecipes()
@@ -47,20 +48,22 @@ namespace ItemMagnetPlus.Items
 
         public override bool OnPickup(Player player)
         {
-            ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-            Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
-            Main.PlaySound(SoundID.MaxMana, player.position, 1);
-            mPlayer.magnetActive = 0;
-            SendMagnetData(mPlayer);
+            //player.AddBuff(item.buffType, 3600, true);
+            //player.ClearBuff(mod.BuffType("ItemMagnetBuff")); //not needed since buff time is only 2 sec
+            //ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+            //Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
+            //Main.PlaySound(SoundID.MaxMana, player.position, 1);
+            //mPlayer.magnetActive = 0;
+            //SendMagnetData(mPlayer);
 
-            for (int j = 0; j < 400; j++)
-            {
-                if (Main.item[j].beingGrabbed)
-                {
-                    Main.NewText("reset item " + Main.item[j].Name);
-                    Main.item[j].beingGrabbed = false;
-                }
-            }
+            //for (int j = 0; j < 400; j++)
+            //{
+            //    if (Main.item[j].beingGrabbed)
+            //    {
+            //        Main.NewText("reset item " + Main.item[j].Name);
+            //        Main.item[j].beingGrabbed = false;
+            //    }
+            //}
 
             return true;
         }
@@ -92,7 +95,7 @@ namespace ItemMagnetPlus.Items
             int stage = radius / (mPlayer.magnetScreenRadius * 16);
             radius = radius - mPlayer.magnetScreenRadius * 16 * stage;
             color = new Color(color.R + stage * 40, color.G, color.B - stage * 40);
-            Main.NewText("DrawRec radius " + radius);
+            //Main.NewText("DrawRec radius " + radius);
 
             //radius in world coordinates
             Vector2 pos = mPlayer.player.position;
@@ -106,19 +109,17 @@ namespace ItemMagnetPlus.Items
             //Main.NewText("rightx " + rightx);
             //Main.NewText("boty " + boty);
 
-            QuickDustLine(new Vector2(leftx, topy), new Vector2(rightx, topy), radius / 16f, color); //round robin clock wise starting top left
+            QuickDustLine(new Vector2(leftx, topy), new Vector2(rightx, topy), radius / 16f, color); //clock wise starting top left
             QuickDustLine(new Vector2(rightx, topy), new Vector2(rightx, boty), radius / 16f, color);
             QuickDustLine(new Vector2(rightx, boty), new Vector2(leftx, boty), radius / 16f, color);
             QuickDustLine(new Vector2(leftx, boty), new Vector2(leftx, topy), radius / 16f, color);
-            //Dust dust = Main.dust[Dust.NewDust(new Vector2((float)leftx * 16, (float)lefty * 16), 4, 4, 15, 0f, 0f, 150, new Color(8, 255, 0), 1f)];
-            //Dust.QuickDustLine(new Vector2((float)leftx * 16, (float)lefty * 16), new Vector2((float)rightx * 16, (float)righty * 16), 16f, new Color(8, 255, 0));
         }
 
         public void SendMagnetData(ItemMagnetPlusPlayer mPlayer)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                Main.NewText("sent Magnet packet");
+                //Main.NewText("sent Magnet packet");
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte)ItemMagnetPlusMessageType.Magnet);
                 packet.Write((byte)mPlayer.player.whoAmI);
@@ -129,86 +130,93 @@ namespace ItemMagnetPlus.Items
             }
         }
 
-    public override bool UseItem(Player player)
+        public override bool UseItem(Player player)
         {
             ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-
-            int divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5;
-            //int steps = (mPlayer.magnetMaxGrabRadius - divider) / divider;
-            int radius = mPlayer.magnetGrabRadius;
-
-            if (mPlayer.magnetActive == 0)
+            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                //CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, "magnet on");
-                Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
-                Main.PlaySound(SoundID.MaxMana, player.position, 1);
-                mPlayer.magnetActive = 1;
-                radius = mPlayer.magnetMinGrabRadius;
-                mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetMinGrabRadius);
-                divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
-                Main.NewText("grab radius after update: " + mPlayer.magnetGrabRadius);
-                DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(128, 255, 128));
 
-                string ranges = "range:" + radius;
-                if (radius + divider > mPlayer.magnetMaxGrabRadius)
-                {
-                    ranges += "| next:off";
-                }
-                else
-                {
-                    ranges += "| next:" + (radius + divider);
-                }
+                int divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5;
+                //int steps = (mPlayer.magnetMaxGrabRadius - divider) / divider;
+                int radius = mPlayer.magnetGrabRadius;
 
-                Main.NewText("radius " + radius);
-                Main.NewText("divider " + divider);
-                CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, ranges);
-            }
-            else
-            {
-                radius += divider;
-
-                if (radius > mPlayer.magnetMaxGrabRadius)
+                if (mPlayer.magnetActive == 0)
                 {
-                    CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
-                    Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
+                    player.AddBuff(item.buffType, 3600, true);
+
+                    //CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, "magnet on");
+                    //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
                     Main.PlaySound(SoundID.MaxMana, player.position, 1);
-                    mPlayer.magnetActive = 0;
-                    DrawRectangle(mPlayer, 16 * 1, new Color(255, 128, 128));
+                    mPlayer.magnetActive = 1;
+                    radius = mPlayer.magnetMinGrabRadius;
+                    mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetMinGrabRadius);
+                    radius = mPlayer.magnetGrabRadius;
+                    divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
+                    //Main.NewText("grab radius after update: " + mPlayer.magnetGrabRadius);
+                    DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(128, 255, 128));
 
-                    SendMagnetData(mPlayer);
-
-                    for (int j = 0; j < 400; j++)
+                    string ranges = "range:" + radius;
+                    if (radius + divider > mPlayer.magnetMaxGrabRadius)
                     {
-                        if (Main.item[j].beingGrabbed)
-                        {
-                            Main.NewText("reset item " + Main.item[j].Name);
-                            Main.item[j].beingGrabbed = false;
-                        }
+                        ranges += "| next:off";
                     }
-                    return true;
-                }
+                    else
+                    {
+                        ranges += "| next:" + (radius + divider);
+                    }
 
-                mPlayer.UpdateMagnetValues(mPlayer, radius);
-                DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(128, 255, 128));
-
-                //here radius is already + divider
-                string ranges = "range:" + radius;
-                if (radius + divider > mPlayer.magnetMaxGrabRadius)
-                {
-                    ranges += "| next:off";
+                    //Main.NewText("radius " + radius);
+                    //Main.NewText("divider " + divider);
+                    CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, ranges);
                 }
                 else
                 {
-                    ranges += "| next:" + (radius + divider);
-                }
-                CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), new Color(128, 255, 128), ranges);
-                Main.NewText("divider " + divider);
-                //Main.NewText("steps " + steps);
-                Main.NewText("Radius " + radius);
-                Main.NewText("mPlayer.magnetGrabRadius " + mPlayer.magnetGrabRadius);
-            }
+                    radius += divider;
 
-            SendMagnetData(mPlayer);
+                    if (radius > mPlayer.magnetMaxGrabRadius)
+                    {
+                        CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
+                        //Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
+                        Main.PlaySound(SoundID.MaxMana, player.position, 1);
+                        player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+                        //DrawRectangle(mPlayer, 16 * 1, new Color(255, 128, 128));
+
+                        SendMagnetData(mPlayer);
+
+                        for (int j = 0; j < 400; j++)
+                        {
+                            if (Main.item[j].beingGrabbed)
+                            {
+                                Main.NewText("reset item " + Main.item[j].Name);
+                                Main.item[j].beingGrabbed = false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    mPlayer.UpdateMagnetValues(mPlayer, radius);
+                    DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(128, 255, 128));
+
+                    //here radius is already + divider
+                    string ranges = "range:" + radius;
+                    if (radius + divider > mPlayer.magnetMaxGrabRadius)
+                    {
+                        ranges += "| next:off";
+                    }
+                    else
+                    {
+                        ranges += "| next:" + (radius + divider);
+                    }
+                    CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), new Color(128, 255, 128), ranges);
+                    //Main.NewText("divider " + divider);
+                    //Main.NewText("steps " + steps);
+                    //Main.NewText("Radius " + radius);
+                    //Main.NewText("mPlayer.magnetGrabRadius " + mPlayer.magnetGrabRadius);
+                }
+
+                SendMagnetData(mPlayer);
+
+            }
 
             return true;
         }

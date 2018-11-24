@@ -12,32 +12,32 @@ namespace ItemMagnetPlus
         public const int configVersion = 1;
         private readonly static string modName = "ItemMagnetPlus";
 
-        //private const string scaleField = "scale";
-        //internal static int scale = 10;
-        //public static int Scale
-        //{
-        //    get
-        //    {
-        //        if (scale <= 0)
-        //        {
-        //            return 1;
-        //        }
-        //        return scale;
-        //    }
-        //}
+        private const string scaleField = "scale";
+        internal static int scale = 1;
+        public static int Scale
+        {
+            get
+            {
+                return scale;
+            }
+        }
 
         private const string velocityField = "velocity";
-        internal static int velocity = 8;
+        internal static int velocity = 16;
         public static int Velocity
         {
             get
             {
+                if (velocity <= 0)
+                {
+                    return 1;
+                }
                 return velocity;
             }
         }
 
         private const string accelerationField = "acceleration";
-        internal static int acceleration = 30;
+        internal static int acceleration = 20;
         public static int Acceleration
         {
             get
@@ -86,7 +86,7 @@ namespace ItemMagnetPlus
                     if (!canUpdate) return false;
                 }
 
-                //ModConfig.Get(scaleField, ref scale);
+                ModConfig.Get(scaleField, ref scale);
                 ModConfig.Get(velocityField, ref velocity);
                 ModConfig.Get(accelerationField, ref acceleration);
 
@@ -101,7 +101,7 @@ namespace ItemMagnetPlus
             ModConfig.Clear();
             ModConfig.Put("version", configVersion);
 
-            //ModConfig.Put(scaleField, scale);
+            ModConfig.Put(scaleField, scale);
             ModConfig.Put(velocityField, velocity);
             ModConfig.Put(accelerationField, acceleration);
 
