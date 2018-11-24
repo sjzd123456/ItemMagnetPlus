@@ -1,0 +1,247 @@
+﻿using System;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace ItemMagnetPlus
+{
+    public class ItemMagnetPlusPlayer : ModPlayer
+    {
+        public int magnetActive = 0;
+        public float magnetScaleFactor = 0.1f;
+        public int magnetScreenRadius = 60;
+        public int magnetGrabRadius = 10;
+        public int magnetMinGrabRadius = 10;
+        public int magnetMaxGrabRadius = 60; //60 half a screen radius
+        public int magnetScale = 10;
+        public int magnetVelocity = 16;
+        public int magnetAcceleration = 20;
+        public int counter = 20;
+        public int clientcounter = 20;
+        //private const int maxGrabRadius = 120; //120 one screen radius
+
+        public override void ResetEffects()
+        {
+            //magnetActive = 0; //no need for false because item controls this value
+
+            magnetScaleFactor = 0.1f;
+            //magnetGrabRadius = 10;
+            magnetScreenRadius = (int)(magnetScaleFactor * magnetScale * 60 + 1);
+            magnetMaxGrabRadius = 60; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
+            magnetScale = 10; //10
+            magnetVelocity = 8; //16
+            magnetAcceleration = 30; //20
+        }
+
+        public override void clientClone(ModPlayer clientClone)
+        {
+            ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
+        }
+
+        public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
+        {
+            //TODO Scale with config
+            //mPlayer.magnetScale = ModConf.Scale;
+            mPlayer.magnetScale = 10;
+            mPlayer.magnetVelocity = ModConf.Velocity;
+            mPlayer.magnetAcceleration = ModConf.Acceleration;
+            if (NPC.downedSlimeKing)
+            {
+                //Starts at
+                //magnetMaxGrabRadius = 10;
+                //magnetVelocity = 8;
+                //magnetAcceleration = 30;
+
+                mPlayer.magnetVelocity += 4;
+            }
+            if (NPC.downedBoss1) //Eye of Cthulhu
+            {
+                mPlayer.magnetMaxGrabRadius += 5;
+            }
+            if (NPC.downedBoss2) //Eater/Brain
+            {
+                mPlayer.magnetMaxGrabRadius += 5;
+            }
+            if (NPC.downedQueenBee)
+            {
+                mPlayer.magnetVelocity += 4;
+                mPlayer.magnetAcceleration -= 10;
+            }
+            if (NPC.downedBoss3) //Skeletron
+            {
+                mPlayer.magnetMaxGrabRadius += 5;
+            }
+            if (Main.hardMode) //Wall of flesh
+            {
+                //Ideal at
+                //magnetMaxGrabRadius = 30; //quarter screen
+                //magnetVelocity = 16;
+                //magnetAcceleration = 20;
+
+                mPlayer.magnetMaxGrabRadius += 5; //quarter of a screen range if ^ satisfied
+            }
+            if (NPC.downedMechBoss1) //Destroyer
+            {
+                mPlayer.magnetMaxGrabRadius += 10;
+            }
+            if (NPC.downedMechBoss2) //Twins
+            {
+                mPlayer.magnetMaxGrabRadius += 10;
+            }
+            if (NPC.downedMechBoss3) //Skeletron prime
+            {
+                mPlayer.magnetMaxGrabRadius += 10;
+            }
+            if (NPC.downedPlantBoss)
+            {
+                mPlayer.magnetMaxGrabRadius += 10;
+                mPlayer.magnetVelocity += 4;
+                mPlayer.magnetAcceleration -= 2;
+            }
+            if (NPC.downedGolemBoss)
+            {
+                mPlayer.magnetMaxGrabRadius += 10;
+                mPlayer.magnetVelocity += 4;
+                mPlayer.magnetAcceleration -= 2;
+            }
+            if (NPC.downedFishron)
+            {
+                mPlayer.magnetMaxGrabRadius += 10;
+                mPlayer.magnetVelocity += 4;
+                mPlayer.magnetAcceleration -= 2;
+            }
+            if (NPC.downedAncientCultist)
+            {
+                mPlayer.magnetMaxGrabRadius += 10;
+            }
+            if (NPC.downedMoonlord)
+            {
+                //Final at
+                //magnetMaxGrabRadius = 120; //one screen
+                //magnetVelocity = 32;
+                //magnetAcceleration = 10;
+                mPlayer.magnetMaxGrabRadius = 120; //set to 120
+                mPlayer.magnetVelocity += 4;
+                mPlayer.magnetAcceleration -= 4;
+            }
+
+            if (currentRadius <= mPlayer.magnetMaxGrabRadius + 1)
+            {
+                mPlayer.magnetGrabRadius = currentRadius;
+            }
+            else
+            {
+                mPlayer.magnetGrabRadius = mPlayer.magnetMinGrabRadius;
+            }
+
+            mPlayer.magnetGrabRadius = (int)(magnetScale * magnetScaleFactor * mPlayer.magnetGrabRadius);
+        }
+
+        public override void PreUpdate()
+        {
+            //Main.NewText(magnetGrabRadius);
+            //Main.NewText(magnetMaxGrabRadius);
+            //Main.NewText(magnetMinGrabRadius);
+            //Main.NewText(magnetActive);
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                if (magnetActive > 0 && player.HasItem(mod.ItemType("ItemMagnet")))
+                {
+                    ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+                    UpdateMagnetValues(mPlayer, magnetGrabRadius);
+
+                    int grabRadius = (int)(magnetGrabRadius * 16); //16 == to world coordinates
+                    //Main.NewText("grabradius: " + grabRadius);
+                    //bool itemFound = false;
+                    for (int j = 0; j < 400; j++)
+                    {
+                        //if (j ==0) Main.NewText("start for loop");
+                        if (!ItemLoader.GrabStyle(Main.item[j], player) && Main.item[j].active && Main.item[j].noGrabDelay == 0 && ItemLoader.CanPickup(Main.item[j], player))
+                        {
+                            //Main.NewText("position " + player.position);
+                            //Main.NewText("Tile " + player.position.ToTileCoordinates());
+                            Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - grabRadius, player.width + grabRadius * 2, player.height + grabRadius * 2);
+                            if (rect.Intersects(new Rectangle((int)Main.item[j].position.X, (int)Main.item[j].position.Y, Main.item[j].width, Main.item[j].height)))
+                            {
+                                if (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0)
+                                {
+                                    //Main.NewText("wtf");
+                                    //so it can go through walls
+                                    //Main.item[j].beingGrabbed = true;
+                                    //itemFound = true;
+                                    //velocity, higher = more speed
+                                    int velo = magnetVelocity; //12 vanilla, 16 default
+
+                                    Vector2 vector = new Vector2(Main.item[j].position.X + (float)(Main.item[j].width / 2), Main.item[j].position.Y + (float)(Main.item[j].height / 2));
+                                    float distanceX = player.Center.X - vector.X;
+                                    float distanceY = player.Center.Y - vector.Y;
+                                    float normalDistance = (float)Math.Sqrt((double)(distanceX * distanceX + distanceY * distanceY));
+                                    normalDistance = ((float)velo) / normalDistance;
+                                    distanceX *= normalDistance;
+                                    distanceY *= normalDistance;
+
+                                    //acceleration, higher = less acceleration
+                                    int accel = magnetAcceleration; //5 vanilla, 20 default
+
+                                    // num1 goes linear, num2 goes inverse
+                                    Main.item[j].velocity.X = (Main.item[j].velocity.X * (float)(accel - 1) + distanceX) / (float)accel;
+                                    Main.item[j].velocity.Y = (Main.item[j].velocity.Y * (float)(accel - 1) + distanceY) / (float)accel;
+
+                                    if (Main.rand.NextFloat() < 0.7f)
+                                    {
+                                        Vector2 position = Main.LocalPlayer.Center;
+                                        Dust dust = Main.dust[Dust.NewDust(Main.item[j].position, 30, 30, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f)];
+                                        dust.noGravity = true;
+                                        dust.noLight = true;
+                                    }
+                                    //Main.NewText("drawing in item " + Main.item[j].Name);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Main.item[j].beingGrabbed = false;
+                        }
+                        //Main.item[j].beingGrabbed = false;
+                        //if (j == 399) Main.NewText("end for loop");
+                    }
+                }
+            }
+
+            //if (Main.netMode != NetmodeID.MultiplayerClient)
+            //{
+            if (counter == 0)
+            {
+                for (int j = 0; j < 400; j++)
+                {
+                    Main.item[j].beingGrabbed = false;
+                    //if (Main.item[j].active && Main.item[j].noGrabDelay == 0)
+                    //{
+                    //    Console.WriteLine("grabbed " + Main.item[j].Name + " " + Main.item[j].beingGrabbed);
+                    //}
+                }
+                counter = 20;
+                Main.NewText("reset all items");
+            }
+            counter--;
+            //}
+
+            //if (Main.netMode == NetmodeID.MultiplayerClient)
+            //{
+            //    if (clientcounter == 0)
+            //    {
+            //        for (int j = 0; j < 400; j++)
+            //        {
+            //            if (Main.item[j].active && Main.item[j].noGrabDelay == 0)
+            //            {
+            //                Main.NewText("grabbed " + Main.item[j].Name + " " + Main.item[j].beingGrabbed);
+            //            }
+            //        }
+            //        clientcounter = 20;
+            //    }
+            //    clientcounter--;
+            //}
+        }
+    }
+}
