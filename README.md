@@ -1,6 +1,6 @@
 # ItemMagnetPlus
 
-![Icon](direwolf420.github.com/repository/img/icon.png)
+![Icon](https://raw.githubusercontent.com/direwolf420/ItemMagnetPlus/master/icon.png)
 
 ItemMagnetPlus adds a single item called "Item Magnet" that does the obvious thing: Sucking in items around you so you don't have to run around and collect them yourself.
 
