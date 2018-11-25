@@ -10,10 +10,10 @@ namespace ItemMagnetPlus
     {
         public int magnetActive = 0;
         public float magnetScaleFactor = 0.1f;
-        public int magnetScreenRadius = 60;
+        public int magnetScreenRadius = 60 + 1;
         public int magnetGrabRadius = 10;
         public int magnetMinGrabRadius = 10;
-        public int magnetMaxGrabRadius = 60; //60 half a screen radius
+        public int magnetMaxGrabRadius = 10; //60 half a screen radius
         public int magnetScale = 1;
         public int magnetVelocity = 8;
         public int magnetAcceleration = 30;
@@ -25,8 +25,8 @@ namespace ItemMagnetPlus
             magnetActive = 0;
             
             //magnetGrabRadius = 0;
-            magnetScreenRadius = 60 + 1;
-            magnetMaxGrabRadius = 60; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
+            //these are changed by config
+            magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
             magnetScale = 1; //1
             magnetVelocity = 8; //16
             magnetAcceleration = 30; //20
@@ -39,9 +39,16 @@ namespace ItemMagnetPlus
 
         public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
         {
+            mPlayer.magnetMaxGrabRadius = ModConf.Range;
             mPlayer.magnetScale = ModConf.Scale;
             mPlayer.magnetVelocity = ModConf.Velocity;
             mPlayer.magnetAcceleration = ModConf.Acceleration;
+
+            if (mPlayer.magnetScale == 0)
+            {
+                mPlayer.magnetGrabRadius = mPlayer.magnetMaxGrabRadius;
+                return;
+            }
             if (NPC.downedSlimeKing)
             {
                 //Starts at
@@ -117,7 +124,7 @@ namespace ItemMagnetPlus
                 //magnetMaxGrabRadius = 120; //one screen
                 //magnetVelocity = 32;
                 //magnetAcceleration = 10;
-                mPlayer.magnetMaxGrabRadius = 120; //set to 120
+                mPlayer.magnetMaxGrabRadius += 20;
                 mPlayer.magnetVelocity += 4;
                 mPlayer.magnetAcceleration -= 4;
             }
@@ -129,11 +136,6 @@ namespace ItemMagnetPlus
             else
             {
                 mPlayer.magnetGrabRadius = mPlayer.magnetMinGrabRadius;
-            }
-
-            if(mPlayer.magnetScale == 0)
-            {
-                mPlayer.magnetGrabRadius = mPlayer.magnetMaxGrabRadius;
             }
         }
 

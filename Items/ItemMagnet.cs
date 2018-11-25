@@ -10,33 +10,38 @@ namespace ItemMagnetPlus.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
-            Tooltip.SetDefault("Use to change radius");
+            Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9090FF:show current range ]");
         }
 
         public override void SetDefaults()
         {
-            item.width = 22;
-            item.height = 22;
-            item.scale = 1f;
+            item.width = 26;
+            item.height = 26;
+            item.scale = 1.3f;
             item.value = 100;
-            item.rare = 12;
+            item.rare = 2;
             item.useAnimation = 10;
             item.useTime = 10;
             item.useStyle = 4;
             item.consumable = false;
-            item.buffType = mod.BuffType("ItemMagnetBuff");
+            //item.buffType = mod.BuffType("ItemMagnetBuff");
         }
 
         public override void AddRecipes()
         {
+            //6 iron/lead, 1 sapphire, 1 ruby
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.IronBar, 6);
+            recipe.AddRecipeGroup("IronBar", 6);
             recipe.AddIngredient(ItemID.Sapphire, 1);
             recipe.AddIngredient(ItemID.Ruby, 1);
+            recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this, 1);
             recipe.AddRecipe();
+
+            //12 iron/lead
             ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(ItemID.IronBar, 12);
+            recipe2.AddRecipeGroup("IronBar", 12);
+            recipe2.AddTile(TileID.Anvils);
             recipe2.SetResult(this, 1);
             recipe2.AddRecipe();
         }
@@ -139,9 +144,11 @@ namespace ItemMagnetPlus.Items
         public override bool UseItem(Player player)
         {
             ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+            mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
+
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                Main.NewText("alt "+ player.altFunctionUse);
+                //Main.NewText("alt "+ player.altFunctionUse);
 
                 //right click feature only shows the range
                 if (player.altFunctionUse == 2 && mPlayer.magnetActive > 0)
@@ -149,7 +156,7 @@ namespace ItemMagnetPlus.Items
                     DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
                     CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealMana, "range:" + mPlayer.magnetGrabRadius);
                 }
-                else
+                else if (player.altFunctionUse != 2)
                 {
                     int divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5;
                     //int steps = (mPlayer.magnetMaxGrabRadius - divider) / divider;
@@ -157,7 +164,7 @@ namespace ItemMagnetPlus.Items
 
                     if (mPlayer.magnetActive == 0)
                     {
-                        player.AddBuff(item.buffType, 3600, true);
+                        player.AddBuff(mod.BuffType("ItemMagnetBuff"), 3600, true);
 
                         //CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, "magnet on");
                         //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
@@ -168,7 +175,7 @@ namespace ItemMagnetPlus.Items
                         radius = mPlayer.magnetGrabRadius;
                         divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
                         //Main.NewText("grab radius after update: " + mPlayer.magnetGrabRadius);
-                        DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(128, 255, 128));
+                        DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(200, 255, 200));
 
                         string ranges = "range:" + radius;
                         if (radius + divider > mPlayer.magnetMaxGrabRadius)
@@ -210,7 +217,7 @@ namespace ItemMagnetPlus.Items
                         }
 
                         mPlayer.UpdateMagnetValues(mPlayer, radius);
-                        DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(128, 255, 128));
+                        DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(200, 255, 200));
 
                         //here radius is already + divider
                         string ranges = "range:" + radius;

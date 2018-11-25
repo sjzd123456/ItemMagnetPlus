@@ -56,15 +56,4 @@ namespace ItemMagnetPlus
     {
         Magnet,
     }
-
-    /*TODO
-     * -somehow display current radius on buff or item tooltip
-     * -change player.magnetMaxGrabRange to 10 on final release
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     */
 }
