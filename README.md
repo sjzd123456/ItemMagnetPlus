@@ -12,3 +12,5 @@ Item Magnet (and corresponding buff) that
 * has adjustable range and item succ speed
 * has increased stats after killing bosses
 * customizable via config (\Documents\My Games\Terraria\ModLoader\Mod Configs) to fit your playstyle
+
+Terraria Forum link: https://forums.terraria.org/index.php?threads/itemmagnetplus-customizable-item-magnet.74425/
