@@ -13,7 +13,7 @@ namespace ItemMagnetPlus
         public int magnetScreenRadius = 60;
         public int magnetGrabRadius = 10;
         public int magnetMinGrabRadius = 10;
-        public int magnetMaxGrabRadius = 10; //60 half a screen radius
+        public int magnetMaxGrabRadius = 60; //60 half a screen radius
         public int magnetScale = 1;
         public int magnetVelocity = 8;
         public int magnetAcceleration = 30;
@@ -26,7 +26,7 @@ namespace ItemMagnetPlus
             
             //magnetGrabRadius = 0;
             magnetScreenRadius = 60 + 1;
-            magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
+            magnetMaxGrabRadius = 60; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
             magnetScale = 1; //1
             magnetVelocity = 8; //16
             magnetAcceleration = 30; //20
@@ -39,7 +39,6 @@ namespace ItemMagnetPlus
 
         public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
         {
-            //TODO Scale with config
             mPlayer.magnetScale = ModConf.Scale;
             mPlayer.magnetVelocity = ModConf.Velocity;
             mPlayer.magnetAcceleration = ModConf.Acceleration;
@@ -153,6 +152,7 @@ namespace ItemMagnetPlus
                 UpdateMagnetValues(mPlayer, magnetGrabRadius);
 
                 int grabRadius = (int)(magnetGrabRadius * 16); //16 == to world coordinates
+                int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
                 //Main.NewText("grabradius: " + grabRadius);
                 for (int j = 0; j < 400; j++)
                 {
@@ -161,7 +161,7 @@ namespace ItemMagnetPlus
                     {
                         //Main.NewText("position " + player.position);
                         //Main.NewText("Tile " + player.position.ToTileCoordinates());
-                        Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - grabRadius, player.width + grabRadius * 2, player.height + grabRadius * 2);
+                        Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
                         if (rect.Intersects(new Rectangle((int)Main.item[j].position.X, (int)Main.item[j].position.Y, Main.item[j].width, Main.item[j].height)))
                         {
                             if (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0)
@@ -212,9 +212,8 @@ namespace ItemMagnetPlus
             //{
             //    if (counter == 0)
             //    {
-            //        Console.WriteLine(" " + player.name + "active " + magnetActive);
-            //        Console.WriteLine(" " + player.name + "grabradius " + magnetGrabRadius);
-            //        Console.WriteLine(" " + player.name + "grabradius " + magnetGrabRadius);
+            //        Console.WriteLine(" " + player.name + " active " + magnetActive);
+            //        Console.WriteLine(" " + player.name + " grabradius " + magnetGrabRadius);
             //        counter = 30;
             //    }
             //    counter--;
@@ -224,8 +223,8 @@ namespace ItemMagnetPlus
             //{
             //    if (clientcounter == 0)
             //    {
-            //        Main.NewText(" " + player.name + "active " + magnetActive);
-            //        Main.NewText(" " + player.name + "grabradius " + magnetGrabRadius);
+            //        Main.NewText(" " + player.name + " active " + magnetActive);
+            //        Main.NewText(" " + player.name + " grabradius " + magnetGrabRadius);
 
             //        clientcounter = 30;
             //    }

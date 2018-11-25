@@ -8,7 +8,7 @@ namespace ItemMagnetPlus.Buffs
         public override void SetDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
-            Description.SetDefault("A magnetic aura surrounds you!");
+            Description.SetDefault("A magnetic field surrounds you!");
             Main.buffNoTimeDisplay[Type] = true;
         }
 

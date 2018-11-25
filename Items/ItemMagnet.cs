@@ -94,6 +94,7 @@ namespace ItemMagnetPlus.Items
         {
             int stage = radius / (mPlayer.magnetScreenRadius * 16);
             radius = radius - mPlayer.magnetScreenRadius * 16 * stage;
+            float fullhdradius = radius * 0.5625f;
             color = new Color(color.R + stage * 40, color.G, color.B - stage * 40);
             //Main.NewText("DrawRec radius " + radius);
 
@@ -101,9 +102,9 @@ namespace ItemMagnetPlus.Items
             Vector2 pos = mPlayer.player.position;
             //radius in tile coordinates
             float leftx = pos.X - radius;
-            float topy = pos.Y - radius;
+            float topy = pos.Y - fullhdradius;
             float rightx = leftx + mPlayer.player.width + radius * 2;
-            float boty = topy + mPlayer.player.height + radius * 2;
+            float boty = topy + mPlayer.player.height + fullhdradius * 2;
             //Main.NewText("leftx " + leftx);
             //Main.NewText("topy " + topy);
             //Main.NewText("rightx " + rightx);

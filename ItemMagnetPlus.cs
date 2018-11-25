@@ -37,9 +37,9 @@ namespace ItemMagnetPlus
                     ItemMagnetPlusPlayer mPlayer = magnetPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        //Console.WriteLine("radius " + magnetGrabRadius);
-                        //Console.WriteLine("scale " + magnetScale);
-                        //Console.WriteLine("active " + magnetActive);
+                        //Console.WriteLine(" " + magnetPlayer.name + " radius " + magnetGrabRadius);
+                        //Console.WriteLine(" " + magnetPlayer.name + " scale " + magnetScale);
+                        //Console.WriteLine(" " + magnetPlayer.name + " active " + magnetActive);
                     }
                     mPlayer.magnetGrabRadius = magnetGrabRadius;
                     mPlayer.magnetScale = magnetScale;
