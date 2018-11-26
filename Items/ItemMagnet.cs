@@ -10,7 +10,7 @@ namespace ItemMagnetPlus.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
-            Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9090FF:show current range ]");
+            Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9999FF:show current range ]");
         }
 
         public override void SetDefaults()
@@ -105,7 +105,7 @@ namespace ItemMagnetPlus.Items
             int stage = radius / (mPlayer.magnetScreenRadius * 16);
             radius = radius - mPlayer.magnetScreenRadius * 16 * stage;
             float fullhdradius = radius * 0.5625f;
-            color = new Color(color.R + stage * 40, color.G, color.B - stage * 40);
+            color = new Color(color.R + stage * 30, color.G, color.B - stage * 30);
             //Main.NewText("DrawRec radius " + radius);
 
             //radius in world coordinates
@@ -151,10 +151,17 @@ namespace ItemMagnetPlus.Items
                 //Main.NewText("alt "+ player.altFunctionUse);
 
                 //right click feature only shows the range
-                if (player.altFunctionUse == 2 && mPlayer.magnetActive > 0)
+                if (player.altFunctionUse == 2)
                 {
-                    DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
-                    CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealMana, "range:" + mPlayer.magnetGrabRadius);
+                    if(mPlayer.magnetActive > 0)
+                    {
+                        DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
+                        CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealMana, "range:" + mPlayer.magnetGrabRadius);
+                    }
+                    else
+                    {
+                        CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet is off");
+                    }
                 }
                 else if (player.altFunctionUse != 2)
                 {
@@ -170,7 +177,6 @@ namespace ItemMagnetPlus.Items
                         //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
                         Main.PlaySound(SoundID.MaxMana, player.position, 1);
                         mPlayer.magnetActive = 1;
-                        radius = mPlayer.magnetMinGrabRadius;
                         mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetMinGrabRadius);
                         radius = mPlayer.magnetGrabRadius;
                         divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
@@ -209,7 +215,7 @@ namespace ItemMagnetPlus.Items
                             {
                                 if (Main.item[j].beingGrabbed)
                                 {
-                                    Main.NewText("reset item " + Main.item[j].Name);
+                                    //Main.NewText("reset item " + Main.item[j].Name);
                                     Main.item[j].beingGrabbed = false;
                                 }
                             }

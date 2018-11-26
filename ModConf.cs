@@ -9,7 +9,7 @@ namespace ItemMagnetPlus
     // Tutorial by goldenapple: https://forums.terraria.org/index.php?threads/modders-guide-to-config-files-and-optional-features.48581/
     public static class ModConf
     {
-        public const int configVersion = 2;
+        public const int configVersion = 3;
         private readonly static string modName = "ItemMagnetPlus";
 
         private const string rangeField = "range";
@@ -51,7 +51,7 @@ namespace ItemMagnetPlus
         }
 
         private const string accelerationField = "acceleration";
-        internal static int acceleration = 30;
+        internal static int acceleration = 8;
         public static int Acceleration
         {
             get
@@ -59,6 +59,10 @@ namespace ItemMagnetPlus
                 if (acceleration <= 0)
                 {
                     return 1;
+                }
+                if (acceleration > 40)
+                {
+                    return 40;
                 }
                 return acceleration;
             }
@@ -92,9 +96,18 @@ namespace ItemMagnetPlus
                     {
                         ErrorLogger.Log("ItemMagnetPlus: updated Version");
                         canUpdate = true;
-                        ModConfig.Put("readme", "First off, make sure to reload before the configs will take any effect. Range: Item pull range (default 10). Scale: 0 => always use max radius, 1 => switch through min to max radius, also ignores increased stats by boss progression (default 1), Velocity: how fast items move towards you (default 8, more is better), Acceleration: how fast items speed up when moving towards you (default 30, less is better). WARNING: Clients will desync if their local config is different to the server - this cannot be fixed without forcing the clients to download the server's mods and forcing the mods to reload. So don't mess with this too much outside of singleplayer unless you know what you're doing. And no I'm too lazy to find out how to even fix this behaviour, though a simple server mismatch warning might be a good idea. Feel free to delete this.");
                         ModConfig.Put("version", 2);
                         ModConfig.Put(rangeField, range);
+                        ModConfig.Put("readme", "First off, make sure to reload before the configs will take any effect. Range: Item pull range (default 10). Scale: 0 => always use max radius, also ignores increased stats by boss progression; 1 => switch through min to max radius (default 1), Velocity: how fast items move towards you (default 8), Acceleration: how fast items speed up when moving towards you (default 8). WARNING: Clients will desync if their local config is different to the server - this cannot be fixed without forcing the clients to download the server's mods and forcing the mods to reload. So don't mess with this too much outside of singleplayer unless you know what you're doing. And no I'm too lazy to find out how to even fix this behaviour, though a simple server mismatch warning might be a good idea. Feel free to delete this.");
+                        ModConfig.Save();
+                    }
+                    if (readVersion == 2)
+                    {
+                        ErrorLogger.Log("ItemMagnetPlus: updated Version");
+                        canUpdate = true;
+                        ModConfig.Put("version", 3);
+                        ModConfig.Put(accelerationField, acceleration);
+                        ModConfig.Put("readme", "First off, make sure to reload before the configs will take any effect. Range: Item pull range (default 10). Scale: 0 => always use max radius, also ignores increased stats by boss progression; 1 => switch through min to max radius (default 1), Velocity: how fast items move towards you (default 8), Acceleration: how fast items speed up when moving towards you (default 8). WARNING: Clients will desync if their local config is different to the server - this cannot be fixed without forcing the clients to download the server's mods and forcing the mods to reload. So don't mess with this too much outside of singleplayer unless you know what you're doing. And no I'm too lazy to find out how to even fix this behaviour, though a simple server mismatch warning might be a good idea. Feel free to delete this.");
                         ModConfig.Save();
                     }
 
@@ -122,7 +135,7 @@ namespace ItemMagnetPlus
             ModConfig.Put(velocityField, velocity);
             ModConfig.Put(accelerationField, acceleration);
 
-            ModConfig.Put("readme", "First off, make sure to reload before the configs will take any effect. Range: Item pull range (default 10). Scale: 0 => always use max radius, 1 => switch through min to max radius, also ignores increased stats by boss progression (default 1), Velocity: how fast items move towards you (default 8, more is better), Acceleration: how fast items speed up when moving towards you (default 30, less is better). WARNING: Clients will desync if their local config is different to the server - this cannot be fixed without forcing the clients to download the server's mods and forcing the mods to reload. So don't mess with this too much outside of singleplayer unless you know what you're doing. And no I'm too lazy to find out how to even fix this behaviour, though a simple server mismatch warning might be a good idea. Feel free to delete this.");
+            ModConfig.Put("readme", "First off, make sure to reload before the configs will take any effect. Range: Item pull range (default 10). Scale: 0 => always use max radius, also ignores increased stats by boss progression; 1 => switch through min to max radius (default 1), Velocity: how fast items move towards you (default 8), Acceleration: how fast items speed up when moving towards you (default 8). WARNING: Clients will desync if their local config is different to the server - this cannot be fixed without forcing the clients to download the server's mods and forcing the mods to reload. So don't mess with this too much outside of singleplayer unless you know what you're doing. And no I'm too lazy to find out how to even fix this behaviour, though a simple server mismatch warning might be a good idea. Feel free to delete this.");
 
             ModConfig.Save();
         }

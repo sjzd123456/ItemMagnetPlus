@@ -9,16 +9,15 @@ namespace ItemMagnetPlus
     public class ItemMagnetPlusPlayer : ModPlayer
     {
         public int magnetActive = 0;
-        public float magnetScaleFactor = 0.1f;
         public int magnetScreenRadius = 60 + 1;
         public int magnetGrabRadius = 10;
         public int magnetMinGrabRadius = 10;
         public int magnetMaxGrabRadius = 10; //60 half a screen radius
         public int magnetScale = 1;
         public int magnetVelocity = 8;
-        public int magnetAcceleration = 30;
+        public int magnetAcceleration = 8;
         //public int counter = 30;
-        //public int clientcounter = 30;
+        public int clientcounter = 30;
 
         public override void ResetEffects()
         {
@@ -29,12 +28,22 @@ namespace ItemMagnetPlus
             magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
             magnetScale = 1; //1
             magnetVelocity = 8; //16
-            magnetAcceleration = 30; //20
+            magnetAcceleration = 8; //20
         }
 
         public override void clientClone(ModPlayer clientClone)
         {
             ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
+        }
+
+        public override void OnEnterWorld(Player player)
+        {
+            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+        }
+
+        public override void OnRespawn(Player player)
+        {
+            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
         }
 
         public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
@@ -54,9 +63,10 @@ namespace ItemMagnetPlus
                 //Starts at
                 //magnetMaxGrabRadius = 10;
                 //magnetVelocity = 8;
-                //magnetAcceleration = 30;
+                //magnetAcceleration = 8;
 
                 mPlayer.magnetVelocity += 4;
+                mPlayer.magnetAcceleration += 2;
             }
             if (NPC.downedBoss1) //Eye of Cthulhu
             {
@@ -69,7 +79,7 @@ namespace ItemMagnetPlus
             if (NPC.downedQueenBee)
             {
                 mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration -= 10;
+                mPlayer.magnetAcceleration += 10;
             }
             if (NPC.downedBoss3) //Skeletron
             {
@@ -100,19 +110,19 @@ namespace ItemMagnetPlus
             {
                 mPlayer.magnetMaxGrabRadius += 10;
                 mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration -= 2;
+                mPlayer.magnetAcceleration += 2;
             }
             if (NPC.downedGolemBoss)
             {
                 mPlayer.magnetMaxGrabRadius += 10;
                 mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration -= 2;
+                mPlayer.magnetAcceleration += 2;
             }
             if (NPC.downedFishron)
             {
                 mPlayer.magnetMaxGrabRadius += 10;
                 mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration -= 2;
+                mPlayer.magnetAcceleration += 2;
             }
             if (NPC.downedAncientCultist)
             {
@@ -123,10 +133,10 @@ namespace ItemMagnetPlus
                 //Final at
                 //magnetMaxGrabRadius = 120; //one screen
                 //magnetVelocity = 32;
-                //magnetAcceleration = 10;
+                //magnetAcceleration = 32;
                 mPlayer.magnetMaxGrabRadius += 20;
                 mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration -= 4;
+                mPlayer.magnetAcceleration += 6;
             }
 
             if (currentRadius <= mPlayer.magnetMaxGrabRadius + 1)
@@ -158,9 +168,9 @@ namespace ItemMagnetPlus
                 //Main.NewText("grabradius: " + grabRadius);
                 for (int j = 0; j < 400; j++)
                 {
+                    //Main.NewText(j);
                     //if (j ==0) Main.NewText("start for loop");
-                    if (!ItemLoader.GrabStyle(Main.item[j], player) && Main.item[j].active && Main.item[j].noGrabDelay == 0 && ItemLoader.CanPickup(Main.item[j], player))
-                    {
+                    if(Main.item[j].active && Main.item[j].noGrabDelay == 0 && !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player)) {
                         //Main.NewText("position " + player.position);
                         //Main.NewText("Tile " + player.position.ToTileCoordinates());
                         Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
@@ -183,7 +193,7 @@ namespace ItemMagnetPlus
                                 distanceY *= normalDistance;
 
                                 //acceleration, higher = less acceleration
-                                int accel = magnetAcceleration; //20 default
+                                int accel = -(magnetAcceleration - 41); //20 default
 
                                 // num1 goes linear, num2 goes inverse
                                 Main.item[j].velocity.X = (Main.item[j].velocity.X * (float)(accel - 1) + distanceX) / (float)accel;
@@ -200,6 +210,7 @@ namespace ItemMagnetPlus
                             }
                         }
                     }
+                       // }
                     else
                     {
                         Main.item[j].beingGrabbed = false;
