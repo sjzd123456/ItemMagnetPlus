@@ -11,7 +11,7 @@ Item Magnet (and corresponding buff) that
 
 How to use:
 * Left click cycles through its ranges
-* Right click shows current range
+* Right click shows current range (you can always check the stats on the buff tooltip)
 * Killing bosses improves its stats
 * If you want it to either be off or on, there is a config entry called "scale", set it to 0
 * If you plan on using this in multiplayer, make sure that everyone has the same config
@@ -36,6 +36,8 @@ Ends with: (killing Moonlord)
 
 
  Changelog:
+
+ v0.1.2: Added Buff- and Tooltip to show range, updated icons (Thanks to Harblesnargits!)
 
  v0.1.1: Fixed incompatibility with Even More Modifiers, changed acceleration values (updating will set it back to default)
 
