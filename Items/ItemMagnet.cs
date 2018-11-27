@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace ItemMagnetPlus.Items
 {
@@ -25,6 +26,21 @@ namespace ItemMagnetPlus.Items
             item.useStyle = 4;
             item.consumable = false;
             //item.buffType = mod.BuffType("ItemMagnetBuff");
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")))
+            {
+                ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+                tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
+            }
+            else if (Main.LocalPlayer.HasItem(mod.ItemType("ItemMagnet")))
+            {
+                tooltips.Add(new TooltipLine(mod, "Range", "Magnet is off"));
+            }
+            //If player has buff, then he automatically also has the item
+            //If player doesn't have the buff, he can still have the item, just not activated
         }
 
         public override void AddRecipes()

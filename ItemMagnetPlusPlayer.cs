@@ -201,7 +201,6 @@ namespace ItemMagnetPlus
 
                                 if (Main.rand.NextFloat() < 0.7f)
                                 {
-                                    Vector2 position = Main.LocalPlayer.Center;
                                     Dust dust = Main.dust[Dust.NewDust(Main.item[j].position, 30, 30, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f)];
                                     dust.noGravity = true;
                                     dust.noLight = true;
