@@ -16,9 +16,9 @@ namespace ItemMagnetPlus.Items
 
         public override void SetDefaults()
         {
-            item.width = 20;
-            item.height = 20;
-            item.scale = 1.5f;
+            item.width = 28;
+            item.height = 32;
+            item.scale = 1f;
             item.value = 100;
             item.rare = 2;
             item.useAnimation = 10;

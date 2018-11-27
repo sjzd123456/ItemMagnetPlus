@@ -2,7 +2,6 @@
 
 ![Icon](https://raw.githubusercontent.com/direwolf420/ItemMagnetPlus/master/icon.png)
 
-
 Terraria Forum link: https://forums.terraria.org/index.php?threads/itemmagnetplus-customizable-item-magnet.74425/
 
 ItemMagnetPlus adds a single item called "Item Magnet" that does the obvious thing: Sucking in items around you so you don't have to run around and collect them yourself.
@@ -24,17 +23,17 @@ How to use:
 * If you plan on using this in multiplayer, make sure that everyone has the same config
 
 Progression: (default config)
- Starts with:
- Range = 10 (Blocks in each direction)
- Velocity = 8
- Acceleration = 8
+* Starts with:
+* Range = 10 (Blocks in each direction)
+* Velocity = 8
+* Acceleration = 8
 
 Ends with: (killing Moonlord)
- Range = 120 (one and a half screens)
- Velocity = 32
- Acceleration = 32
+* Range = 120 (one and a half screens)
+* Velocity = 32
+* Acceleration = 32
 
- About the config:
+About the config:
 * Range starts from 10, but can be as big as you want
 * Velocity can also be as big as you want, but acceleration is capped at 40 to prevent items wobbling around the player too much
 * Beware of lag when increasing these values, especially range
@@ -43,6 +42,8 @@ Ends with: (killing Moonlord)
 
 
  Changelog:
+
+ v0.1.2: Added Buff- and Tooltip to show range, updated icons (Thanks to Harblesnargits!)
 
  v0.1.1: Fixed incompatibility with Even More Modifiers, changed acceleration values (updating will set it back to default)
 
