@@ -16,9 +16,9 @@ namespace ItemMagnetPlus.Items
 
         public override void SetDefaults()
         {
-            item.width = 26;
-            item.height = 26;
-            item.scale = 1.3f;
+            item.width = 20;
+            item.height = 20;
+            item.scale = 1.5f;
             item.value = 100;
             item.rare = 2;
             item.useAnimation = 10;
@@ -33,7 +33,10 @@ namespace ItemMagnetPlus.Items
             if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")))
             {
                 ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+                mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
                 tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
+                tooltips.Add(new TooltipLine(mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
+                tooltips.Add(new TooltipLine(mod, "Acceleration", "Current Acceleration: " + mPlayer.magnetAcceleration));
             }
             else if (Main.LocalPlayer.HasItem(mod.ItemType("ItemMagnet")))
             {
@@ -137,9 +140,9 @@ namespace ItemMagnetPlus.Items
             //Main.NewText("boty " + boty);
 
             QuickDustLine(new Vector2(leftx, topy), new Vector2(rightx, topy), radius / 16f, color); //clock wise starting top left
-            QuickDustLine(new Vector2(rightx, topy), new Vector2(rightx, boty), radius / 16f, color);
+            QuickDustLine(new Vector2(rightx, topy), new Vector2(rightx, boty), fullhdradius / 16f, color);
             QuickDustLine(new Vector2(rightx, boty), new Vector2(leftx, boty), radius / 16f, color);
-            QuickDustLine(new Vector2(leftx, boty), new Vector2(leftx, topy), radius / 16f, color);
+            QuickDustLine(new Vector2(leftx, boty), new Vector2(leftx, topy), fullhdradius / 16f, color);
         }
 
         public void SendMagnetData(ItemMagnetPlusPlayer mPlayer)

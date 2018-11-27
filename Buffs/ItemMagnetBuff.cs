@@ -12,6 +12,17 @@ namespace ItemMagnetPlus.Buffs
             Main.buffNoTimeDisplay[Type] = true;
         }
 
+        public override void ModifyBuffTip(ref string tip, ref int rare)
+        {
+            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+            string add = "\nCurrent Range: " + mPlayer.magnetGrabRadius;
+            //Feeling Cute, Might Delete Later
+            mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
+            add += "\nCurrent Velocity: " + mPlayer.magnetVelocity;
+            add += "\nCurrent Acceleration: " + mPlayer.magnetAcceleration;
+            tip = tip + add;
+        }
+
         public override void Update(Player player, ref int buffIndex)
         {
             if (player.HasItem(mod.ItemType("ItemMagnet")))
