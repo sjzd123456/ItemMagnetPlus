@@ -21,8 +21,11 @@ namespace ItemMagnetPlus
 
         public override void ResetEffects()
         {
-            magnetActive = 0;
-            
+            if (ModConf.Buff == 1)
+            {
+                magnetActive = 0;
+            }
+
             //magnetGrabRadius = 0;
             //these are changed by config
             magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
@@ -36,14 +39,40 @@ namespace ItemMagnetPlus
             ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
         }
 
+        public void ActivateMagnet(Player player)
+        {
+            if(ModConf.Buff != 0) // != 0 is buff
+            {
+                player.AddBuff(mod.BuffType("ItemMagnetBuff"), 3600, true);
+            }
+            else
+            {
+                ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+                mPlayer.magnetActive = 1;
+            }
+        }
+
+        public void DeactivateMagnet(Player player)
+        {
+            if (ModConf.Buff != 0) // != 0 is buff
+            {
+                player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+            }
+            else
+            {
+                ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+                mPlayer.magnetActive = 0;
+            }
+        }
+
         public override void OnEnterWorld(Player player)
         {
-            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+            DeactivateMagnet(player);
         }
 
         public override void OnRespawn(Player player)
         {
-            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+            DeactivateMagnet(player);
         }
 
         public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
@@ -151,6 +180,12 @@ namespace ItemMagnetPlus
 
         public override void PreUpdate()
         {
+            //new for no buff
+            //if(ModConf.Buff == 0)
+            //{
+            //    ActivateMagnet(player);
+            //}
+
             //Main.NewText(magnetGrabRadius);
             //Main.NewText(magnetMaxGrabRadius);
             //Main.NewText(magnetMinGrabRadius);
