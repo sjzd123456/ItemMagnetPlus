@@ -1,6 +1,6 @@
 # ItemMagnetPlus
 
-![Icon](https://raw.githubusercontent.com/direwolf420/ItemMagnetPlus/master/icon.png)
+![Banner](https://raw.githubusercontent.com/direwolf420/ItemMagnetPlus/master/banner.png)
 
 Terraria Forum link: https://forums.terraria.org/index.php?threads/itemmagnetplus-customizable-item-magnet.74425/
 
