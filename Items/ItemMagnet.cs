@@ -30,7 +30,7 @@ namespace ItemMagnetPlus.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")))
+            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive == 1)
             {
                 ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
                 mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
@@ -172,14 +172,19 @@ namespace ItemMagnetPlus.Items
                 //right click feature only shows the range
                 if (player.altFunctionUse == 2)
                 {
-                    if(mPlayer.magnetActive > 0)
+                    if(mPlayer.magnetActive == 0)
+                    {
+                        CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet is off");
+                    }
+                    else if(player.HasBuff(mod.BuffType("ItemMagnetBuff")))
                     {
                         DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealMana, "range:" + mPlayer.magnetGrabRadius);
                     }
                     else
                     {
-                        CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet is off");
+                        mPlayer.DeactivateMagnet(player);
+                        CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
                     }
                 }
                 else if (player.altFunctionUse != 2)
@@ -190,7 +195,7 @@ namespace ItemMagnetPlus.Items
 
                     if (mPlayer.magnetActive == 0)
                     {
-                        player.AddBuff(mod.BuffType("ItemMagnetBuff"), 3600, true);
+                        mPlayer.ActivateMagnet(player);
 
                         //CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, "magnet on");
                         //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
@@ -225,7 +230,7 @@ namespace ItemMagnetPlus.Items
                             CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
                             //Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
                             Main.PlaySound(SoundID.MaxMana, player.position, 1);
-                            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+                            mPlayer.DeactivateMagnet(player);
                             //DrawRectangle(mPlayer, 16 * 1, new Color(255, 128, 128));
 
                             SendMagnetData(mPlayer);
