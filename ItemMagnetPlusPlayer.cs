@@ -55,6 +55,10 @@ namespace ItemMagnetPlus
                 lowerCase[i] = stringBlacklist[i].Trim();
             }
             string[] lowerCaseDistinct = lowerCase.Distinct().ToArray();
+            for (int i = 0; i < lowerCaseDistinct.Length; i++)
+            {
+                Main.NewText(lowerCaseDistinct[i]);
+            }
             int j = -1;
             for (int i = 0; i < lowerCaseDistinct.Length; i++)
             {
@@ -82,6 +86,7 @@ namespace ItemMagnetPlus
                 }
             }
             Array.Resize(ref typeBlacklist, j + 1);
+            Array.Sort(typeBlacklist,0, typeBlacklist.Length - 1);
             return typeBlacklist;
         }
 
@@ -256,9 +261,13 @@ namespace ItemMagnetPlus
                         {
                             if (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0)
                             {
-                                if(Array.BinarySearch(magnetBlacklist, Main.item[j].type) < 0)
+                                for (int i = 0; i < magnetBlacklist.Length; i++)
                                 {
-                                    //Main.NewText("wtf");
+                                    Main.NewText(magnetBlacklist[i]);
+                                }
+                                Main.NewText(Array.BinarySearch(magnetBlacklist, Main.item[j].type));
+                                if (Array.BinarySearch(magnetBlacklist, Main.item[j].type) < 0)
+                                {
                                     //so it can go through walls
                                     Main.item[j].beingGrabbed = true;
                                     //velocity, higher = more speed

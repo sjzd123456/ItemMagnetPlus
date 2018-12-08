@@ -54,6 +54,8 @@ Ends with: (killing Moonlord)
 
 
  Changelog:
+
+ v0.1.4.1: filter hotfix
  
  v0.1.4: Added blacklist "filter" to be able to filter hearts, mana stars and coins (for now)
 
