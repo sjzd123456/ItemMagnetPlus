@@ -75,28 +75,6 @@ namespace ItemMagnetPlus.Items
             return true;
         }
 
-        public override bool OnPickup(Player player)
-        {
-            //player.AddBuff(item.buffType, 3600, true);
-            //player.ClearBuff(mod.BuffType("ItemMagnetBuff")); //not needed since buff time is only 2 sec
-            //ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-            //Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
-            //Main.PlaySound(SoundID.MaxMana, player.position, 1);
-            //mPlayer.magnetActive = 0;
-            //SendMagnetData(mPlayer);
-
-            //for (int j = 0; j < 400; j++)
-            //{
-            //    if (Main.item[j].beingGrabbed)
-            //    {
-            //        Main.NewText("reset item " + Main.item[j].Name);
-            //        Main.item[j].beingGrabbed = false;
-            //    }
-            //}
-
-            return true;
-        }
-
         public static Dust QuickDust(Vector2 pos, Color color)
         {
             int type = 1;

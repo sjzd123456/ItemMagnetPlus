@@ -25,7 +25,7 @@ namespace ItemMagnetPlus.Buffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.HasItem(mod.ItemType("ItemMagnet")))
+            if (player.HasItem(mod.ItemType("ItemMagnet")) || player.selectedItem == 58) //when player takes the item out of his inventory
             {
                 player.buffTime[buffIndex] = 60;
                 player.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive = 1;
