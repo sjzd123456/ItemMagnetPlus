@@ -47,9 +47,13 @@ namespace ItemMagnetPlus
             //list of item types to ignore
             //TODO make this more efficient with LINQ stuff
             //also make this more general
+            int[] typeBlacklist = new int[50];
+            if (ModConf.Filter == "")
+            {
+                return typeBlacklist;
+            }
             string[] stringBlacklist = ModConf.Filter.Split(new string[] { "," }, 50, StringSplitOptions.RemoveEmptyEntries);
             string[] lowerCase = new string[stringBlacklist.Length];
-            int[] typeBlacklist = new int[50];
             for (int i = 0; i < stringBlacklist.Length; i++)
             {
                 lowerCase[i] = stringBlacklist[i].Trim();
@@ -63,14 +67,12 @@ namespace ItemMagnetPlus
                     typeBlacklist[++j] = 58;
                     typeBlacklist[++j] = 1734;
                     typeBlacklist[++j] = 1867;
-                    //58 || Main.item[j].type == 1734 || Main.item[j].type == 1867
                 }
                 if (lowerCaseDistinct[i] == "mana")
                 {
                     typeBlacklist[++j] = 184;
                     typeBlacklist[++j] = 1735;
                     typeBlacklist[++j] = 1868;
-                    //184 || Main.item[j].type == 1735 || Main.item[j].type == 1868
                 }
                 if (lowerCaseDistinct[i] == "coin")
                 {
@@ -78,9 +80,10 @@ namespace ItemMagnetPlus
                     typeBlacklist[++j] = 331;
                     typeBlacklist[++j] = 332;
                     typeBlacklist[++j] = 333;
-                    //184 || Main.item[j].type == 1735 || Main.item[j].type == 1868
                 }
             }
+            //if no things added to the list then return empty list
+            if (j < 0) return typeBlacklist;
             Array.Resize(ref typeBlacklist, j + 1);
             Array.Sort(typeBlacklist,0, typeBlacklist.Length - 1);
             return typeBlacklist;

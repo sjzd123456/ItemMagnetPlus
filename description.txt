@@ -40,7 +40,7 @@ Ends with: (killing Moonlord)
 
 Changelog:
  
- v0.1.4.1 + 2 + 3: filter hotfix, fix stuck range when using magnet inside inventory
+ v0.1.4.1 + 2 + 3 + 4: filter hotfix, fix stuck range when using magnet inside inventory, another filter hotfix
 
  v0.1.4: Added blacklist "filter" to be able to filter hearts, mana stars and coins (for now)
 
