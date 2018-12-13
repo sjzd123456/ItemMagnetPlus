@@ -14,7 +14,7 @@ How to use:
 * Right click shows current range (you can always check the stats on the buff tooltip)
 * This right click functionality changes to "turn off" when "buff" flag in the config is set to 0
 * Killing bosses improves its stats
-* If you want it to either be off or on, there is a config entry called "scale", set it to 0
+* If you want it to either be off or on, there is a config entry called "scale", set it to 0 or 2
 * If you plan on using this in multiplayer, make sure that everyone has the same config
 
 Progression: (default config)
