@@ -56,6 +56,8 @@ Ends with: (killing Moonlord)
 
  Changelog:
 
+ v0.1.6.1: Hotfix bug where items get deleted very rarely when opening crate-like things (now you won't attract items with a full inventory)
+
  v0.1.6: Added persistency: Magnet now keeps its state when you respawn! (Also switched scale mode 0 and 2 around, check your config)
  
  v0.1.5: Added new scale config mode: Keep all the buffs from killing bosses but don't shuffle through each range again upon activation
