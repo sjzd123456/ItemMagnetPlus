@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace ItemMagnetPlus
 {
@@ -19,6 +20,7 @@ namespace ItemMagnetPlus
         public int magnetVelocity = 8;
         public int magnetAcceleration = 8;
         public int[] magnetBlacklist = new int[50]; //only populated when player activates magnet, not changed during gameplay
+        private bool hadMagnetActive = false;
         //public int counter = 30;
         public int clientcounter = 30;
 
@@ -41,6 +43,17 @@ namespace ItemMagnetPlus
         {
             ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
         }
+
+        //public override TagCompound Save()
+        //{
+        //    //Main.NewText(magnetActive);
+        //    return new TagCompound {{"magnetActive", magnetActive}};
+        //}
+
+        //public override void Load(TagCompound tag)
+        //{
+        //    magnetActive = tag.GetInt("magnetActive");
+        //}
 
         private int[] MagnetBlacklist(ItemMagnetPlusPlayer mPlayer)
         {
@@ -115,6 +128,15 @@ namespace ItemMagnetPlus
                 ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
                 mPlayer.magnetActive = 0;
             }
+
+            for (int j = 0; j < 400; j++)
+            {
+                if (Main.item[j].beingGrabbed)
+                {
+                    Main.NewText("reset item " + Main.item[j].Name);
+                    Main.item[j].beingGrabbed = false;
+                }
+            }
         }
 
         public override void OnEnterWorld(Player player)
@@ -124,7 +146,24 @@ namespace ItemMagnetPlus
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
+            if (player.HasBuff(mod.BuffType("ItemMagnetBuff")) || magnetActive != 0)
+            {
+                hadMagnetActive = true;
+            }
+            else
+            {
+                hadMagnetActive = false;
+            }
             DeactivateMagnet(player);
+        }
+
+        public override void OnRespawn(Player player)
+        {
+            if (hadMagnetActive)
+            {
+                hadMagnetActive = false;
+                ActivateMagnet(player);
+            }
         }
 
         public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
@@ -135,7 +174,7 @@ namespace ItemMagnetPlus
             mPlayer.magnetVelocity = ModConf.Velocity;
             mPlayer.magnetAcceleration = ModConf.Acceleration;
 
-            if (mPlayer.magnetScale == 0)
+            if (mPlayer.magnetScale == 2)
             {
                 mPlayer.magnetGrabRadius = mPlayer.magnetMaxGrabRadius;
                 return;
@@ -221,7 +260,7 @@ namespace ItemMagnetPlus
                 mPlayer.magnetAcceleration += 6;
             }
 
-            if (mPlayer.magnetScale == 2)
+            if (mPlayer.magnetScale == 0)
             {
                 mPlayer.magnetGrabRadius = mPlayer.magnetMaxGrabRadius;
                 return;
@@ -249,8 +288,8 @@ namespace ItemMagnetPlus
             //{
             if (magnetActive > 0)
             {
-                ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-                UpdateMagnetValues(mPlayer, magnetGrabRadius);
+                //ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+                UpdateMagnetValues(this, magnetGrabRadius);
 
                 int grabRadius = (int)(magnetGrabRadius * 16); //16 == to world coordinates
                 int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
