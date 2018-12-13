@@ -48,14 +48,14 @@ namespace ItemMagnetPlus.Items
 
         public override void AddRecipes()
         {
-            //6 iron/lead, 1 sapphire, 1 ruby
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddRecipeGroup("IronBar", 6);
-            recipe.AddIngredient(ItemID.Sapphire, 1);
-            recipe.AddIngredient(ItemID.Ruby, 1);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            //6 iron / lead, 1 sapphire, 1 ruby
+            //ModRecipe recipe = new ModRecipe(mod);
+            //recipe.AddRecipeGroup("IronBar", 6);
+            //recipe.AddIngredient(ItemID.Sapphire, 1);
+            //recipe.AddIngredient(ItemID.Ruby, 1);
+            //recipe.AddTile(TileID.Anvils);
+            //recipe.SetResult(this, 1);
+            //recipe.AddRecipe();
 
             //12 iron/lead
             ModRecipe recipe2 = new ModRecipe(mod);
@@ -165,7 +165,7 @@ namespace ItemMagnetPlus.Items
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
                     }
                 }
-                else if (player.altFunctionUse != 2)
+                else //if (player.altFunctionUse != 2)
                 {
                     int divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5;
                     //int steps = (mPlayer.magnetMaxGrabRadius - divider) / divider;

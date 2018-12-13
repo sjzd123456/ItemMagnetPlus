@@ -129,6 +129,7 @@ namespace ItemMagnetPlus
 
         public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
         {
+            //currentRadius is for creating steps between min and max range, and setting it accordingly
             mPlayer.magnetMaxGrabRadius = ModConf.Range;
             mPlayer.magnetScale = ModConf.Scale;
             mPlayer.magnetVelocity = ModConf.Velocity;
@@ -218,6 +219,12 @@ namespace ItemMagnetPlus
                 mPlayer.magnetMaxGrabRadius += 20;
                 mPlayer.magnetVelocity += 4;
                 mPlayer.magnetAcceleration += 6;
+            }
+
+            if (mPlayer.magnetScale == 2)
+            {
+                mPlayer.magnetGrabRadius = mPlayer.magnetMaxGrabRadius;
+                return;
             }
 
             if (currentRadius <= mPlayer.magnetMaxGrabRadius + 1)
