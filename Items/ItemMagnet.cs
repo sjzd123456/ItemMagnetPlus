@@ -11,7 +11,14 @@ namespace ItemMagnetPlus.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
-            Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9999FF:show current range ]");
+            if(ModConf.Buff == 1)
+            {
+                Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9999FF:show current range ]");
+            }
+            else
+            {
+                Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/FF8080:turn off ]");
+            }
         }
 
         public override void SetDefaults()
