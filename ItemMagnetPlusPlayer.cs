@@ -11,7 +11,7 @@ namespace ItemMagnetPlus
 {
     public class ItemMagnetPlusPlayer : ModPlayer
     {
-        public int magnetActive = 0;
+        public bool magnetActive = false;
         public int magnetScreenRadius = 60 + 1;
         public int magnetGrabRadius = 10;
         public int magnetMinGrabRadius = 10;
@@ -21,27 +21,44 @@ namespace ItemMagnetPlus
         public int magnetAcceleration = 8;
         public int[] magnetBlacklist = new int[50]; //only populated when player activates magnet, not changed during gameplay
         private bool hadMagnetActive = false;
-        //public int counter = 30;
+        public int counter = 30;
         public int clientcounter = 30;
 
         public override void ResetEffects()
         {
-            if (ModConf.Buff == 1)
-            {
-                magnetActive = 0;
-            }
 
             //magnetGrabRadius = 0;
-            //these are changed by config
-            magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
-            magnetScale = 1; //1
-            magnetVelocity = 8; //16
-            magnetAcceleration = 8; //20
+            if (Main.netMode != NetmodeID.MultiplayerClient) //using server config
+            {
+                if (ModConf.Buff == 1 && magnetActive == true)
+                {
+                    magnetActive = false;
+                }
+
+                //these are changed by config
+                //magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
+                //magnetScale = 1; //1
+                //magnetVelocity = 8; //16
+                //magnetAcceleration = 8; //20
+            }
         }
 
         public override void clientClone(ModPlayer clientClone)
         {
             ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
+        }
+
+        private void SendActive()
+        {
+            //gets only called from server
+            Main.NewText("syncplayer");
+            Console.WriteLine("syncplayer");
+            //from server to client
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)ItemMagnetPlusMessageType.MagnetPlayerSyncPlayer);
+            packet.Write((byte)player.whoAmI);
+            packet.Write(magnetActive);
+            packet.Send(toClient: player.whoAmI);
         }
 
         //public override TagCompound Save()
@@ -55,13 +72,13 @@ namespace ItemMagnetPlus
         //    magnetActive = tag.GetInt("magnetActive");
         //}
 
-        private int[] MagnetBlacklist(ItemMagnetPlusPlayer mPlayer)
+        private int[] MagnetBlacklist()
         {
             //list of item types to ignore
             //TODO make this more efficient with LINQ stuff
             //also make this more general
-            int[] typeBlacklist = new int[50];
-            if (ModConf.Filter == "")
+            int[] typeBlacklist = new int[10];
+            if (ModConf.Filter == null || ModConf.Filter == "")
             {
                 return typeBlacklist;
             }
@@ -97,56 +114,91 @@ namespace ItemMagnetPlus
             }
             //if no things added to the list then return empty list
             if (j < 0) return typeBlacklist;
-            Array.Resize(ref typeBlacklist, j + 1);
             Array.Sort(typeBlacklist,0, typeBlacklist.Length - 1);
             return typeBlacklist;
         }
 
-        public void ActivateMagnet(Player player)
+        public void SendMagnetData()
         {
-            magnetBlacklist = MagnetBlacklist(player.GetModPlayer<ItemMagnetPlusPlayer>(mod));
-            if (ModConf.Buff != 0) // != 0 is buff
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                player.AddBuff(mod.BuffType("ItemMagnetBuff"), 3600, true);
-            }
-            else
-            {
-                ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-                mPlayer.magnetActive = 1;
+                //Main.NewText("sent Magnet packet");
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)ItemMagnetPlusMessageType.Magnet);
+                packet.Write((byte)player.whoAmI);
+                packet.Write(player.HasBuff(mod.BuffType("ItemMagnetBuff")));
+                packet.Write(magnetGrabRadius);
+                packet.Write(magnetScale);
+                packet.Write(magnetActive);
+                packet.Send();
             }
         }
 
-        public void DeactivateMagnet(Player player)
+        private void SendMagnetBlacklist()
         {
-            if (ModConf.Buff != 0) // != 0 is buff
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)ItemMagnetPlusMessageType.MagnetBlacklist);
+                packet.Write((byte)player.whoAmI);
+                packet.Write((byte)magnetBlacklist.Length);
+                packet.Send();
             }
-            else
+        }
+
+        public void ActivateMagnet()
+        {
+            if(Main.netMode != NetmodeID.Server)
             {
-                player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+                if (ModConf.Buff != 0) // != 0 is buff
+                {
+                    player.AddBuff(mod.BuffType("ItemMagnetBuff"), 3600, true);
+                }
+                else
+                {
+                    ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+                    mPlayer.magnetActive = true;
+                }
+            }
+
+            UpdateMagnetValues(magnetGrabRadius);
+            SendMagnetData();
+        }
+
+        public void DeactivateMagnet()
+        {
+            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+            if (Main.netMode != NetmodeID.Server && ModConf.Buff == 0) // == 0 is no buff
+            {
                 ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-                mPlayer.magnetActive = 0;
+                mPlayer.magnetActive = false;
             }
 
             for (int j = 0; j < 400; j++)
             {
-                if (Main.item[j].beingGrabbed)
+                if (Main.item[j].active && Main.item[j].beingGrabbed)
                 {
                     //Main.NewText("reset item " + Main.item[j].Name);
                     Main.item[j].beingGrabbed = false;
                 }
             }
+            UpdateMagnetValues(magnetGrabRadius);
+            SendMagnetData();
         }
 
         public override void OnEnterWorld(Player player)
         {
-            DeactivateMagnet(player);
+            if (Main.netMode != NetmodeID.Server)
+            {
+                magnetBlacklist = MagnetBlacklist();
+                SendMagnetBlacklist();
+            }
+            DeactivateMagnet();
         }
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (player.HasBuff(mod.BuffType("ItemMagnetBuff")) || magnetActive != 0)
+            if (player.HasBuff(mod.BuffType("ItemMagnetBuff")) || magnetActive != false)
             {
                 hadMagnetActive = true;
             }
@@ -154,7 +206,7 @@ namespace ItemMagnetPlus
             {
                 hadMagnetActive = false;
             }
-            DeactivateMagnet(player);
+            DeactivateMagnet();
         }
 
         public override void OnRespawn(Player player)
@@ -162,134 +214,150 @@ namespace ItemMagnetPlus
             if (hadMagnetActive)
             {
                 hadMagnetActive = false;
-                ActivateMagnet(player);
+                ActivateMagnet();
             }
         }
 
-        public void UpdateMagnetValues(ItemMagnetPlusPlayer mPlayer, int currentRadius)
+        private void SendMagnetDataRegular()
         {
-            //currentRadius is for creating steps between min and max range, and setting it accordingly
-            mPlayer.magnetMaxGrabRadius = ModConf.Range;
-            mPlayer.magnetScale = ModConf.Scale;
-            mPlayer.magnetVelocity = ModConf.Velocity;
-            mPlayer.magnetAcceleration = ModConf.Acceleration;
+            if(Main.time % 360 == 42)
+            {
+                SendMagnetData();
+            }
+        }
 
-            if (mPlayer.magnetScale == 2)
+        public void UpdateMagnetValues(int currentRadius)
+        {
+            //only apply changes client side, but sync them up once a second to server
+            if(Main.netMode != NetmodeID.Server)
             {
-                mPlayer.magnetGrabRadius = mPlayer.magnetMaxGrabRadius;
-                return;
-            }
-            if (NPC.downedSlimeKing)
-            {
-                //Starts at
-                //magnetMaxGrabRadius = 10;
-                //magnetVelocity = 8;
-                //magnetAcceleration = 8;
+                //currentRadius is for creating steps between min and max range, and setting it accordingly
+                magnetMaxGrabRadius = ModConf.Range;
+                magnetScale = ModConf.Scale;
+                magnetVelocity = ModConf.Velocity;
+                magnetAcceleration = ModConf.Acceleration;
+                if (magnetScale == 2)
+                {
+                    magnetGrabRadius = magnetMaxGrabRadius;
+                    SendMagnetDataRegular();
+                    return;
+                }
+                if (NPC.downedSlimeKing)
+                {
+                    //Starts at
+                    //magnetMaxGrabRadius = 10;
+                    //magnetVelocity = 8;
+                    //magnetAcceleration = 8;
 
-                mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration += 2;
-            }
-            if (NPC.downedBoss1) //Eye of Cthulhu
-            {
-                mPlayer.magnetMaxGrabRadius += 5;
-            }
-            if (NPC.downedBoss2) //Eater/Brain
-            {
-                mPlayer.magnetMaxGrabRadius += 5;
-            }
-            if (NPC.downedQueenBee)
-            {
-                mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration += 10;
-            }
-            if (NPC.downedBoss3) //Skeletron
-            {
-                mPlayer.magnetMaxGrabRadius += 5;
-            }
-            if (Main.hardMode) //Wall of flesh
-            {
-                //Ideal at
-                //magnetMaxGrabRadius = 30; //quarter screen
-                //magnetVelocity = 16;
-                //magnetAcceleration = 20;
+                    magnetVelocity += 4;
+                    magnetAcceleration += 2;
+                }
+                if (NPC.downedBoss1) //Eye of Cthulhu
+                {
+                    magnetMaxGrabRadius += 5;
+                }
+                if (NPC.downedBoss2) //Eater/Brain
+                {
+                    magnetMaxGrabRadius += 5;
+                }
+                if (NPC.downedQueenBee)
+                {
+                    magnetVelocity += 4;
+                    magnetAcceleration += 10;
+                }
+                if (NPC.downedBoss3) //Skeletron
+                {
+                    magnetMaxGrabRadius += 5;
+                }
+                if (Main.hardMode) //Wall of flesh
+                {
+                    //Ideal at
+                    //magnetMaxGrabRadius = 30; //quarter screen
+                    //magnetVelocity = 16;
+                    //magnetAcceleration = 20;
 
-                mPlayer.magnetMaxGrabRadius += 5; //quarter of a screen range if ^ satisfied
-            }
-            if (NPC.downedMechBoss1) //Destroyer
-            {
-                mPlayer.magnetMaxGrabRadius += 10;
-            }
-            if (NPC.downedMechBoss2) //Twins
-            {
-                mPlayer.magnetMaxGrabRadius += 10;
-            }
-            if (NPC.downedMechBoss3) //Skeletron prime
-            {
-                mPlayer.magnetMaxGrabRadius += 10;
-            }
-            if (NPC.downedPlantBoss)
-            {
-                mPlayer.magnetMaxGrabRadius += 10;
-                mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration += 2;
-            }
-            if (NPC.downedGolemBoss)
-            {
-                mPlayer.magnetMaxGrabRadius += 10;
-                mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration += 2;
-            }
-            if (NPC.downedFishron)
-            {
-                mPlayer.magnetMaxGrabRadius += 10;
-                mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration += 2;
-            }
-            if (NPC.downedAncientCultist)
-            {
-                mPlayer.magnetMaxGrabRadius += 10;
-            }
-            if (NPC.downedMoonlord)
-            {
-                //Final at
-                //magnetMaxGrabRadius = 120; //one screen
-                //magnetVelocity = 32;
-                //magnetAcceleration = 32;
-                mPlayer.magnetMaxGrabRadius += 20;
-                mPlayer.magnetVelocity += 4;
-                mPlayer.magnetAcceleration += 6;
-            }
+                    magnetMaxGrabRadius += 5; //quarter of a screen range if ^ satisfied
+                }
+                if (NPC.downedMechBoss1) //Destroyer
+                {
+                    magnetMaxGrabRadius += 10;
+                }
+                if (NPC.downedMechBoss2) //Twins
+                {
+                    magnetMaxGrabRadius += 10;
+                }
+                if (NPC.downedMechBoss3) //Skeletron prime
+                {
+                    magnetMaxGrabRadius += 10;
+                }
+                if (NPC.downedPlantBoss)
+                {
+                    magnetMaxGrabRadius += 10;
+                    magnetVelocity += 4;
+                    magnetAcceleration += 2;
+                }
+                if (NPC.downedGolemBoss)
+                {
+                    magnetMaxGrabRadius += 10;
+                    magnetVelocity += 4;
+                    magnetAcceleration += 2;
+                }
+                if (NPC.downedFishron)
+                {
+                    magnetMaxGrabRadius += 10;
+                    magnetVelocity += 4;
+                    magnetAcceleration += 2;
+                }
+                if (NPC.downedAncientCultist)
+                {
+                    magnetMaxGrabRadius += 10;
+                }
+                if (NPC.downedMoonlord)
+                {
+                    //Final at
+                    //magnetMaxGrabRadius = 120; //one screen
+                    //magnetVelocity = 32;
+                    //magnetAcceleration = 32;
+                    magnetMaxGrabRadius += 20;
+                    magnetVelocity += 4;
+                    magnetAcceleration += 6;
+                }
 
-            if (mPlayer.magnetScale == 0)
-            {
-                mPlayer.magnetGrabRadius = mPlayer.magnetMaxGrabRadius;
-                return;
-            }
+                if (magnetAcceleration > ModConf.maxAcceleration) magnetAcceleration = ModConf.maxAcceleration; //hard cap
 
-            if (currentRadius <= mPlayer.magnetMaxGrabRadius + 1)
-            {
-                mPlayer.magnetGrabRadius = currentRadius;
-            }
-            else
-            {
-                mPlayer.magnetGrabRadius = mPlayer.magnetMinGrabRadius;
+                if (magnetScale == 0)
+                {
+                    magnetGrabRadius = magnetMaxGrabRadius;
+                    SendMagnetDataRegular();
+                    return;
+                }
+
+                if (currentRadius <= magnetMaxGrabRadius + 1)
+                {
+                    magnetGrabRadius = currentRadius;
+                }
+                else
+                {
+                    magnetGrabRadius = magnetMinGrabRadius;
+                }
+
+                SendMagnetDataRegular();
             }
         }
 
         public override void PreUpdate()
         {
-
-            //Main.NewText(magnetGrabRadius);
-            //Main.NewText(magnetMaxGrabRadius);
-            //Main.NewText(magnetMinGrabRadius);
-            //Main.NewText(magnetActive);
+            //Main.NewText("+++++++++++");
+            //Main.NewText("rad " + magnetGrabRadius);
+            //Main.NewText("max " + magnetMaxGrabRadius);
+            //Main.NewText("min " +  magnetMinGrabRadius);
+            //Main.NewText("active " + magnetActive);
 
             //if (Main.netMode != NetmodeID.MultiplayerClient)
             //{
-            if (magnetActive > 0)
+            if (magnetActive == true)
             {
-                //ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-                UpdateMagnetValues(this, magnetGrabRadius);
+                //UpdateMagnetValues(magnetGrabRadius);
 
                 int grabRadius = (int)(magnetGrabRadius * 16); //16 == to world coordinates
                 int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
@@ -351,28 +419,33 @@ namespace ItemMagnetPlus
             }
             //}
 
-            //if (Main.netMode == NetmodeID.Server)
-            //{
-            //    if (counter == 0)
-            //    {
-            //        Console.WriteLine(" " + player.name + " active " + magnetActive);
-            //        Console.WriteLine(" " + player.name + " grabradius " + magnetGrabRadius);
-            //        counter = 30;
-            //    }
-            //    counter--;
-            //}
+            if (Main.time % 60 == 34 && Main.netMode == NetmodeID.Server)
+            {
+                SendActive();
+            }
 
-            //if (Main.netMode == NetmodeID.MultiplayerClient)
-            //{
-            //    if (clientcounter == 0)
-            //    {
-            //        Main.NewText(" " + player.name + " active " + magnetActive);
-            //        Main.NewText(" " + player.name + " grabradius " + magnetGrabRadius);
+            if (Main.netMode == NetmodeID.Server)
+            {
+                if (counter == 0)
+                {
+                    Console.WriteLine(" " + player.name + " active " + magnetActive);
+                    Console.WriteLine(" " + player.name + " grabradius " + magnetGrabRadius);
+                    counter = 30;
+                }
+                counter--;
+            }
 
-            //        clientcounter = 30;
-            //    }
-            //    clientcounter--;
-            //}
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                if (clientcounter == 0)
+                {
+                    Main.NewText(" " + player.name + " active " + magnetActive);
+                    Main.NewText(" " + player.name + " grabradius " + magnetGrabRadius);
+
+                    clientcounter = 30;
+                }
+                clientcounter--;
+            }
 
             //if (Main.netMode == NetmodeID.SinglePlayer)
             //{

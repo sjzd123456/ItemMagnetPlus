@@ -37,10 +37,10 @@ namespace ItemMagnetPlus.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive == 1)
+            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive == true)
             {
                 ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-                mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
+                mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
                 tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
                 tooltips.Add(new TooltipLine(mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
                 tooltips.Add(new TooltipLine(mod, "Acceleration", "Current Acceleration: " + mPlayer.magnetAcceleration));
@@ -130,25 +130,10 @@ namespace ItemMagnetPlus.Items
             QuickDustLine(new Vector2(leftx, boty), new Vector2(leftx, topy), fullhdradius / 16f, color);
         }
 
-        public void SendMagnetData(ItemMagnetPlusPlayer mPlayer)
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                //Main.NewText("sent Magnet packet");
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)ItemMagnetPlusMessageType.Magnet);
-                packet.Write((byte)mPlayer.player.whoAmI);
-                packet.Write(mPlayer.magnetGrabRadius);
-                packet.Write(mPlayer.magnetScale);
-                packet.Write(mPlayer.magnetActive);
-                packet.Send();
-            }
-        }
-
         public override bool UseItem(Player player)
         {
             ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-            mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
+            mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
 
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
@@ -157,7 +142,7 @@ namespace ItemMagnetPlus.Items
                 //right click feature only shows the range
                 if (player.altFunctionUse == 2)
                 {
-                    if(mPlayer.magnetActive == 0)
+                    if(mPlayer.magnetActive == false)
                     {
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet is off");
                     }
@@ -168,7 +153,7 @@ namespace ItemMagnetPlus.Items
                     }
                     else
                     {
-                        mPlayer.DeactivateMagnet(player);
+                        mPlayer.DeactivateMagnet();
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
                     }
                 }
@@ -178,15 +163,15 @@ namespace ItemMagnetPlus.Items
                     //int steps = (mPlayer.magnetMaxGrabRadius - divider) / divider;
                     int radius = mPlayer.magnetGrabRadius;
 
-                    if (mPlayer.magnetActive == 0)
+                    if (mPlayer.magnetActive == false)
                     {
-                        mPlayer.ActivateMagnet(player);
+                        mPlayer.ActivateMagnet();
 
                         //CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, "magnet on");
                         //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
                         Main.PlaySound(SoundID.MaxMana, player.position, 1);
-                        mPlayer.magnetActive = 1;
-                        mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetMinGrabRadius);
+                        mPlayer.magnetActive = true;
+                        mPlayer.UpdateMagnetValues(mPlayer.magnetMinGrabRadius);
                         radius = mPlayer.magnetGrabRadius;
                         divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
                         //Main.NewText("grab radius after update: " + mPlayer.magnetGrabRadius);
@@ -215,10 +200,10 @@ namespace ItemMagnetPlus.Items
                             CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
                             //Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
                             Main.PlaySound(SoundID.MaxMana, player.position, 1);
-                            mPlayer.DeactivateMagnet(player);
+                            mPlayer.DeactivateMagnet();
                             //DrawRectangle(mPlayer, 16 * 1, new Color(255, 128, 128));
 
-                            SendMagnetData(mPlayer);
+                            mPlayer.SendMagnetData();
 
                             for (int j = 0; j < 400; j++)
                             {
@@ -231,7 +216,7 @@ namespace ItemMagnetPlus.Items
                             return true;
                         }
 
-                        mPlayer.UpdateMagnetValues(mPlayer, radius);
+                        mPlayer.UpdateMagnetValues(radius);
                         DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(200, 255, 200));
 
                         //here radius is already + divider
@@ -252,7 +237,7 @@ namespace ItemMagnetPlus.Items
                     }
                 }
 
-                SendMagnetData(mPlayer);
+                mPlayer.SendMagnetData();
             }
 
             return true;

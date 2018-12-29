@@ -17,7 +17,7 @@ namespace ItemMagnetPlus.Buffs
             ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
             string add = "\nCurrent Range: " + mPlayer.magnetGrabRadius;
             //Feeling Cute, Might Delete Later
-            mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
+            mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
             add += "\nCurrent Velocity: " + mPlayer.magnetVelocity;
             add += "\nCurrent Acceleration: " + mPlayer.magnetAcceleration;
             tip = tip + add;
@@ -25,10 +25,10 @@ namespace ItemMagnetPlus.Buffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.HasItem(mod.ItemType("ItemMagnet")) || player.selectedItem == 58) //when player takes the item out of his inventory
+            if (player.HasItem(mod.ItemType("ItemMagnet")) || player.selectedItem == 58) //when player takes the item out of his/her inventory
             {
                 player.buffTime[buffIndex] = 60;
-                player.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive = 1;
+                player.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive = true;
             }
         }
     }

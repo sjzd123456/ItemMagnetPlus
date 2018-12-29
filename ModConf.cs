@@ -55,6 +55,7 @@ namespace ItemMagnetPlus
 
         private const string accelerationField = "acceleration";
         internal static int acceleration = 8;
+        public const int maxAcceleration = 40;
         public static int Acceleration
         {
             get
@@ -63,9 +64,9 @@ namespace ItemMagnetPlus
                 {
                     return 1;
                 }
-                if (acceleration > 40)
+                if (acceleration > maxAcceleration)
                 {
-                    return 40;
+                    return maxAcceleration;
                 }
                 return acceleration;
             }
