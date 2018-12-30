@@ -21,7 +21,10 @@ How to use:
 * This right click functionality changes to "turn off" when "buff" flag in the config is set to 0
 * Killing bosses improves its stats
 * If you want it to either be off or on, there is a config entry called "scale", set it to 0 or 2
-* If you plan on using this in multiplayer, make sure that everyone has the same config
+
+Multiplayer:
+* This mod is multiplayer compatible, the config is entirely client side (though a serverside enforced config is in the works)
+* Report any bugs in the forum thread
 
 Progression: (default config)
 
@@ -55,6 +58,8 @@ Ends with: (killing Moonlord)
 
 
  Changelog:
+
+ v0.1.7: Made config entirely client side now
 
  v0.1.6.2: Reverted hotfix
 
