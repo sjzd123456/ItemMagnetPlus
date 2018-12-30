@@ -19,21 +19,25 @@ namespace ItemMagnetPlus
         public int magnetScale = 1;
         public int magnetVelocity = 8;
         public int magnetAcceleration = 8;
-        public int[] magnetBlacklist = new int[50]; //only populated when player activates magnet, not changed during gameplay
+        public int[] magnetBlacklist = new int[10]; //only populated when player enters world, not changed during gameplay
         private bool hadMagnetActive = false;
+        public bool clientHasBuff = false;
         public int counter = 30;
         public int clientcounter = 30;
 
         public override void ResetEffects()
         {
-
+            if (clientHasBuff)
+            {
+                magnetActive = false;
+            }
             //magnetGrabRadius = 0;
             if (Main.netMode != NetmodeID.MultiplayerClient) //using server config
             {
-                if (ModConf.Buff == 1 && magnetActive == true)
-                {
-                    magnetActive = false;
-                }
+                //if (/*ModConf.Buff == 1 &&*/ clientHasBuff)
+                //{
+                //    magnetActive = false;
+                //}
 
                 //these are changed by config
                 //magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
@@ -46,19 +50,6 @@ namespace ItemMagnetPlus
         public override void clientClone(ModPlayer clientClone)
         {
             ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
-        }
-
-        private void SendActive()
-        {
-            //gets only called from server
-            Main.NewText("syncplayer");
-            Console.WriteLine("syncplayer");
-            //from server to client
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte)ItemMagnetPlusMessageType.MagnetPlayerSyncPlayer);
-            packet.Write((byte)player.whoAmI);
-            packet.Write(magnetActive);
-            packet.Send(toClient: player.whoAmI);
         }
 
         //public override TagCompound Save()
@@ -114,7 +105,7 @@ namespace ItemMagnetPlus
             }
             //if no things added to the list then return empty list
             if (j < 0) return typeBlacklist;
-            Array.Sort(typeBlacklist,0, typeBlacklist.Length - 1);
+            Array.Sort(typeBlacklist,0, typeBlacklist.Length);
             return typeBlacklist;
         }
 
@@ -129,28 +120,50 @@ namespace ItemMagnetPlus
                 packet.Write(player.HasBuff(mod.BuffType("ItemMagnetBuff")));
                 packet.Write(magnetGrabRadius);
                 packet.Write(magnetScale);
+                packet.Write(magnetVelocity);
+                packet.Write(magnetAcceleration);
                 packet.Write(magnetActive);
                 packet.Send();
             }
         }
 
-        private void SendMagnetBlacklist()
+        private void SendInitialData()
         {
+            //client tells the server his buff and filter config
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
+                //Main.NewText("sent MagnetBlacklist packet");
                 ModPacket packet = mod.GetPacket();
-                packet.Write((byte)ItemMagnetPlusMessageType.MagnetBlacklist);
+                packet.Write((byte)ItemMagnetPlusMessageType.MagnetInitialData);
                 packet.Write((byte)player.whoAmI);
+                packet.Write(clientHasBuff);
                 packet.Write((byte)magnetBlacklist.Length);
+                for (int i = 0; i < magnetBlacklist.Length; i++)
+                {
+                    packet.Write(magnetBlacklist[i]);
+                }
                 packet.Send();
             }
+        }
+        
+        private void SendActive()
+        {
+            //gets only called from server
+            //Main.NewText("syncplayer");
+            //Console.WriteLine("syncplayer");
+            //from server to client
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)ItemMagnetPlusMessageType.MagnetPlayerSyncPlayer);
+            packet.Write((byte)player.whoAmI);
+            packet.Write(magnetActive);
+            packet.Send(toClient: player.whoAmI);
         }
 
         public void ActivateMagnet()
         {
             if(Main.netMode != NetmodeID.Server)
             {
-                if (ModConf.Buff != 0) // != 0 is buff
+                if (clientHasBuff) // != 0 is buff
                 {
                     player.AddBuff(mod.BuffType("ItemMagnetBuff"), 3600, true);
                 }
@@ -168,7 +181,7 @@ namespace ItemMagnetPlus
         public void DeactivateMagnet()
         {
             player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
-            if (Main.netMode != NetmodeID.Server && ModConf.Buff == 0) // == 0 is no buff
+            if (Main.netMode != NetmodeID.Server && !clientHasBuff) // == 0 is no buff
             {
                 ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
                 mPlayer.magnetActive = false;
@@ -190,15 +203,16 @@ namespace ItemMagnetPlus
         {
             if (Main.netMode != NetmodeID.Server)
             {
+                clientHasBuff = ModConf.Buff == 1 ? true : false;
                 magnetBlacklist = MagnetBlacklist();
-                SendMagnetBlacklist();
+                SendInitialData();
             }
             DeactivateMagnet();
         }
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (player.HasBuff(mod.BuffType("ItemMagnetBuff")) || magnetActive != false)
+            if (player.HasBuff(mod.BuffType("ItemMagnetBuff")) || !magnetActive)
             {
                 hadMagnetActive = true;
             }
@@ -239,7 +253,7 @@ namespace ItemMagnetPlus
                 if (magnetScale == 2)
                 {
                     magnetGrabRadius = magnetMaxGrabRadius;
-                    SendMagnetDataRegular();
+                    //SendMagnetData();
                     return;
                 }
                 if (NPC.downedSlimeKing)
@@ -328,7 +342,7 @@ namespace ItemMagnetPlus
                 if (magnetScale == 0)
                 {
                     magnetGrabRadius = magnetMaxGrabRadius;
-                    SendMagnetDataRegular();
+                    //SendMagnetData();
                     return;
                 }
 
@@ -341,7 +355,7 @@ namespace ItemMagnetPlus
                     magnetGrabRadius = magnetMinGrabRadius;
                 }
 
-                SendMagnetDataRegular();
+                //SendMagnetData();
             }
         }
 
@@ -355,7 +369,7 @@ namespace ItemMagnetPlus
 
             //if (Main.netMode != NetmodeID.MultiplayerClient)
             //{
-            if (magnetActive == true)
+            if (magnetActive)
             {
                 //UpdateMagnetValues(magnetGrabRadius);
 
@@ -424,28 +438,37 @@ namespace ItemMagnetPlus
                 SendActive();
             }
 
-            if (Main.netMode == NetmodeID.Server)
-            {
-                if (counter == 0)
-                {
-                    Console.WriteLine(" " + player.name + " active " + magnetActive);
-                    Console.WriteLine(" " + player.name + " grabradius " + magnetGrabRadius);
-                    counter = 30;
-                }
-                counter--;
-            }
+            //if (Main.netMode == NetmodeID.Server)
+            //{
+            //    if (counter == 0)
+            //    {
+            //        Console.WriteLine("" + player.name + " active " + magnetActive + " buff " + clientHasBuff);
+            //        Console.WriteLine("" + player.name + " grabradius " + magnetGrabRadius + " vel " + magnetVelocity);
+            //        //for (int i = 0; i < magnetBlacklist.Length; i++)
+            //        //{
+            //        //    if(magnetBlacklist[i] !=0)Console.Write( " " + magnetBlacklist[i]);
+            //        //}
+            //        //Console.WriteLine("");
+            //        counter = 30;
+            //    }
+            //    counter--;
+            //}
 
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                if (clientcounter == 0)
-                {
-                    Main.NewText(" " + player.name + " active " + magnetActive);
-                    Main.NewText(" " + player.name + " grabradius " + magnetGrabRadius);
+            //if (Main.netMode == NetmodeID.MultiplayerClient)
+            //{
+            //    if (clientcounter == 0)
+            //    {
+            //        Main.NewText("" + player.name + " active " + magnetActive + " buff " + clientHasBuff);
+            //        Main.NewText("" + player.name + " grabradius " + magnetGrabRadius + " vel " + magnetVelocity);
+            //        //for (int i = 0; i < magnetBlacklist.Length; i++)
+            //        //{
+            //        //    if (magnetBlacklist[i] != 0) Main.NewText(magnetBlacklist[i]);
+            //        //}
 
-                    clientcounter = 30;
-                }
-                clientcounter--;
-            }
+            //        clientcounter = 30;
+            //    }
+            //    clientcounter--;
+            //}
 
             //if (Main.netMode == NetmodeID.SinglePlayer)
             //{

@@ -37,7 +37,7 @@ namespace ItemMagnetPlus.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive == true)
+            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive)
             {
                 ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
                 mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
@@ -55,15 +55,6 @@ namespace ItemMagnetPlus.Items
 
         public override void AddRecipes()
         {
-            //6 iron / lead, 1 sapphire, 1 ruby
-            //ModRecipe recipe = new ModRecipe(mod);
-            //recipe.AddRecipeGroup("IronBar", 6);
-            //recipe.AddIngredient(ItemID.Sapphire, 1);
-            //recipe.AddIngredient(ItemID.Ruby, 1);
-            //recipe.AddTile(TileID.Anvils);
-            //recipe.SetResult(this, 1);
-            //recipe.AddRecipe();
-
             //12 iron/lead
             ModRecipe recipe2 = new ModRecipe(mod);
             recipe2.AddRecipeGroup("IronBar", 12);
@@ -110,7 +101,6 @@ namespace ItemMagnetPlus.Items
             radius = radius - mPlayer.magnetScreenRadius * 16 * stage;
             float fullhdradius = radius * 0.5625f;
             color = new Color(color.R + stage * 30, color.G, color.B - stage * 30);
-            //Main.NewText("DrawRec radius " + radius);
 
             //radius in world coordinates
             Vector2 pos = mPlayer.player.position;
@@ -119,10 +109,6 @@ namespace ItemMagnetPlus.Items
             float topy = pos.Y - fullhdradius;
             float rightx = leftx + mPlayer.player.width + radius * 2;
             float boty = topy + mPlayer.player.height + fullhdradius * 2;
-            //Main.NewText("leftx " + leftx);
-            //Main.NewText("topy " + topy);
-            //Main.NewText("rightx " + rightx);
-            //Main.NewText("boty " + boty);
 
             QuickDustLine(new Vector2(leftx, topy), new Vector2(rightx, topy), radius / 16f, color); //clock wise starting top left
             QuickDustLine(new Vector2(rightx, topy), new Vector2(rightx, boty), fullhdradius / 16f, color);
@@ -137,12 +123,11 @@ namespace ItemMagnetPlus.Items
 
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                //Main.NewText("alt "+ player.altFunctionUse);
 
-                //right click feature only shows the range
+                //right click feature
                 if (player.altFunctionUse == 2)
                 {
-                    if(mPlayer.magnetActive == false)
+                    if (!mPlayer.magnetActive)
                     {
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet is off");
                     }
@@ -163,7 +148,7 @@ namespace ItemMagnetPlus.Items
                     //int steps = (mPlayer.magnetMaxGrabRadius - divider) / divider;
                     int radius = mPlayer.magnetGrabRadius;
 
-                    if (mPlayer.magnetActive == false)
+                    if (!mPlayer.magnetActive)
                     {
                         mPlayer.ActivateMagnet();
 
@@ -203,7 +188,7 @@ namespace ItemMagnetPlus.Items
                             mPlayer.DeactivateMagnet();
                             //DrawRectangle(mPlayer, 16 * 1, new Color(255, 128, 128));
 
-                            mPlayer.SendMagnetData();
+                            //mPlayer.SendMagnetData();
 
                             for (int j = 0; j < 400; j++)
                             {
