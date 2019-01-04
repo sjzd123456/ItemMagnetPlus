@@ -54,7 +54,7 @@ namespace ItemMagnetPlus
                         //Console.WriteLine(" " + magnetPlayer.name + " scale " + magnetScale);
                         //Console.WriteLine(" " + magnetPlayer.name + " active " + magnetActive);
                     }
-                    if(hasBuff) Main.player[playernumber].AddBuff(BuffType("ItemMagnetBuff"), 3600, true);
+                    if (hasBuff) Main.player[playernumber].AddBuff(BuffType("ItemMagnetBuff"), 3600, true);
                     mPlayer.magnetGrabRadius = magnetGrabRadius;
                     mPlayer.magnetScale = magnetScale;
                     mPlayer.magnetVelocity = magnetVelocity;

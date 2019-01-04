@@ -161,7 +161,7 @@ namespace ItemMagnetPlus
 
         public void ActivateMagnet()
         {
-            if(Main.netMode != NetmodeID.Server)
+            if (Main.netMode != NetmodeID.Server)
             {
                 if (clientHasBuff) // != 0 is buff
                 {
@@ -234,7 +234,7 @@ namespace ItemMagnetPlus
 
         private void SendMagnetDataRegular()
         {
-            if(Main.time % 360 == 42)
+            if (Main.time % 360 == 42)
             {
                 SendMagnetData();
             }
@@ -243,7 +243,7 @@ namespace ItemMagnetPlus
         public void UpdateMagnetValues(int currentRadius)
         {
             //only apply changes client side, but sync them up once a second to server
-            if(Main.netMode != NetmodeID.Server)
+            if (Main.netMode != NetmodeID.Server)
             {
                 //currentRadius is for creating steps between min and max range, and setting it accordingly
                 magnetMaxGrabRadius = ModConf.Range;
@@ -380,7 +380,7 @@ namespace ItemMagnetPlus
                 {
                     //Main.NewText(j);
                     //if (j ==0) Main.NewText("start for loop");
-                    if(Main.item[j].active && Main.item[j].noGrabDelay == 0 && !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
+                    if (Main.item[j].active && Main.item[j].noGrabDelay == 0 && !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
                         //Main.NewText("position " + player.position);
                         //Main.NewText("Tile " + player.position.ToTileCoordinates());
                         Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);

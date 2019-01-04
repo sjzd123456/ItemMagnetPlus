@@ -17,7 +17,7 @@ namespace ItemMagnetPlus
         {
             get
             {
-                if(range <= 0)
+                if (range <= 0)
                 {
                     return 10;
                 }
@@ -78,7 +78,7 @@ namespace ItemMagnetPlus
         {
             get
             {
-                if(buff > 0)
+                if (buff > 0)
                 {
                     return 1;
                 }

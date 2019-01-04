@@ -11,7 +11,7 @@ namespace ItemMagnetPlus.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
-            if(ModConf.Buff == 1)
+            if (ModConf.Buff == 1)
             {
                 Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9999FF:show current range ]");
             }
@@ -131,7 +131,7 @@ namespace ItemMagnetPlus.Items
                     {
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet is off");
                     }
-                    else if(player.HasBuff(mod.BuffType("ItemMagnetBuff")))
+                    else if (player.HasBuff(mod.BuffType("ItemMagnetBuff")))
                     {
                         DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealMana, "range:" + mPlayer.magnetGrabRadius);
