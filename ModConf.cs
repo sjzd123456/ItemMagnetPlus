@@ -8,7 +8,7 @@ namespace ItemMagnetPlus
     // Tutorial by goldenapple: https://forums.terraria.org/index.php?threads/modders-guide-to-config-files-and-optional-features.48581/
     public static class ModConf
     {
-        public const int configVersion = 8;
+        public const int configVersion = 9;
         private readonly static string modName = "ItemMagnetPlus";
 
         private const string rangeField = "range";
@@ -96,6 +96,16 @@ namespace ItemMagnetPlus
             }
         }
 
+        private const string forceServerConfField = "forceServerConf";
+        internal static int forceServerConf = 1;
+        public static int ForceServerConf
+        {
+            get
+            {
+                return forceServerConf;
+            }
+        }
+
         static readonly string ConfigPath = Path.Combine(Main.SavePath, "Mod Configs/" + modName + ".json");
 
         static Preferences ModConfig = new Preferences(ConfigPath);
@@ -180,6 +190,15 @@ namespace ItemMagnetPlus
                         ModConfig.Put("readme", "First off, make sure to reload before the config will take any effect. Buff: 1 => buff icon to click on; 0 => no icon (default 1). Range: Item pull range (default 10). Scale: 0 => always use max range; 1 => switch through min to max range; 2 => like 0, but ignores increased stats (for setting accurate range via config) (default 1). Velocity: how fast items move towards you (default 8). Acceleration: how fast items speed up when moving towards you (min 1, default 8, max 40). Filter: put 'heart', 'mana' and/or 'coin' separated via comma to blacklist those, or just leave the string empty (''), (default 'heart, mana').");
                         ModConfig.Save();
                     }
+                    if (readVersion == 8)
+                    {
+                        ErrorLogger.Log("ItemMagnetPlus: updated Version");
+                        canUpdate = true;
+                        ModConfig.Put("version", 9);
+                        ModConfig.Put(forceServerConfField, forceServerConf);
+                        ModConfig.Put("readme", "First off, make sure to reload before the config will take any effect. Buff: 1 => buff icon to click on; 0 => no icon (default 1). Range: Item pull range (default 10). Scale: 0 => always use max range; 1 => switch through min to max range; 2 => like 0, but ignores increased stats (for setting accurate range via config) (default 1). Velocity: how fast items move towards you (default 8). Acceleration: how fast items speed up when moving towards you (min 1, default 8, max 40). Filter: put 'heart', 'mana' and/or 'coin' separated via comma to blacklist those, or just leave the string empty (''), (default 'heart, mana'). ForceServerConf: (server side only) 1 => every player has the config that the server has; 0 => each player uses his client config (default 1).");
+                        ModConfig.Save();
+                    }
 
                     if (!canUpdate) return false;
                 }
@@ -190,10 +209,22 @@ namespace ItemMagnetPlus
                 ModConfig.Get(accelerationField, ref acceleration);
                 ModConfig.Get(buffField, ref buff);
                 ModConfig.Get(filterField, ref filter);
+                ModConfig.Get(forceServerConfField, ref forceServerConf);
 
                 return true;
             }
             return false;
+        }
+
+        public static void OverrideConfig(int a, int b, int c, int d, int e)
+        {
+            ModConfig.Put(rangeField, a);
+            ModConfig.Put(scaleField, b);
+            ModConfig.Put(velocityField, c);
+            ModConfig.Put(accelerationField, d);
+            ModConfig.Put(buffField, e);
+            
+            ModConfig.Save(false);
         }
 
         // Create a new config file for the player to edit. 
@@ -208,8 +239,9 @@ namespace ItemMagnetPlus
             ModConfig.Put(accelerationField, acceleration);
             ModConfig.Put(buffField, buff);
             ModConfig.Put(filterField, filter);
+            ModConfig.Put(forceServerConfField, forceServerConf);
 
-            ModConfig.Put("readme", "First off, make sure to reload before the config will take any effect. Buff: 1 => buff icon to click on; 0 => no icon (default 1). Range: Item pull range (default 10). Scale: 0 => always use max range; 1 => switch through min to max range; 2 => like 0, but ignores increased stats (for setting accurate range via config) (default 1). Velocity: how fast items move towards you (default 8). Acceleration: how fast items speed up when moving towards you (min 1, default 8, max 40). Filter: put 'heart', 'mana' and/or 'coin' separated via comma to blacklist those, or just leave the string empty (''), (default 'heart, mana').");
+            ModConfig.Put("readme", "First off, make sure to reload before the config will take any effect. Buff: 1 => buff icon to click on; 0 => no icon (default 1). Range: Item pull range (default 10). Scale: 0 => always use max range; 1 => switch through min to max range; 2 => like 0, but ignores increased stats (for setting accurate range via config) (default 1). Velocity: how fast items move towards you (default 8). Acceleration: how fast items speed up when moving towards you (min 1, default 8, max 40). Filter: put 'heart', 'mana' and/or 'coin' separated via comma to blacklist those, or just leave the string empty (''), (default 'heart, mana'). ForceServerConf: (server side only) 1 => every player has the config that the server has; 0 => each player uses his client config (default 1).");
 
             ModConfig.Save();
         }

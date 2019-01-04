@@ -32,19 +32,17 @@ namespace ItemMagnetPlus
                 magnetActive = false;
             }
             //magnetGrabRadius = 0;
-            if (Main.netMode != NetmodeID.MultiplayerClient) //using server config
-            {
-                //if (/*ModConf.Buff == 1 &&*/ clientHasBuff)
-                //{
-                //    magnetActive = false;
-                //}
 
-                //these are changed by config
-                //magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
-                //magnetScale = 1; //1
-                //magnetVelocity = 8; //16
-                //magnetAcceleration = 8; //20
-            }
+            //if (/*ModConf.Buff == 1 &&*/ clientHasBuff)
+            //{
+            //    magnetActive = false;
+            //}
+
+            //these are changed by config
+            //magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
+            //magnetScale = 1; //1
+            //magnetVelocity = 8; //16
+            //magnetAcceleration = 8; //20
         }
 
         public override void clientClone(ModPlayer clientClone)
@@ -52,18 +50,7 @@ namespace ItemMagnetPlus
             ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
         }
 
-        //public override TagCompound Save()
-        //{
-        //    //Main.NewText(magnetActive);
-        //    return new TagCompound {{"magnetActive", magnetActive}};
-        //}
-
-        //public override void Load(TagCompound tag)
-        //{
-        //    magnetActive = tag.GetInt("magnetActive");
-        //}
-
-        private int[] MagnetBlacklist()
+        public int[] MagnetBlacklist()
         {
             //list of item types to ignore
             //TODO make this more efficient with LINQ stuff
@@ -119,7 +106,7 @@ namespace ItemMagnetPlus
                 packet.Write((byte)player.whoAmI);
                 packet.Write(player.HasBuff(mod.BuffType("ItemMagnetBuff")));
                 packet.Write(magnetGrabRadius);
-                packet.Write(magnetScale);
+                packet.Write((byte)magnetScale);
                 packet.Write(magnetVelocity);
                 packet.Write(magnetAcceleration);
                 packet.Write(magnetActive);
@@ -199,8 +186,49 @@ namespace ItemMagnetPlus
             SendMagnetData();
         }
 
+        public void SendOverrideData()
+        {
+            //server sends client a new config
+            ErrorLogger.Log("SendOverrideData()");
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)ItemMagnetPlusMessageType.Override);
+            packet.Write((byte)player.whoAmI);
+            packet.Write(ModConf.Range);
+            packet.Write((byte)ModConf.Scale);
+            packet.Write(ModConf.Velocity);
+            packet.Write(ModConf.Acceleration);
+            packet.Write((byte)ModConf.Buff);
+            packet.Write((byte)magnetBlacklist.Length);
+            for (int i = 0; i < magnetBlacklist.Length; i++)
+            {
+                packet.Write(magnetBlacklist[i]);
+            }
+
+            packet.Send(toClient: player.whoAmI);
+        }
+
+
+        private void SendRequestOverride()
+        {
+            //client tells the server if it can override
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                Main.NewText("sent SendRequestOverride packet");
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)ItemMagnetPlusMessageType.RequestOverride);
+                packet.Write((byte)player.whoAmI);
+                packet.Send();
+            }
+        }
+
         public override void OnEnterWorld(Player player)
         {
+
+            SendRequestOverride();
+            //CREATE AN INSTANCED CONFIG, BASICALLY A COPY OF THE JSON FILE
+
+            //send a packet to a server (if you are multiplayer
+
             if (Main.netMode != NetmodeID.Server)
             {
                 clientHasBuff = ModConf.Buff == 1 ? true : false;
