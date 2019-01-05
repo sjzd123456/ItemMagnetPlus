@@ -26,6 +26,8 @@ namespace ItemMagnetPlus
             int magnetScale;
             int magnetVelocity;
             int magnetAcceleration;
+            int buff;
+
             bool magnetActive;
             byte blacklistLength;
             bool clientHasBuff;
@@ -37,22 +39,22 @@ namespace ItemMagnetPlus
                 case ItemMagnetPlusMessageType.Magnet:
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        //Console.WriteLine("echo recieved a Magnet");
+                        Console.WriteLine("echo recieved a Magnet");
                     }
                     playernumber = reader.ReadByte();
                     magnetPlayer = Main.player[playernumber];
                     hasBuff = reader.ReadBoolean();
                     magnetGrabRadius = reader.ReadInt32();
-                    magnetScale = reader.ReadInt32();
+                    magnetScale = reader.ReadByte();
                     magnetVelocity = reader.ReadInt32();
                     magnetAcceleration = reader.ReadInt32();
                     magnetActive = reader.ReadBoolean();
                     mPlayer = magnetPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        //Console.WriteLine(" " + magnetPlayer.name + " radius " + magnetGrabRadius);
-                        //Console.WriteLine(" " + magnetPlayer.name + " scale " + magnetScale);
-                        //Console.WriteLine(" " + magnetPlayer.name + " active " + magnetActive);
+                        Console.WriteLine(" " + magnetPlayer.name + " radius " + magnetGrabRadius);
+                        Console.WriteLine(" " + magnetPlayer.name + " scale " + magnetScale);
+                        Console.WriteLine(" " + magnetPlayer.name + " active " + magnetActive);
                     }
                     if (hasBuff) Main.player[playernumber].AddBuff(BuffType("ItemMagnetBuff"), 3600, true);
                     mPlayer.magnetGrabRadius = magnetGrabRadius;
@@ -60,12 +62,17 @@ namespace ItemMagnetPlus
                     mPlayer.magnetVelocity = magnetVelocity;
                     mPlayer.magnetAcceleration = magnetAcceleration;
                     mPlayer.magnetActive = magnetActive;
+
+                    //tell everyone including the player itself, what his magnet status is
+                    mPlayer.SendActive();
+
                     break;
 
                 //This message syncs magnetActive regularly
                 case ItemMagnetPlusMessageType.MagnetPlayerSyncPlayer:
                     playernumber = reader.ReadByte();
                     magnetPlayer = Main.player[playernumber];
+                    Main.NewText("recv Player " + magnetPlayer.name);
                     mPlayer = magnetPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
                     magnetActive = reader.ReadBoolean();
                     mPlayer.magnetActive = magnetActive;
@@ -89,6 +96,54 @@ namespace ItemMagnetPlus
                     Array.Sort(mPlayer.magnetBlacklist, 0, mPlayer.magnetBlacklist.Length);
                     break;
 
+
+                //This message recieves the server config (if necessary)
+                case ItemMagnetPlusMessageType.Override:
+                    Main.NewText("recv Override packet");
+                    playernumber = reader.ReadByte();
+                    magnetPlayer = Main.player[playernumber];
+                    mPlayer = magnetPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
+
+                    magnetGrabRadius = reader.ReadInt32();
+                    magnetScale = reader.ReadByte();
+                    magnetVelocity = reader.ReadInt32();
+                    magnetAcceleration = reader.ReadInt32();
+                    buff = reader.ReadByte();
+
+                    blacklistLength = reader.ReadByte();
+                    mPlayer.magnetBlacklist = mPlayer.MagnetBlacklist();
+                    for (int i = 0; i < blacklistLength; i++)
+                    {
+                        mPlayer.magnetBlacklist[i] = reader.ReadInt32();
+                        //Console.WriteLine(" " + mPlayer.magnetBlacklist[i]);
+                    }
+                    Array.Sort(mPlayer.magnetBlacklist, 0, mPlayer.magnetBlacklist.Length);
+
+                    //ErrorLogger.Log("Previous Config::::::");
+                    //ErrorLogger.Log("ModConf.Range " + mPlayer.tempConf.Range);
+                    //ErrorLogger.Log("ModConf.Velocity " + mPlayer.tempConf.Velocity);
+                    //ErrorLogger.Log("ModConf.Acceleration " + mPlayer.tempConf.Acceleration);
+                    //ErrorLogger.Log("ModConf.Buff " + mPlayer.tempConf.Buff);
+
+                    mPlayer.OverrideConfig(magnetGrabRadius, magnetScale, magnetVelocity, magnetAcceleration, buff);
+
+                    mPlayer.clientHasBuff = mPlayer.tempConf.Buff == 1 ? true : false;
+
+                    //ErrorLogger.Log("After Config::::::");
+                    //ErrorLogger.Log("ModConf.Range " + mPlayer.tempConf.Range);
+                    //ErrorLogger.Log("ModConf.Velocity " + mPlayer.tempConf.Velocity);
+                    //ErrorLogger.Log("ModConf.Acceleration " + mPlayer.tempConf.Acceleration);
+                    //ErrorLogger.Log("ModConf.Buff " + mPlayer.tempConf.Buff);
+
+                    break;
+
+                case ItemMagnetPlusMessageType.RequestOverride:
+                    Console.WriteLine("recv RequestOverride packet");
+                    playernumber = reader.ReadByte();
+                    if(ModConf.ForceServerConf == 1) Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>().SendOverrideData();
+
+                    break;
+
                 default:
                     ErrorLogger.Log("ItemMagnetPlus: Unknown Message type: " + msgType);
                     break;
@@ -100,6 +155,8 @@ namespace ItemMagnetPlus
     {
         Magnet,
         MagnetPlayerSyncPlayer,
-        MagnetInitialData
+        MagnetInitialData,
+        RequestOverride,
+        Override
     }
 }

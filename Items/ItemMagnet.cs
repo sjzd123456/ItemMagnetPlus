@@ -11,14 +11,6 @@ namespace ItemMagnetPlus.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
-            if (ModConf.Buff == 1)
-            {
-                Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9999FF:show current range ]");
-            }
-            else
-            {
-                Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/FF8080:turn off ]");
-            }
         }
 
         public override void SetDefaults()
@@ -37,9 +29,13 @@ namespace ItemMagnetPlus.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive)
+            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+
+            tooltips.Add(new TooltipLine(mod, "Buffa", "Left Click to [c/80FF80:change range ]"));
+            tooltips.Add(new TooltipLine(mod, "Buffb", "Right Click to " + ((mPlayer.tempConf.Buff == 1)? "[c/9999FF:show current range ]": "[c/FF8080:turn off ]")));
+
+            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || mPlayer.magnetActive)
             {
-                ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
                 mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
                 tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
                 tooltips.Add(new TooltipLine(mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
@@ -138,7 +134,7 @@ namespace ItemMagnetPlus.Items
                     }
                     else
                     {
-                        mPlayer.DeactivateMagnet();
+                        mPlayer.DeactivateMagnet(false);
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
                     }
                 }
@@ -150,7 +146,7 @@ namespace ItemMagnetPlus.Items
 
                     if (!mPlayer.magnetActive)
                     {
-                        mPlayer.ActivateMagnet();
+                        mPlayer.ActivateMagnet(false);
 
                         //CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, "magnet on");
                         //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
@@ -186,9 +182,6 @@ namespace ItemMagnetPlus.Items
                             //Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
                             Main.PlaySound(SoundID.MaxMana, player.position, 1);
                             mPlayer.DeactivateMagnet();
-                            //DrawRectangle(mPlayer, 16 * 1, new Color(255, 128, 128));
-
-                            //mPlayer.SendMagnetData();
 
                             for (int j = 0; j < 400; j++)
                             {
