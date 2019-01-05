@@ -53,19 +53,17 @@ namespace ItemMagnetPlus
                 magnetActive = false;
             }
             //magnetGrabRadius = 0;
-            if (Main.netMode != NetmodeID.MultiplayerClient) //using server config
-            {
-                //if (/*ModConf.Buff == 1 &&*/ clientHasBuff)
-                //{
-                //    magnetActive = false;
-                //}
 
-                //these are changed by config
-                //magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
-                //magnetScale = 1; //1
-                //magnetVelocity = 8; //16
-                //magnetAcceleration = 8; //20
-            }
+            //if (/*ModConf.Buff == 1 &&*/ clientHasBuff)
+            //{
+            //    magnetActive = false;
+            //}
+
+            //these are changed by config
+            //magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
+            //magnetScale = 1; //1
+            //magnetVelocity = 8; //16
+            //magnetAcceleration = 8; //20
         }
 
         public override void clientClone(ModPlayer clientClone)

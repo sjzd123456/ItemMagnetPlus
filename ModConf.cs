@@ -216,6 +216,17 @@ namespace ItemMagnetPlus
             return false;
         }
 
+        public static void OverrideConfig(int a, int b, int c, int d, int e)
+        {
+            ModConfig.Put(rangeField, a);
+            ModConfig.Put(scaleField, b);
+            ModConfig.Put(velocityField, c);
+            ModConfig.Put(accelerationField, d);
+            ModConfig.Put(buffField, e);
+            
+            ModConfig.Save(false);
+        }
+
         // Create a new config file for the player to edit. 
         internal static void CreateConfig()
         {

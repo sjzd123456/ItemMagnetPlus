@@ -130,17 +130,27 @@ namespace ItemMagnetPlus
                     mPlayer.clientHasBuff = mPlayer.tempConf.Buff == 1 ? true : false;
 
                     //ErrorLogger.Log("After Config::::::");
-                    //ErrorLogger.Log("ModConf.Range " + mPlayer.tempConf.Range);
-                    //ErrorLogger.Log("ModConf.Velocity " + mPlayer.tempConf.Velocity);
-                    //ErrorLogger.Log("ModConf.Acceleration " + mPlayer.tempConf.Acceleration);
-                    //ErrorLogger.Log("ModConf.Buff " + mPlayer.tempConf.Buff);
+                    //ErrorLogger.Log("ModConf.Range " + ModConf.Range);
+                    //ErrorLogger.Log("ModConf.Velocity " + ModConf.Velocity);
+                    //ErrorLogger.Log("ModConf.Acceleration " + ModConf.Acceleration);
+                    //ErrorLogger.Log("ModConf.Buff " + ModConf.Buff);
 
+                    ModConf.OverrideConfig(magnetGrabRadius, magnetScale, magnetVelocity, magnetAcceleration, buff);
+
+                    mPlayer.clientHasBuff = ModConf.Buff == 1 ? true : false;
+
+                    //ErrorLogger.Log("After Config::::::");
+                    //ErrorLogger.Log("ModConf.Range " + ModConf.Range);
+                    //ErrorLogger.Log("ModConf.Velocity " + ModConf.Velocity);
+                    //ErrorLogger.Log("ModConf.Acceleration " + ModConf.Acceleration);
+                    //ErrorLogger.Log("ModConf.Buff " + ModConf.Buff);
                     break;
 
                 case ItemMagnetPlusMessageType.RequestOverride:
                     Console.WriteLine("recv RequestOverride packet");
                     playernumber = reader.ReadByte();
-                    if(ModConf.ForceServerConf == 1) Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>().SendOverrideData();
+                    //if force server config is set to 1 on the server side, .SendOverrideData();
+                    if (ModConf.ForceServerConf == 1) Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>().SendOverrideData();
 
                     break;
 
