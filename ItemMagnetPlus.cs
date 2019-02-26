@@ -135,9 +135,9 @@ namespace ItemMagnetPlus
                     //ErrorLogger.Log("ModConf.Acceleration " + ModConf.Acceleration);
                     //ErrorLogger.Log("ModConf.Buff " + ModConf.Buff);
 
-                    ModConf.OverrideConfig(magnetGrabRadius, magnetScale, magnetVelocity, magnetAcceleration, buff);
+                    //ModConf.OverrideConfig(magnetGrabRadius, magnetScale, magnetVelocity, magnetAcceleration, buff);
 
-                    mPlayer.clientHasBuff = ModConf.Buff == 1 ? true : false;
+                    mPlayer.clientHasBuff = mPlayer.tempConf.Buff == 1 ? true : false;
 
                     //ErrorLogger.Log("After Config::::::");
                     //ErrorLogger.Log("ModConf.Range " + ModConf.Range);

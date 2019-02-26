@@ -224,7 +224,7 @@ namespace ItemMagnetPlus
                 packet.Write(magnetBlacklist[i]);
             }
 
-            packet.Send(toClient: player.whoAmI);
+            packet.Send(/*toClient: player.whoAmI*/);
         }
 
 
@@ -423,7 +423,7 @@ namespace ItemMagnetPlus
                 {
                     //Main.NewText(j);
                     //if (j ==0) Main.NewText("start for loop");
-                    if (Main.item[j].active && Main.item[j].noGrabDelay == 0 && !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
+                    if (Main.item[j].active && !player.dead && Main.item[j].noGrabDelay == 0 && !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
                         //Main.NewText("position " + player.position);
                         //Main.NewText("Tile " + player.position.ToTileCoordinates());
                         Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
