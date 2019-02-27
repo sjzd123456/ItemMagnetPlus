@@ -11,14 +11,6 @@ namespace ItemMagnetPlus.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
-            if(ModConf.Buff == 1)
-            {
-                Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/9999FF:show current range ]");
-            }
-            else
-            {
-                Tooltip.SetDefault("Left Click to [c/80FF80:change range ]" + "\nRight Click to [c/FF8080:turn off ]");
-            }
         }
 
         public override void SetDefaults()
@@ -32,15 +24,18 @@ namespace ItemMagnetPlus.Items
             item.useTime = 10;
             item.useStyle = 4;
             item.consumable = false;
-            //item.buffType = mod.BuffType("ItemMagnetBuff");
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+
+            tooltips.Add(new TooltipLine(mod, "Buffa", "Left Click to " + ((mPlayer.clientConf.Scale == 1) ? "[c/80FF80:change range ]" : "[c/80FF80:toggle on/off ]")));
+            tooltips.Add(new TooltipLine(mod, "Buffb", "Right Click to " + ((mPlayer.clientConf.Buff == 1) ? "[c/9999FF:show current range ]" : "[c/FF8080:turn off ]")));
+
             if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive == 1)
             {
-                ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-                mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
+                mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
                 tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
                 tooltips.Add(new TooltipLine(mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
                 tooltips.Add(new TooltipLine(mod, "Acceleration", "Current Acceleration: " + mPlayer.magnetAcceleration));
@@ -136,7 +131,7 @@ namespace ItemMagnetPlus.Items
             {
                 //Main.NewText("sent Magnet packet");
                 ModPacket packet = mod.GetPacket();
-                packet.Write((byte)ItemMagnetPlusMessageType.Magnet);
+                packet.Write((byte)IMPMessageType.Magnet);
                 packet.Write((byte)mPlayer.player.whoAmI);
                 packet.Write(mPlayer.magnetGrabRadius);
                 packet.Write(mPlayer.magnetScale);
@@ -148,7 +143,7 @@ namespace ItemMagnetPlus.Items
         public override bool UseItem(Player player)
         {
             ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
-            mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetGrabRadius);
+            mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
 
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
@@ -186,7 +181,7 @@ namespace ItemMagnetPlus.Items
                         //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
                         Main.PlaySound(SoundID.MaxMana, player.position, 1);
                         mPlayer.magnetActive = 1;
-                        mPlayer.UpdateMagnetValues(mPlayer, mPlayer.magnetMinGrabRadius);
+                        mPlayer.UpdateMagnetValues(mPlayer.magnetMinGrabRadius);
                         radius = mPlayer.magnetGrabRadius;
                         divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
                         //Main.NewText("grab radius after update: " + mPlayer.magnetGrabRadius);
@@ -220,18 +215,18 @@ namespace ItemMagnetPlus.Items
 
                             SendMagnetData(mPlayer);
 
-                            for (int j = 0; j < 400; j++)
-                            {
-                                if (Main.item[j].beingGrabbed)
-                                {
-                                    //Main.NewText("reset item " + Main.item[j].Name);
-                                    Main.item[j].beingGrabbed = false;
-                                }
-                            }
+                            //for (int j = 0; j < 400; j++)
+                            //{
+                            //    if (Main.item[j].beingGrabbed)
+                            //    {
+                            //        //Main.NewText("reset item " + Main.item[j].Name);
+                            //        Main.item[j].beingGrabbed = false;
+                            //    }
+                            //}
                             return true;
                         }
 
-                        mPlayer.UpdateMagnetValues(mPlayer, radius);
+                        mPlayer.UpdateMagnetValues(radius);
                         DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(200, 255, 200));
 
                         //here radius is already + divider
