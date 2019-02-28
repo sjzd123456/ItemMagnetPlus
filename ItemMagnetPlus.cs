@@ -11,12 +11,17 @@ namespace ItemMagnetPlus
     {
         public ItemMagnetPlus()
         {
+
         }
 
         public override void Load()
         {
             ModConf.Load();
         }
+
+        //Mod Helpers compat
+        public static string GithubUserName { get { return "direwolf420"; } }
+        public static string GithubProjectName { get { return "ItemMagnetPlus"; } }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
@@ -31,7 +36,9 @@ namespace ItemMagnetPlus
 
             byte arrayLength;
 
+            BitsByte flags1;
             bool currentlyActive;
+            bool magnetActive;
 
             ItemMagnetPlusPlayer mPlayer;
             switch (msgType)
@@ -85,19 +92,23 @@ namespace ItemMagnetPlus
                     //    Main.NewText("recv sendclientchanges from " + playernumber);
                     //}
                     range = reader.ReadInt32();        //int
-                    currentlyActive = reader.ReadBoolean();
+
+                    flags1 = reader.ReadByte();        //byte
+                    currentlyActive = flags1[0];
+                    //magnetActive = flags1[1];
 
                     mPlayer = Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>();
                     mPlayer.magnetGrabRadius = range;
                     mPlayer.currentlyActive = currentlyActive;
+                    //mPlayer.magnetActive = magnetActive? 1: 0;
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        //NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server send SendClientChanges from " + playernumber), new Color(255, 25, 25));
+                        //NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server send SendClientChanges from " + playernumber + " with " + currentlyActive), new Color(255, 25, 25));
                         ModPacket packet = GetPacket();
                         packet.Write((byte)IMPMessageType.SendClientChanges);
                         packet.Write(playernumber);
                         packet.Write((int)range);
-                        packet.Write((bool)currentlyActive);
+                        packet.Write((byte)flags1);
                         packet.Send(-1, playernumber);
                     }
                     break;

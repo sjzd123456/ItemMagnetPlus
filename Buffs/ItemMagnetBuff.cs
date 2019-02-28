@@ -16,7 +16,6 @@ namespace ItemMagnetPlus.Buffs
         {
             ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
             string add = "\nCurrent Range: " + mPlayer.magnetGrabRadius;
-            //Feeling Cute, Might Delete Later
             mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
             add += "\nCurrent Velocity: " + mPlayer.magnetVelocity;
             add += "\nCurrent Acceleration: " + mPlayer.magnetAcceleration;

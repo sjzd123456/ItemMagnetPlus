@@ -18,7 +18,7 @@ namespace ItemMagnetPlus.Items
             item.width = 28;
             item.height = 32;
             item.scale = 1f;
-            item.value = 100;
+            item.value = Item.sellPrice(silver:36);
             item.rare = 2;
             item.useAnimation = 10;
             item.useTime = 10;
@@ -50,16 +50,7 @@ namespace ItemMagnetPlus.Items
 
         public override void AddRecipes()
         {
-            //6 iron / lead, 1 sapphire, 1 ruby
-            //ModRecipe recipe = new ModRecipe(mod);
-            //recipe.AddRecipeGroup("IronBar", 6);
-            //recipe.AddIngredient(ItemID.Sapphire, 1);
-            //recipe.AddIngredient(ItemID.Ruby, 1);
-            //recipe.AddTile(TileID.Anvils);
-            //recipe.SetResult(this, 1);
-            //recipe.AddRecipe();
-
-            //12 iron/lead
+            //iron/lead
             ModRecipe recipe2 = new ModRecipe(mod);
             recipe2.AddRecipeGroup("IronBar", 12);
             recipe2.AddTile(TileID.Anvils);
@@ -105,39 +96,19 @@ namespace ItemMagnetPlus.Items
             radius = radius - mPlayer.magnetScreenRadius * 16 * stage;
             float fullhdradius = radius * 0.5625f;
             color = new Color(color.R + stage * 30, color.G, color.B - stage * 30);
-            //Main.NewText("DrawRec radius " + radius);
 
-            //radius in world coordinates
+            //before: radius in world coordinates
             Vector2 pos = mPlayer.player.position;
-            //radius in tile coordinates
             float leftx = pos.X - radius;
             float topy = pos.Y - fullhdradius;
             float rightx = leftx + mPlayer.player.width + radius * 2;
             float boty = topy + mPlayer.player.height + fullhdradius * 2;
-            //Main.NewText("leftx " + leftx);
-            //Main.NewText("topy " + topy);
-            //Main.NewText("rightx " + rightx);
-            //Main.NewText("boty " + boty);
 
+            //after radius in tile coordinates
             QuickDustLine(new Vector2(leftx, topy), new Vector2(rightx, topy), radius / 16f, color); //clock wise starting top left
             QuickDustLine(new Vector2(rightx, topy), new Vector2(rightx, boty), fullhdradius / 16f, color);
             QuickDustLine(new Vector2(rightx, boty), new Vector2(leftx, boty), radius / 16f, color);
             QuickDustLine(new Vector2(leftx, boty), new Vector2(leftx, topy), fullhdradius / 16f, color);
-        }
-
-        public void SendMagnetData(ItemMagnetPlusPlayer mPlayer)
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                //Main.NewText("sent Magnet packet");
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)IMPMessageType.Magnet);
-                packet.Write((byte)mPlayer.player.whoAmI);
-                packet.Write(mPlayer.magnetGrabRadius);
-                packet.Write(mPlayer.magnetScale);
-                packet.Write(mPlayer.magnetActive);
-                packet.Send();
-            }
         }
 
         public override bool UseItem(Player player)
@@ -147,22 +118,23 @@ namespace ItemMagnetPlus.Items
 
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                //Main.NewText("alt "+ player.altFunctionUse);
-
                 //right click feature only shows the range
                 if (player.altFunctionUse == 2)
                 {
                     if(mPlayer.magnetActive == 0)
                     {
+                        //nothing
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet is off");
                     }
                     else if(player.HasBuff(mod.BuffType("ItemMagnetBuff")))
                     {
+                        //shows the range
                         DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealMana, "range:" + mPlayer.magnetGrabRadius);
                     }
                     else
                     {
+                        //deactivates
                         mPlayer.DeactivateMagnet(player);
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
                     }
@@ -177,14 +149,11 @@ namespace ItemMagnetPlus.Items
                     {
                         mPlayer.ActivateMagnet(player);
 
-                        //CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, "magnet on");
-                        //Main.NewText("activated Magnet", Color.Green.R, Color.Green.G, Color.Green.B);
                         Main.PlaySound(SoundID.MaxMana, player.position, 1);
                         mPlayer.magnetActive = 1;
                         mPlayer.UpdateMagnetValues(mPlayer.magnetMinGrabRadius);
                         radius = mPlayer.magnetGrabRadius;
                         divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
-                        //Main.NewText("grab radius after update: " + mPlayer.magnetGrabRadius);
                         DrawRectangle(mPlayer, mPlayer.magnetGrabRadius * 16, new Color(200, 255, 200));
 
                         string ranges = "range:" + radius;
@@ -196,9 +165,7 @@ namespace ItemMagnetPlus.Items
                         {
                             ranges += "| next:" + (radius + divider);
                         }
-
-                        //Main.NewText("radius " + radius);
-                        //Main.NewText("divider " + divider);
+                        
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.HealLife, ranges);
                     }
                     else
@@ -208,21 +175,8 @@ namespace ItemMagnetPlus.Items
                         if (radius > mPlayer.magnetMaxGrabRadius)
                         {
                             CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, "magnet off");
-                            //Main.NewText("deactivated Magnet", Color.Red.R, Color.Red.G, Color.Red.B);
                             Main.PlaySound(SoundID.MaxMana, player.position, 1);
                             mPlayer.DeactivateMagnet(player);
-                            //DrawRectangle(mPlayer, 16 * 1, new Color(255, 128, 128));
-
-                            SendMagnetData(mPlayer);
-
-                            //for (int j = 0; j < 400; j++)
-                            //{
-                            //    if (Main.item[j].beingGrabbed)
-                            //    {
-                            //        //Main.NewText("reset item " + Main.item[j].Name);
-                            //        Main.item[j].beingGrabbed = false;
-                            //    }
-                            //}
                             return true;
                         }
 
@@ -240,14 +194,8 @@ namespace ItemMagnetPlus.Items
                             ranges += "| next:" + (radius + divider);
                         }
                         CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), new Color(128, 255, 128), ranges);
-                        //Main.NewText("divider " + divider);
-                        //Main.NewText("steps " + steps);
-                        //Main.NewText("Radius " + radius);
-                        //Main.NewText("mPlayer.magnetGrabRadius " + mPlayer.magnetGrabRadius);
                     }
                 }
-
-                SendMagnetData(mPlayer);
             }
 
             return true;

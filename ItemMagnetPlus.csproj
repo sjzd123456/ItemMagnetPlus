@@ -33,7 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" Exclude="obj\**\*.*" />
+    <Compile Include="Buffs\ItemMagnetBuff.cs" />
+    <Compile Include="ItemMagnetPlus.cs" />
+    <Compile Include="ItemMagnetPlusPlayer.cs" />
+    <Compile Include="Items\IMPGlobalItem.cs" />
+    <Compile Include="Items\ItemMagnet.cs" />
+    <Compile Include="ModConf.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">

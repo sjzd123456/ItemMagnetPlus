@@ -15,7 +15,12 @@ How to use:
 * This right click functionality changes to "turn off" when "buff" flag in the config is set to 0
 * Killing bosses improves its stats
 * If you want it to either be off or on, there is a config entry called "scale", set it to 0 or 2
-* If you plan on using this in multiplayer, make sure that everyone has the same config
+
+Multiplayer:
+* This mod is multiplayer compatible, the config is entirely server side, but the buff flag is forced to 1
+* Items that are inbetween two players with magnets will "float"
+* Certain items (i.e. Boss bags in expert mode) will be pulled by all players even though it might not be picked up
+* Report any bugs in the forum thread
 
 Progression: (default config)
  Starts with:
@@ -39,6 +44,10 @@ Ends with: (killing Moonlord)
 
 
 Changelog:
+
+ v0.1.8: Made config entirely server side now, the mod is stable in MP
+
+ v0.1.7: Made config entirely client side now
 
  v0.1.6.2: Reverted hotfix
 

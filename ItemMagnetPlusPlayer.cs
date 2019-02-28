@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -22,7 +24,7 @@ namespace ItemMagnetPlus
         public int[] magnetBlacklist; //only populated when player activates magnet, not changed during gameplay
         private bool hadMagnetActive = false;
         public bool currentlyActive = false;
-        //public int counter = 30;
+        public int counter = 30;
         public int clientcounter = 30;
 
         public struct ClientConf
@@ -77,7 +79,10 @@ namespace ItemMagnetPlus
                 packet.Write((byte)IMPMessageType.SendClientChanges);
                 packet.Write((byte)player.whoAmI);
                 packet.Write((int)magnetGrabRadius);
-                packet.Write((bool)currentlyActive);
+                BitsByte flags = new BitsByte();
+                flags[0] = currentlyActive;
+                //flags[1] = magnetActive > 0;
+                packet.Write((byte)flags);
                 packet.Send();
             }
         }
@@ -108,8 +113,9 @@ namespace ItemMagnetPlus
             packet.Write((byte)ModConf.Scale);
             packet.Write((int)ModConf.Velocity);
             packet.Write((byte)ModConf.Acceleration);
-            packet.Write((byte)ModConf.Buff);
+            packet.Write((byte)1); //ModConf.Buff      //enforce buff in MP
             packet.Write((string)ModConf.Filter);
+            player.GetModPlayer<ItemMagnetPlusPlayer>().clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, 1, ModConf.Filter);
 
             //in addition to sending the server config, send all info about the players
 
@@ -196,7 +202,7 @@ namespace ItemMagnetPlus
             }
             else
             {
-                player.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive = 1;
+                magnetActive = 1;
             }
         }
 
@@ -205,7 +211,7 @@ namespace ItemMagnetPlus
             player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
             if (clientConf.Buff == 0) // == 0 is no buff
             {
-                player.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive = 0;
+                magnetActive = 0;
             }
         }
 
@@ -357,7 +363,9 @@ namespace ItemMagnetPlus
 
         public override void PreUpdate()
         {
-            currentlyActive = player.HasBuff(mod.BuffType("ItemMagnetBuff"));
+            //doing this only client side causes a small "lag" when the item first gets dragged toward the player
+            currentlyActive = (clientConf.Buff == 1) ? player.HasBuff(mod.BuffType("ItemMagnetBuff")) : magnetActive == 1;
+
             if (magnetActive > 0 && !player.dead)
             {
                 UpdateMagnetValues(magnetGrabRadius);
@@ -366,11 +374,7 @@ namespace ItemMagnetPlus
                 int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
                 for (int j = 0; j < 400; j++)
                 {
-                    //Main.NewText(j);
-                    //if (j ==0) Main.NewText("start for loop");
-                    if(Main.item[j].active && Main.item[j].noGrabDelay == 0 && !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
-                        //Main.NewText("position " + player.position);
-                        //Main.NewText("Tile " + player.position.ToTileCoordinates());
+                    if(Main.item[j].active/* && Main.item[j].noGrabDelay == 0 */&& !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
                         Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
                         if (rect.Intersects(new Rectangle((int)Main.item[j].position.X, (int)Main.item[j].position.Y, Main.item[j].width, Main.item[j].height)))
                         {
@@ -395,13 +399,12 @@ namespace ItemMagnetPlus
                                     if (magnetAcceleration > 40) magnetAcceleration = 40;
                                     int accel = -(magnetAcceleration - 41); //20 default
 
-                                    // num1 goes linear, num2 goes inverse
                                     Main.item[j].velocity.X = (Main.item[j].velocity.X * (float)(accel - 1) + distanceX) / (float)accel;
                                     Main.item[j].velocity.Y = (Main.item[j].velocity.Y * (float)(accel - 1) + distanceY) / (float)accel;
 
                                     if (Main.rand.NextFloat() < 0.7f)
                                     {
-                                        Dust dust = Main.dust[Dust.NewDust(Main.item[j].position, 30, 30, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f)];
+                                        Dust dust = Main.dust[Dust.NewDust(Main.item[j].position, Main.item[j].width, Main.item[j].height, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f)];
                                         dust.noGravity = true;
                                         dust.noLight = true;
                                     }
@@ -409,12 +412,6 @@ namespace ItemMagnetPlus
                             }
                         }
                     }
-                       // }
-                    //else
-                    //{
-                    //    Main.item[j].beingGrabbed = false;
-                    //}
-                    //if (j == 399) Main.NewText("end for loop");
                 }
             }
             //}
@@ -423,9 +420,13 @@ namespace ItemMagnetPlus
             //{
             //    if (counter == 0)
             //    {
-            //        Console.WriteLine(" " + player.name + " active " + magnetActive);
-            //        Console.WriteLine(" " + player.name + " grabradius " + magnetGrabRadius);
-            //        counter = 30;
+            //        //Console.WriteLine(" " + player.name + " active " + magnetActive);
+            //        //Console.WriteLine(" " + player.name + " grabradius " + magnetGrabRadius);
+            //        //(clientConf.Buff == 1)? player.HasBuff(mod.BuffType("ItemMagnetBuff")) : magnetActive == 1
+            //        NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server " + player.whoAmI + " " + (clientConf.Buff == 1) +  " " + player.HasBuff(mod.BuffType("ItemMagnetBuff")) + " " +(magnetActive == 1)), Color.Green);
+            //        NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server " + player.whoAmI + " " + currentlyActive), new Color(255, 25, 25));
+
+            //        counter = 120;
             //    }
             //    counter--;
             //}
@@ -440,13 +441,13 @@ namespace ItemMagnetPlus
             //            {
             //                if (Main.player[players].whoAmI == player.whoAmI)
             //                {
-            //                    Main.NewText("SELF: ");
-            //                    Main.NewText(clientConf);
+            //                    Main.NewText("SELF: " + currentlyActive);
+            //                    //Main.NewText(clientConf);
             //                }
             //                else
             //                {
-            //                    Main.NewText("OTHE: ");
-            //                    Main.NewText(clientConf);
+            //                    Main.NewText("OTHE: " + Main.player[players].GetModPlayer<ItemMagnetPlusPlayer>().currentlyActive);
+            //                    //Main.NewText(Main.player[players].GetModPlayer<ItemMagnetPlusPlayer>().clientConf);
             //                }
             //            }
             //        }
