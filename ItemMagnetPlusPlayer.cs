@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Linq;
-using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 
 namespace ItemMagnetPlus
 {
@@ -374,7 +371,7 @@ namespace ItemMagnetPlus
                 int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
                 for (int j = 0; j < 400; j++)
                 {
-                    if(Main.item[j].active/* && Main.item[j].noGrabDelay == 0 */&& !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
+                    if(Main.item[j].active && Main.item[j].noGrabDelay == 0 && !ItemLoader.GrabStyle(Main.item[j], player) && ItemLoader.CanPickup(Main.item[j], player) /*&& Main.player[Main.item[j].owner].ItemSpace(Main.item[j])*/) {
                         Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
                         if (rect.Intersects(new Rectangle((int)Main.item[j].position.X, (int)Main.item[j].position.Y, Main.item[j].width, Main.item[j].height)))
                         {
@@ -385,22 +382,20 @@ namespace ItemMagnetPlus
                                     //so it can go through walls
                                     Main.item[j].beingGrabbed = true;
                                     //velocity, higher = more speed
-                                    int velo = magnetVelocity; //16 default
+                                    float velo = magnetVelocity; //16 ideal
 
-                                    Vector2 vector = new Vector2(Main.item[j].position.X + (float)(Main.item[j].width / 2), Main.item[j].position.Y + (float)(Main.item[j].height / 2));
-                                    float distanceX = player.Center.X - vector.X;
-                                    float distanceY = player.Center.Y - vector.Y;
-                                    float normalDistance = (float)Math.Sqrt((double)(distanceX * distanceX + distanceY * distanceY));
-                                    normalDistance = ((float)velo) / normalDistance;
-                                    distanceX *= normalDistance;
-                                    distanceY *= normalDistance;
+                                    Vector2 distance = player.Center - Main.item[j].Center;
+
+                                    velo += 2 * (1 - (distance.Length() / grabRadius));
+
+                                    distance.Normalize();
+                                    distance *= velo;
 
                                     //acceleration, higher = more acceleration
                                     if (magnetAcceleration > 40) magnetAcceleration = 40;
-                                    int accel = -(magnetAcceleration - 41); //20 default
+                                    int accel = -(magnetAcceleration - 41); //20 ideal
 
-                                    Main.item[j].velocity.X = (Main.item[j].velocity.X * (float)(accel - 1) + distanceX) / (float)accel;
-                                    Main.item[j].velocity.Y = (Main.item[j].velocity.Y * (float)(accel - 1) + distanceY) / (float)accel;
+                                    Main.item[j].velocity = (Main.item[j].velocity * (float)(accel - 1) + distance) / (float)accel;
 
                                     if (Main.rand.NextFloat() < 0.7f)
                                     {
