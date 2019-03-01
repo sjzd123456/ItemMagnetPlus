@@ -26,6 +26,7 @@ Multiplayer:
 * This mod is multiplayer compatible, the config is entirely server side, but the buff flag is forced to 1
 * Items that are inbetween two players with magnets will "float"
 * Certain items (i.e. Boss bags in expert mode) will be pulled by all players even though it might not be picked up
+* Due to the way the "grab delay" is only set in singleplayer, items dropped by the player will instantly latch onto the player, which is normal behavior
 * Report any bugs in the forum thread
 
 Progression: (default config)
