@@ -47,7 +47,7 @@ Progression: (default config)
 
  About the config:
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
-* Filter decides what do ignore when using the magnet (only hearts, mana stars and coins supported for now)
+* Filter decides what to ignore when using the magnet (only hearts, mana stars and coins supported for now)
 * Range starts from 10, but can be as big as you want
 * If you increase Vel or Acc too much from those recommended above, items might get "stuck" on you until you deactivate it again
 * Beware of lag when increasing these values, especially range
