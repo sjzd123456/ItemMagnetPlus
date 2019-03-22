@@ -38,7 +38,6 @@
     <Compile Include="Buffs\ItemMagnetBuff.cs" />
     <Compile Include="ItemMagnetPlus.cs" />
     <Compile Include="ItemMagnetPlusPlayer.cs" />
-    <Compile Include="Items\IMPGlobalItem.cs" />
     <Compile Include="Items\ItemMagnet.cs" />
     <Compile Include="ModConf.cs" />
   </ItemGroup>

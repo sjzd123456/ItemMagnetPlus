@@ -17,13 +17,11 @@ namespace ItemMagnetPlus.Items
         {
             item.width = 28;
             item.height = 32;
-            item.scale = 1f;
-            item.value = Item.sellPrice(silver:36);
+            item.value = Item.sellPrice(silver: 36);
             item.rare = 2;
             item.useAnimation = 10;
             item.useTime = 10;
             item.useStyle = 4;
-            item.consumable = false;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -51,11 +49,11 @@ namespace ItemMagnetPlus.Items
         public override void AddRecipes()
         {
             //iron/lead
-            ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddRecipeGroup("IronBar", 12);
-            recipe2.AddTile(TileID.Anvils);
-            recipe2.SetResult(this, 1);
-            recipe2.AddRecipe();
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddRecipeGroup("IronBar", 12);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this, 1);
+            recipe.AddRecipe();
         }
 
         public override bool CanUseItem(Player player)
@@ -142,7 +140,6 @@ namespace ItemMagnetPlus.Items
                 else //if (player.altFunctionUse != 2)
                 {
                     int divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5;
-                    //int steps = (mPlayer.magnetMaxGrabRadius - divider) / divider;
                     int radius = mPlayer.magnetGrabRadius;
 
                     if (mPlayer.magnetActive == 0)
@@ -197,7 +194,6 @@ namespace ItemMagnetPlus.Items
                     }
                 }
             }
-
             return true;
         }
     }

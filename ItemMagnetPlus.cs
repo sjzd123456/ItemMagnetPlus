@@ -1,19 +1,12 @@
-using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace ItemMagnetPlus
 {
     class ItemMagnetPlus : Mod
     {
-        public ItemMagnetPlus()
-        {
-
-        }
-
         public override void Load()
         {
             ModConf.Load();
@@ -38,7 +31,6 @@ namespace ItemMagnetPlus
 
             BitsByte flags1;
             bool currentlyActive;
-            bool magnetActive;
 
             ItemMagnetPlusPlayer mPlayer;
             switch (msgType)
@@ -60,7 +52,6 @@ namespace ItemMagnetPlus
                         //in addition to recieving the server config, get all info about the players
 
                         arrayLength = reader.ReadByte();
-                        //Main.NewText("arrayLength is " + arrayLength);
                         if (arrayLength > 0)
                         {
                             byte[] indexes = new byte[arrayLength];
@@ -76,7 +67,6 @@ namespace ItemMagnetPlus
 
                             for (int i = 0; i < arrayLength; i++)
                             {
-                                //Main.NewText("recv with " + indexes[i] + " " + ranges[i] + " " + currentlyActives[i]);
                                 mPlayer = Main.player[indexes[i]].GetModPlayer<ItemMagnetPlusPlayer>();
                                 mPlayer.magnetGrabRadius = ranges[i];
                                 mPlayer.currentlyActive = currentlyActives[i];
@@ -86,24 +76,17 @@ namespace ItemMagnetPlus
                     break;
                 case IMPMessageType.SendClientChanges:
                     playernumber = reader.ReadByte();
-
-                    //if (Main.netMode == NetmodeID.MultiplayerClient)
-                    //{
-                    //    Main.NewText("recv sendclientchanges from " + playernumber);
-                    //}
+                    
                     range = reader.ReadInt32();        //int
 
                     flags1 = reader.ReadByte();        //byte
                     currentlyActive = flags1[0];
-                    //magnetActive = flags1[1];
 
                     mPlayer = Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>();
                     mPlayer.magnetGrabRadius = range;
                     mPlayer.currentlyActive = currentlyActive;
-                    //mPlayer.magnetActive = magnetActive? 1: 0;
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        //NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server send SendClientChanges from " + playernumber + " with " + currentlyActive), new Color(255, 25, 25));
                         ModPacket packet = GetPacket();
                         packet.Write((byte)IMPMessageType.SendClientChanges);
                         packet.Write(playernumber);
@@ -121,7 +104,6 @@ namespace ItemMagnetPlus
 
     enum IMPMessageType : byte
     {
-        Magnet,
         SyncPlayer,
         SendClientChanges
     }

@@ -1,9 +1,7 @@
 author = direwolf420
-version = 0.1.8
+version = 0.1.9
 displayName = ItemMagnetPlus
 homepage = https://github.com/direwolf420/ItemMagnetPlus#itemmagnetplus
 hideCode = true
 hideResources = true
-includeSource = true
 buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*, banner.png
-includePDB = true

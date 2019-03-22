@@ -21,6 +21,7 @@ Multiplayer:
 * Items that are inbetween two players with magnets will "float"
 * Certain items (i.e. Boss bags in expert mode) will be pulled by all players even though it might not be picked up
 * Due to the way the "grab delay" is only set in singleplayer, items dropped by the player will instantly latch onto the player, which is normal behavior
+* Items might not get sucked up and turn into a "ghost" with the Auto Trash Mod enabled
 * Report any bugs in the forum thread
 
 Progression: (default config)
@@ -29,7 +30,7 @@ Progression: (default config)
  Velocity = 8
  Acceleration = 8
 
-Ends with: (killing Moonlord)
+ Ends with: (killing Moonlord)
  Range = 120 (one and a half screens)
  Velocity = 32
  Acceleration = 32
@@ -43,8 +44,9 @@ Ends with: (killing Moonlord)
 * If the difference between velocity and acceleration is too big, items will go in circles around you or get stuck until you deactivate it
 * If you change the version number, your config might get reset, so don't touch it 
 
-
 Changelog:
+
+ v0.1.9: Fixed desync bug with more than two players in MP
 
  v0.1.8: Made config entirely server side now, the mod is stable in MP
 

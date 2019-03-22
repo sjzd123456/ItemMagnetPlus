@@ -18,11 +18,14 @@ namespace ItemMagnetPlus
         public int magnetScale = 1;
         public int magnetVelocity = 8;
         public int magnetAcceleration = 8;
-        public int[] magnetBlacklist; //only populated when player activates magnet, not changed during gameplay
+        public int[] magnetBlacklist; //only populated when player joins the world, not changed during gameplay
         private bool hadMagnetActive = false;
         public bool currentlyActive = false;
+        //Debug variables
         public int counter = 30;
         public int clientcounter = 30;
+
+        public ClientConf clientConf;// = new ClientConf(0, 0, 0, 0, 0, "");
 
         public struct ClientConf
         {
@@ -50,38 +53,18 @@ namespace ItemMagnetPlus
             }
         }
 
-        public ClientConf clientConf = new ClientConf(0, 0, 0, 0, 0, "");
-
         public override void ResetEffects()
         {
             if (clientConf.Buff == 1)
             {
                 magnetActive = 0;
             }
-
-            //magnetGrabRadius = 0;
             //these are changed by config
-            magnetMaxGrabRadius = 10; //60 //vvvvvvvvv starting values vvvvvvvvvvvvvv
-            magnetScale = 1; //1
-            magnetVelocity = 8; //16
-            magnetAcceleration = 8; //20
-        }
-
-        private void SendClientChangesPacket()
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                //Main.NewText("Send: " + slots + " " + slotsLast);
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)IMPMessageType.SendClientChanges);
-                packet.Write((byte)player.whoAmI);
-                packet.Write((int)magnetGrabRadius);
-                BitsByte flags = new BitsByte();
-                flags[0] = currentlyActive;
-                //flags[1] = magnetActive > 0;
-                packet.Write((byte)flags);
-                packet.Send();
-            }
+            //starting values
+            magnetMaxGrabRadius = 10;
+            magnetScale = 1;
+            magnetVelocity = 8;
+            magnetAcceleration = 8;
         }
 
         public override void clientClone(ModPlayer clientClone)
@@ -97,6 +80,21 @@ namespace ItemMagnetPlus
             if (clone.magnetGrabRadius != magnetGrabRadius || clone.currentlyActive != currentlyActive)
             {
                 SendClientChangesPacket();
+            }
+        }
+
+        private void SendClientChangesPacket()
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)IMPMessageType.SendClientChanges);
+                packet.Write((byte)player.whoAmI);
+                packet.Write((int)magnetGrabRadius);
+                BitsByte flags = new BitsByte();
+                flags[0] = currentlyActive;
+                packet.Write((byte)flags);
+                packet.Send();
             }
         }
 
@@ -124,6 +122,7 @@ namespace ItemMagnetPlus
             {
                 if (Main.player[i].active && i != player.whoAmI)
                 {
+                    indexes[arrayLength] = (byte)i;
                     ranges[arrayLength] = magnetGrabRadius;
                     currentlyActives[arrayLength++] = currentlyActive;
                 }
@@ -132,6 +131,7 @@ namespace ItemMagnetPlus
             packet.Write((byte)arrayLength);
             if (arrayLength > 0)
             {
+                Array.Resize(ref indexes, arrayLength + 1);
                 Array.Resize(ref ranges, arrayLength + 1);
                 Array.Resize(ref currentlyActives, arrayLength + 1);
 
@@ -290,12 +290,12 @@ namespace ItemMagnetPlus
             }
             if (Main.hardMode) //Wall of flesh
             {
+                magnetMaxGrabRadius += 5;
+
                 //Ideal at
                 //magnetMaxGrabRadius = 30; //quarter screen
                 //magnetVelocity = 16;
                 //magnetAcceleration = 20;
-
-                magnetMaxGrabRadius += 5; //quarter of a screen range if ^ satisfied
             }
             if (NPC.downedMechBoss1) //Destroyer
             {
@@ -333,13 +333,14 @@ namespace ItemMagnetPlus
             }
             if (NPC.downedMoonlord)
             {
+                magnetMaxGrabRadius += 20;
+                magnetVelocity += 4;
+                magnetAcceleration += 6;
+
                 //Final at
                 //magnetMaxGrabRadius = 120; //one screen
                 //magnetVelocity = 32;
                 //magnetAcceleration = 32;
-                magnetMaxGrabRadius += 20;
-                magnetVelocity += 4;
-                magnetAcceleration += 6;
             }
 
             if (magnetScale == 0)
@@ -386,6 +387,7 @@ namespace ItemMagnetPlus
 
                                     Vector2 distance = player.Center - Main.item[j].Center;
 
+                                    //adjustment term, increases velociry the closer to the player it is (0..2)
                                     velo += 2 * (1 - (distance.Length() / grabRadius));
 
                                     distance.Normalize();
