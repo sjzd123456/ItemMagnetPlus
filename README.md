@@ -6,7 +6,7 @@ Terraria Forum link: https://forums.terraria.org/index.php?threads/itemmagnetplu
 
 ItemMagnetPlus adds a single item called "Item Magnet" that does the obvious thing: Sucking in items around you so you don't have to run around and collect them yourself.
 
-Adds:
+### Adds:
 Item Magnet (and corresponding buff) that
 * can be crafted with simple materials (Iron/Lead)
 * works while in your inventory (doesn't waste an accessory slot)
@@ -15,14 +15,14 @@ Item Magnet (and corresponding buff) that
 * has increased stats after killing bosses
 * customizable via config (\Documents\My Games\Terraria\ModLoader\Mod Configs) to fit your playstyle
 
-How to use:
+### How to use:
 * Left click cycles through its ranges
 * Right click shows current range (you can always check the stats on the buff tooltip)
 * This right click functionality changes to "turn off" when "buff" flag in the config is set to 0
 * Killing bosses improves its stats
 * If you want it to either be off or on, there is a config entry called "scale", set it to 0 or 2
 
-Multiplayer:
+### Multiplayer:
 * This mod is multiplayer compatible, the config is entirely server side, but the buff flag is forced to 1
 * Items that are inbetween two players with magnets will "float"
 * Certain items (i.e. Boss bags in expert mode) will be pulled by all players even though it might not be picked up
@@ -30,22 +30,22 @@ Multiplayer:
 * Items might not get sucked up and turn into a "ghost" with the Auto Trash Mod enabled
 * Report any bugs in the forum thread
 
-Progression: (default config)
+### Progression: (default config)
 
- Starts with:
+Starts with:
 
 * Range = 10 (Blocks in each direction)
 * Velocity = 8
 * Acceleration = 8
 
-  Ends with: (killing Moonlord)
+Ends with: (killing Moonlord)
 
 * Range = 120 (one and a half screens)
 * Velocity = 32
 * Acceleration = 32
 
 
- About the config:
+### About the config:
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
 * Filter decides what to ignore when using the magnet (only hearts, mana stars and coins supported for now)
 * Range starts from 10, but can be as big as you want
@@ -54,7 +54,7 @@ Progression: (default config)
 * If the difference between velocity and acceleration is too big, items will go in circles around you or get stuck until you deactivate it
 * If you change the version number, your config might get reset, so don't touch it 
 
- Changelog:
+### Changelog:
 
  v0.1.9: Fixed desync bug with more than two players in MP
 

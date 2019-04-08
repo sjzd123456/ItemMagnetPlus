@@ -8,7 +8,7 @@ namespace ItemMagnetPlus
     // Tutorial by goldenapple: https://forums.terraria.org/index.php?threads/modders-guide-to-config-files-and-optional-features.48581/
     public static class ModConf
     {
-        public const int configVersion = 7;
+        public const int configVersion = 8;
         private readonly static string modName = "ItemMagnetPlus";
 
         private const string rangeField = "range";
@@ -26,7 +26,7 @@ namespace ItemMagnetPlus
         }
 
         private const string scaleField = "scale";
-        internal static int scale = 1;
+        internal static int scale = 0;
         public static int Scale
         {
             get
@@ -169,6 +169,21 @@ namespace ItemMagnetPlus
                         canUpdate = true;
                         ModConfig.Put("version", 7);
                         ModConfig.Put("readme", "First off, make sure to reload before the configs will take any effect. Buff: 1 => buff icon to click on; 0 => no icon (default 1). Range: Item pull range (default 10). Scale: 0 => always use max radius; 1 => switch through min to max radius; 2 => like 0, but ignores increased stats (for setting accurate range via config) (default 1). Velocity: how fast items move towards you (default 8). Acceleration: how fast items speed up when moving towards you (min 1, default 8, max 40). Filter: put 'heart', 'mana' and/or 'coin' separated via comma to blacklist those, or just leave the string empty, ('') (default 'heart, mana').");
+                        ModConfig.Save();
+                    }
+                    if (readVersion == 7)
+                    {
+                        ErrorLogger.Log("ItemMagnetPlus: updated Version");
+                        canUpdate = true;
+                        ModConfig.Get(rangeField, ref range);
+                        ModConfig.Get(scaleField, ref scale);
+                        ModConfig.Get(velocityField, ref velocity);
+                        ModConfig.Get(accelerationField, ref acceleration);
+                        ModConfig.Get(buffField, ref buff);
+                        ModConfig.Get(filterField, ref filter);
+
+                        CreateConfig();
+
                         ModConfig.Save();
                     }
 

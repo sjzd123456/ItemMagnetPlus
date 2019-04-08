@@ -22,8 +22,8 @@ namespace ItemMagnetPlus
         private bool hadMagnetActive = false;
         public bool currentlyActive = false;
         //Debug variables
-        public int counter = 30;
-        public int clientcounter = 30;
+        //public int counter = 30;
+        //public int clientcounter = 30;
 
         public ClientConf clientConf;// = new ClientConf(0, 0, 0, 0, 0, "");
 
@@ -91,9 +91,9 @@ namespace ItemMagnetPlus
                 packet.Write((byte)IMPMessageType.SendClientChanges);
                 packet.Write((byte)player.whoAmI);
                 packet.Write((int)magnetGrabRadius);
-                BitsByte flags = new BitsByte();
-                flags[0] = currentlyActive;
-                packet.Write((byte)flags);
+                BitsByte variousBooleans = new BitsByte();
+                variousBooleans[0] = currentlyActive;
+                packet.Write((byte)variousBooleans);
                 packet.Send();
             }
         }
@@ -214,7 +214,6 @@ namespace ItemMagnetPlus
 
         public override void OnEnterWorld(Player player)
         {
-            DeactivateMagnet(player);
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
                 clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, ModConf.Buff, ModConf.Filter);
@@ -224,6 +223,7 @@ namespace ItemMagnetPlus
             {
                 SendClientChangesPacket();
             }
+            DeactivateMagnet(player);
         }
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
@@ -236,7 +236,6 @@ namespace ItemMagnetPlus
             {
                 hadMagnetActive = false;
             }
-            DeactivateMagnet(player);
         }
 
         public override void OnRespawn(Player player)
@@ -386,20 +385,22 @@ namespace ItemMagnetPlus
                                     float velo = magnetVelocity; //16 ideal
 
                                     Vector2 distance = player.Center - Main.item[j].Center;
+                                    Vector2 normalizedDistance = distance;
 
-                                    //adjustment term, increases velociry the closer to the player it is (0..2)
-                                    velo += 2 * (1 - (distance.Length() / grabRadius));
+                                    //adjustment term, increases velocity the closer to the player it is (0..2)
+                                    velo += 2 * (1 - (normalizedDistance.Length() / grabRadius));
 
-                                    distance.Normalize();
-                                    distance *= velo;
+                                    normalizedDistance.Normalize();
+                                    normalizedDistance *= velo;
 
                                     //acceleration, higher = more acceleration
                                     if (magnetAcceleration > 40) magnetAcceleration = 40;
                                     int accel = -(magnetAcceleration - 41); //20 ideal
 
-                                    Main.item[j].velocity = (Main.item[j].velocity * (float)(accel - 1) + distance) / (float)accel;
+                                    Main.item[j].velocity = (Main.item[j].velocity * (float)(accel - 1) + normalizedDistance) / (float)accel;
 
-                                    if (Main.rand.NextFloat() < 0.7f)
+                                    float dustChance = distance.Length() < player.height ? 0.7f/(player.height - distance.Length()) : 0.7f;
+                                    if (Main.rand.NextFloat() < dustChance)
                                     {
                                         Dust dust = Main.dust[Dust.NewDust(Main.item[j].position, Main.item[j].width, Main.item[j].height, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f)];
                                         dust.noGravity = true;

@@ -29,7 +29,7 @@ namespace ItemMagnetPlus
 
             byte arrayLength;
 
-            BitsByte flags1;
+            BitsByte variousBooleans;
             bool currentlyActive;
 
             ItemMagnetPlusPlayer mPlayer;
@@ -79,8 +79,8 @@ namespace ItemMagnetPlus
                     
                     range = reader.ReadInt32();        //int
 
-                    flags1 = reader.ReadByte();        //byte
-                    currentlyActive = flags1[0];
+                    variousBooleans = reader.ReadByte();        //byte
+                    currentlyActive = variousBooleans[0];
 
                     mPlayer = Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>();
                     mPlayer.magnetGrabRadius = range;
@@ -91,7 +91,7 @@ namespace ItemMagnetPlus
                         packet.Write((byte)IMPMessageType.SendClientChanges);
                         packet.Write(playernumber);
                         packet.Write((int)range);
-                        packet.Write((byte)flags1);
+                        packet.Write((byte)variousBooleans);
                         packet.Send(-1, playernumber);
                     }
                     break;
