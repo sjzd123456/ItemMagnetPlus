@@ -47,6 +47,7 @@ Ends with: (killing Moonlord)
 
 ### About the config:
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
+* OnlyWhenHeld decides if the magnet works only when held (buff icon, if enabled, will still show even if not held)
 * Filter decides what to ignore when using the magnet (only hearts, mana stars and coins supported for now)
 * Range starts from 10, but can be as big as you want
 * If you increase Vel or Acc too much from those recommended above, items might get "stuck" on you until you deactivate it again
@@ -55,6 +56,8 @@ Ends with: (killing Moonlord)
 * If you change the version number, your config might get reset, so don't touch it 
 
 ### Changelog:
+
+ v0.1.11: Added config flag to have the magnet work either from inside the inventory or only when held
 
  v0.1.10: Scale spark rate on pulled items, fixed some desync bugs in MP, fixed grab bags being pulled in by all players
 

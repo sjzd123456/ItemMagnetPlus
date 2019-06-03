@@ -56,11 +56,6 @@ namespace ItemMagnetPlus.Items
             recipe.AddRecipe();
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            return true;
-        }
-
         public override bool AltFunctionUse(Player player)
         {
             return true;

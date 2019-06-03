@@ -19,14 +19,14 @@ namespace ItemMagnetPlus.Buffs
             mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
             add += "\nCurrent Velocity: " + mPlayer.magnetVelocity;
             add += "\nCurrent Acceleration: " + mPlayer.magnetAcceleration;
-            tip = tip + add;
+            tip += add;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
             if (player.HasItem(mod.ItemType("ItemMagnet")) || player.selectedItem == 58) //when player takes the item out of his inventory
             {
-                player.buffTime[buffIndex] = 60;
+                player.buffTime[buffIndex] = 2;
                 player.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive = 1;
             }
         }

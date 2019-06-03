@@ -26,6 +26,7 @@ namespace ItemMagnetPlus
             byte acceleration;
             byte buff;
             string filter;
+            byte held;
 
             byte arrayLength;
 
@@ -45,8 +46,9 @@ namespace ItemMagnetPlus
                         acceleration = reader.ReadByte();  //byte
                         buff = reader.ReadByte();          //byte
                         filter = reader.ReadString();      //string
+                        held = reader.ReadByte();          //byte
                         mPlayer = Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>();
-                        mPlayer.clientConf = new ItemMagnetPlusPlayer.ClientConf(range, scale, velocity, acceleration, buff, filter);
+                        mPlayer.clientConf = new ItemMagnetPlusPlayer.ClientConf(range, scale, velocity, acceleration, buff, filter, held);
                         mPlayer.MagnetBlacklist();
 
                         //in addition to recieving the server config, get all info about the players
@@ -77,9 +79,9 @@ namespace ItemMagnetPlus
                 case IMPMessageType.SendClientChanges:
                     playernumber = reader.ReadByte();
                     
-                    range = reader.ReadInt32();        //int
+                    range = reader.ReadInt32();         //int
 
-                    variousBooleans = reader.ReadByte();        //byte
+                    variousBooleans = reader.ReadByte();//byte
                     currentlyActive = variousBooleans[0];
 
                     mPlayer = Main.player[playernumber].GetModPlayer<ItemMagnetPlusPlayer>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -30,14 +31,14 @@ namespace ItemMagnetPlus
         //not used yet
         private const string PENDING = "NOT RECEIVED FROM SERVER";
 
-        public ClientConf clientConf = new ClientConf(0, 0, 0, 0, 0, PENDING);
+        public ClientConf clientConf = new ClientConf(0, 0, 0, 0, 0, PENDING, 0);
 
         public struct ClientConf
         {
-            public int Range, Scale, Velocity, Acceleration, Buff;
+            public int Range, Scale, Velocity, Acceleration, Buff, Held;
             public string Filter;
 
-            public ClientConf(int p1, int p2, int p3, int p4, int p5, string p6)
+            public ClientConf(int p1, int p2, int p3, int p4, int p5, string p6, int p7)
             {
                 Range = p1;
                 Scale = p2;
@@ -45,6 +46,7 @@ namespace ItemMagnetPlus
                 Acceleration = p4;
                 Buff = p5;
                 Filter = p6;
+                Held = p7;
             }
 
             public override string ToString()
@@ -54,7 +56,8 @@ namespace ItemMagnetPlus
                     ", V: " + Velocity +
                     ", A: " + Acceleration +
                     ", B: " + Buff +
-                    ", F: '" + Filter + "'";
+                    ", F: '" + Filter + "'" +
+                    ", H: " + Held;
             }
         }
 
@@ -115,7 +118,8 @@ namespace ItemMagnetPlus
             packet.Write((byte)ModConf.Acceleration);
             packet.Write((byte)1); //ModConf.Buff      //enforce buff in MP
             packet.Write((string)ModConf.Filter);
-            player.GetModPlayer<ItemMagnetPlusPlayer>().clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, 1, ModConf.Filter);
+            packet.Write((byte)ModConf.Held);
+            player.GetModPlayer<ItemMagnetPlusPlayer>().clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, 1, ModConf.Filter, ModConf.Held);
             player.GetModPlayer<ItemMagnetPlusPlayer>().MagnetBlacklist();
 
             //in addition to sending the server config, send all info about the players
@@ -210,7 +214,7 @@ namespace ItemMagnetPlus
             }
             else
             {
-                player.AddBuff(mod.BuffType("ItemMagnetBuff"), 3600);
+                player.AddBuff(mod.BuffType("ItemMagnetBuff"), 60);
             }
         }
 
@@ -227,7 +231,7 @@ namespace ItemMagnetPlus
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
-                clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, ModConf.Buff, ModConf.Filter);
+                clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, ModConf.Buff, ModConf.Filter, ModConf.Held);
                 MagnetBlacklist();
             }
             else if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -373,8 +377,9 @@ namespace ItemMagnetPlus
         {
             //doing this only client side causes a small "lag" when the item first gets dragged toward the player
             currentlyActive = (clientConf.Buff == 1) ? player.HasBuff(mod.BuffType("ItemMagnetBuff")) : magnetActive == 1;
+            bool whileHeld = (clientConf.Held == 1) ? player.HeldItem.type == mod.ItemType("ItemMagnet") : true;
 
-            if (currentlyActive && !player.dead)
+            if (currentlyActive && !player.dead && whileHeld)
             {
                 UpdateMagnetValues(magnetGrabRadius);
 
