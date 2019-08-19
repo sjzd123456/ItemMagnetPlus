@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace ItemMagnetPlus
@@ -15,12 +11,12 @@ namespace ItemMagnetPlus
     {
         public int magnetActive = 0;
         public int magnetScreenRadius = 60 + 1;
-        public int magnetGrabRadius = 10;
-        public int magnetMinGrabRadius = 10;
-        public int magnetMaxGrabRadius = 10; //60 half a screen radius
-        public int magnetScale = 1;
-        public int magnetVelocity = 8;
-        public int magnetAcceleration = 8;
+        public int magnetGrabRadius = Config.RangeMin;
+        public int magnetMinGrabRadius = Config.RangeMin;
+        public int magnetMaxGrabRadius = Config.RangeMin; //60 half a screen radius
+        public string magnetScale = Config.ScaleModeBosses;
+        public int magnetVelocity = Config.VelocityMin;
+        public int magnetAcceleration = Config.AccelerationMin;
         public int[] magnetBlacklist; //only populated when player joins the world, not changed during gameplay
         private bool hadMagnetActive = false;
         public bool currentlyActive = false;
@@ -28,51 +24,18 @@ namespace ItemMagnetPlus
         //public int counter = 30;
         //public int clientcounter = 30;
 
-        //not used yet
-        private const string PENDING = "NOT RECEIVED FROM SERVER";
-
-        public ClientConf clientConf = new ClientConf(0, 0, 0, 0, 0, PENDING, 0);
-
-        public struct ClientConf
-        {
-            public int Range, Scale, Velocity, Acceleration, Buff, Held;
-            public string Filter;
-
-            public ClientConf(int p1, int p2, int p3, int p4, int p5, string p6, int p7)
-            {
-                Range = p1;
-                Scale = p2;
-                Velocity = p3;
-                Acceleration = p4;
-                Buff = p5;
-                Filter = p6;
-                Held = p7;
-            }
-
-            public override string ToString()
-            {
-                return "R: " + Range +
-                    ", S: " + Scale +
-                    ", V: " + Velocity +
-                    ", A: " + Acceleration +
-                    ", B: " + Buff +
-                    ", F: '" + Filter + "'" +
-                    ", H: " + Held;
-            }
-        }
-
         public override void ResetEffects()
         {
-            if (clientConf.Buff == 1)
+            if (Config.Instance.Buff)
             {
                 magnetActive = 0;
             }
             //these are changed by config
             //starting values
-            magnetMaxGrabRadius = 10;
-            magnetScale = 1;
-            magnetVelocity = 8;
-            magnetAcceleration = 8;
+            magnetMaxGrabRadius = Config.RangeMin;
+            magnetScale = Config.ScaleModeBosses;
+            magnetVelocity = Config.VelocityMin;
+            magnetAcceleration = Config.AccelerationMin;
         }
 
         public override void clientClone(ModPlayer clientClone)
@@ -112,16 +75,6 @@ namespace ItemMagnetPlus
             ModPacket packet = mod.GetPacket();
             packet.Write((byte)IMPMessageType.SyncPlayer);
             packet.Write((byte)player.whoAmI);
-            packet.Write((int)ModConf.Range);
-            packet.Write((byte)ModConf.Scale);
-            packet.Write((int)ModConf.Velocity);
-            packet.Write((byte)ModConf.Acceleration);
-            packet.Write((byte)1); //ModConf.Buff      //enforce buff in MP
-            packet.Write((string)ModConf.Filter);
-            packet.Write((byte)ModConf.Held);
-            player.GetModPlayer<ItemMagnetPlusPlayer>().clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, 1, ModConf.Filter, ModConf.Held);
-            player.GetModPlayer<ItemMagnetPlusPlayer>().MagnetBlacklist();
-
             //in addition to sending the server config, send all info about the players
 
             byte[] indexes = new byte[255];
@@ -156,59 +109,9 @@ namespace ItemMagnetPlus
             packet.Send(toWho/*, fromWho*/);
         }
 
-        public void MagnetBlacklist()
-        {
-            //list of item types to ignore
-            int[] typeBlacklist = new int[20];
-            if (clientConf.Filter == "")
-            {
-                magnetBlacklist = typeBlacklist;
-                return;
-            }
-            string[] stringBlacklist = clientConf.Filter.Split(new string[] { "," }, 50, StringSplitOptions.RemoveEmptyEntries);
-            string[] lowerCase = new string[stringBlacklist.Length];
-            for (int i = 0; i < stringBlacklist.Length; i++)
-            {
-                lowerCase[i] = stringBlacklist[i].Trim();
-            }
-            string[] lowerCaseDistinct = lowerCase.Distinct().ToArray();
-            int j = -1;
-            for (int i = 0; i < lowerCaseDistinct.Length; i++)
-            {
-                if (lowerCaseDistinct[i] == "heart")
-                {
-                    typeBlacklist[++j] = 58;
-                    typeBlacklist[++j] = 1734;
-                    typeBlacklist[++j] = 1867;
-                }
-                if (lowerCaseDistinct[i] == "mana")
-                {
-                    typeBlacklist[++j] = 184;
-                    typeBlacklist[++j] = 1735;
-                    typeBlacklist[++j] = 1868;
-                }
-                if (lowerCaseDistinct[i] == "coin")
-                {
-                    typeBlacklist[++j] = 330;
-                    typeBlacklist[++j] = 331;
-                    typeBlacklist[++j] = 332;
-                    typeBlacklist[++j] = 333;
-                }
-            }
-            //if no things added to the list then return empty list
-            if (j < 0)
-            {
-                magnetBlacklist = typeBlacklist;
-                return;
-            }
-            Array.Resize(ref typeBlacklist, j + 1);
-            Array.Sort(typeBlacklist, 0, typeBlacklist.Length - 1);
-            magnetBlacklist = typeBlacklist;
-        }
-
         public void ActivateMagnet(Player player)
         {
-            if (clientConf.Buff != 1)
+            if (!Config.Instance.Buff)
             {
                 magnetActive = 1;
             }
@@ -220,21 +123,16 @@ namespace ItemMagnetPlus
 
         public void DeactivateMagnet(Player player)
         {
-            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
-            if (clientConf.Buff != 1)
+            if (!Config.Instance.Buff)
             {
                 magnetActive = 0;
             }
+            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
         }
 
         public override void OnEnterWorld(Player player)
         {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                clientConf = new ClientConf(ModConf.Range, ModConf.Scale, ModConf.Velocity, ModConf.Acceleration, ModConf.Buff, ModConf.Filter, ModConf.Held);
-                MagnetBlacklist();
-            }
-            else if (Main.netMode == NetmodeID.MultiplayerClient)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 SendClientChangesPacket();
             }
@@ -265,12 +163,12 @@ namespace ItemMagnetPlus
         public void UpdateMagnetValues(int currentRadius)
         {
             //currentRadius is for creating steps between min and max range, and setting it accordingly
-            magnetMaxGrabRadius = clientConf.Range;
-            magnetScale = clientConf.Scale;
-            magnetVelocity = clientConf.Velocity;
-            magnetAcceleration = clientConf.Acceleration;
+            magnetMaxGrabRadius = Config.Instance.Range;
+            magnetScale = Config.Instance.Scale;
+            magnetVelocity = Config.Instance.Velocity;
+            magnetAcceleration = Config.Instance.Acceleration;
 
-            if (magnetScale == 2)
+            if (magnetScale == Config.ScaleModeOnlyConfig)
             {
                 magnetGrabRadius = magnetMaxGrabRadius;
                 return;
@@ -357,7 +255,7 @@ namespace ItemMagnetPlus
                 //magnetAcceleration = 32;
             }
 
-            if (magnetScale == 0)
+            if (magnetScale != Config.ScaleModeBosses)
             {
                 magnetGrabRadius = magnetMaxGrabRadius;
                 return;
@@ -376,14 +274,14 @@ namespace ItemMagnetPlus
         public override void PreUpdate()
         {
             //doing this only client side causes a small "lag" when the item first gets dragged toward the player
-            currentlyActive = (clientConf.Buff == 1) ? player.HasBuff(mod.BuffType("ItemMagnetBuff")) : magnetActive == 1;
-            bool whileHeld = (clientConf.Held == 1) ? player.HeldItem.type == mod.ItemType("ItemMagnet") : true;
+            currentlyActive = Config.Instance.Buff ? player.HasBuff(mod.BuffType("ItemMagnetBuff")) : magnetActive == 1;
+            bool whileHeld = Config.Instance.Held ? player.HeldItem.type == mod.ItemType("ItemMagnet") : true;
 
             if (currentlyActive && !player.dead && whileHeld)
             {
                 UpdateMagnetValues(magnetGrabRadius);
 
-                int grabRadius = (int)(magnetGrabRadius * 16); //16 == to world coordinates
+                int grabRadius = magnetGrabRadius * 16; //16 == to world coordinates
                 int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
 
                 int grabbedItems = 0;
@@ -394,79 +292,73 @@ namespace ItemMagnetPlus
                     if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, player) && ItemLoader.CanPickup(item, player) /*&& Main.player[item.owner].ItemSpace(item)*/)
                     {
                         bool canGrabNetMode = true;
+                        //All: item.ownIgnore == -1 && item.keepTime == 0
+                        //Client: (above) && item.owner != 255 
                         if (Main.netMode != NetmodeID.SinglePlayer)
                         {
-                            canGrabNetMode = item.owner == 255 || item.owner == player.whoAmI;
-                            //canGrabNetMode &= !item.instanced;
+                            if (item.instanced) canGrabNetMode &= item.owner == player.whoAmI;
                         }
 
                         Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
                         if (canGrabNetMode && rect.Intersects(item.getRect()))
                         {
-                            //if (player.inventory[player.selectedItem].type != 0 || player.itemAnimation <= 0)
-                            //{
-                                if (Array.BinarySearch(magnetBlacklist, item.type) < 0)
+                            if (ConfigWrapper.CanBePulled(item.type))
+                            {
+                                grabbedItems++;
+                                //so it can go through walls
+                                item.beingGrabbed = true;
+                                //velocity, higher = more speed
+                                float velo = magnetVelocity; //16 ideal
+
+                                Vector2 distance = player.Center - item.Center;
+                                Vector2 normalizedDistance = distance;
+
+                                //adjustment term, increases velocity the closer to the player it is (0..2)
+                                velo += 2 * (1 - (normalizedDistance.Length() / grabRadius));
+
+                                normalizedDistance.Normalize();
+                                normalizedDistance *= velo;
+
+                                //acceleration, higher = more acceleration
+                                if (magnetAcceleration > 40) magnetAcceleration = 40;
+                                int accel = -(magnetAcceleration - 41); //20 ideal
+
+                                item.velocity = (item.velocity * (accel - 1) + normalizedDistance) / (float)accel;
+
+                                if (Main.netMode != NetmodeID.Server)
                                 {
-                                    grabbedItems++;
-                                    //so it can go through walls
-                                    item.beingGrabbed = true;
-                                    //velocity, higher = more speed
-                                    float velo = magnetVelocity; //16 ideal
-
-                                    Vector2 distance = player.Center - item.Center;
-                                    Vector2 normalizedDistance = distance;
-
-                                    //adjustment term, increases velocity the closer to the player it is (0..2)
-                                    velo += 2 * (1 - (normalizedDistance.Length() / grabRadius));
-
-                                    normalizedDistance.Normalize();
-                                    normalizedDistance *= velo;
-
-                                    //acceleration, higher = more acceleration
-                                    if (magnetAcceleration > 40) magnetAcceleration = 40;
-                                    int accel = -(magnetAcceleration - 41); //20 ideal
-
-                                    item.velocity = (item.velocity * (float)(accel - 1) + normalizedDistance) / (float)accel;
-
-                                    if (Main.netMode != NetmodeID.Server)
+                                    float dustChance = distance.Length() < player.height ? 0.7f / (player.height - distance.Length()) : 0.7f;
+                                    dustChance *= (11f - grabbedItems) / 10f;
+                                    if (Main.rand.NextFloat() < dustChance - 0.02f)
                                     {
-                                        float dustChance = distance.Length() < player.height ? 0.7f / (player.height - distance.Length()) : 0.7f;
-                                        dustChance = dustChance * ((11f - grabbedItems) / 10f);
-                                        if (Main.rand.NextFloat() < dustChance - 0.02f)
-                                        {
-                                            Dust dust = Main.dust[Dust.NewDust(item.position, item.width, item.height, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f)];
-                                            dust.noGravity = true;
-                                            dust.noLight = true;
-                                        }
+                                        Dust dust = Dust.NewDustDirect(item.position, item.width, item.height, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f);
+                                        dust.noGravity = true;
+                                        dust.noLight = true;
                                     }
                                 }
-                            //}
+                            }
                         }
                     }
                 }
 
-                //if (Main.netMode == NetmodeID.Server)
+                //if (Main.time % 90 == 0)
                 //{
-                //    if (Main.time % 90 == 0)
+                //    if (Main.netMode == NetmodeID.Server)
                 //    {
-                //        //Console.WriteLine("im here " + Main.time);
-                //        //for (int i = 0; i < magnetBlacklist.Length; i++)
-                //        //{
-                //        //    Console.Write(magnetBlacklist[i] + ", ");
-                //        //}
-                //        //Console.WriteLine("test: " + magnetBlacklist.Length);
-                //        NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server: " + player.name + "currently trying to grab " + grabbedItems + " items"), new Color(255, 25, 25));
+                //            //Console.WriteLine("im here " + Main.time);
+                //            //for (int i = 0; i < magnetBlacklist.Length; i++)
+                //            //{
+                //            //    Console.Write(magnetBlacklist[i] + ", ");
+                //            //}
+                //            //Console.WriteLine("test: " + magnetBlacklist.Length);
+                //            NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server: " + player.name + " currently trying to grab " + grabbedItems + " items"), new Color(255, 25, 25));
+                //    }
+
+                //    if (Main.netMode == NetmodeID.MultiplayerClient)
+                //    {
+                //            Main.NewText("client: " + player.name + " currently trying to grab " + grabbedItems + " items");
                 //    }
                 //}
-
-                //if (Main.netMode == NetmodeID.MultiplayerClient)
-                //{
-                //    if (Main.time % 90 == 0)
-                //    {
-                //        Main.NewText("client: " + player.name + "currently trying to grab " + grabbedItems + " items");
-                //    }
-                //}
-
             }
 
             //if (Main.netMode == NetmodeID.Server)
