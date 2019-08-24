@@ -57,6 +57,8 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.0.0.1: Fix velocity cap
+
  v1.0: updated to tml 0.11.4. Fixed multiplayer, updated to ingame config, fixed coin filter, added custom black/whitelist
 
  v0.2: Updated to ingame config, fixed coin filter

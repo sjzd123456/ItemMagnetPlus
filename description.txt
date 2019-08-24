@@ -47,6 +47,8 @@ Progression: (default config)
 
 Changelog:
 
+ v1.0.0.1: Fix velocity cap
+
  v1.0: tml 0.11.4 update. Fixed multiplayer, updated to ingame config, fixed coin filter, added custom black/whitelist
 
  v0.1.11: Added config flag to have the magnet work either from inside the inventory or only when held

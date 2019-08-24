@@ -308,6 +308,7 @@ namespace ItemMagnetPlus
                                 //so it can go through walls
                                 item.beingGrabbed = true;
                                 //velocity, higher = more speed
+                                if (magnetVelocity > Config.VelocityMax) magnetVelocity = Config.VelocityMax;
                                 float velo = magnetVelocity; //16 ideal
 
                                 Vector2 distance = player.Center - item.Center;
@@ -320,7 +321,7 @@ namespace ItemMagnetPlus
                                 normalizedDistance *= velo;
 
                                 //acceleration, higher = more acceleration
-                                if (magnetAcceleration > 40) magnetAcceleration = 40;
+                                if (magnetAcceleration > Config.AccelerationMax) magnetAcceleration = Config.AccelerationMax;
                                 int accel = -(magnetAcceleration - 41); //20 ideal
 
                                 item.velocity = (item.velocity * (accel - 1) + normalizedDistance) / (float)accel;
