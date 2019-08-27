@@ -207,7 +207,7 @@ namespace ItemMagnetPlus
             Clamp(ref acceleration, AccelerationMin, AccelerationMax);
         }
 
-        private void Clamp(ref int value, int min, int max)
+        public static void Clamp(ref int value, int min, int max)
         {
             value = value < min ? min : (value > max ? max : value);
         }
