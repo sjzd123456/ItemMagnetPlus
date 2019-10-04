@@ -306,7 +306,7 @@ namespace ItemMagnetPlus
                         Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
                         if (canGrabNetMode && rect.Intersects(item.getRect()))
                         {
-                            if (ConfigWrapper.CanBePulled(item.type))
+                            if (ConfigWrapper.CanBePulled(item, player))
                             {
                                 grabbedItems++;
                                 //so it can go through walls
@@ -340,6 +340,26 @@ namespace ItemMagnetPlus
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+
+                //remove dust from grabbed coins while magnet is enabled
+                //credit to hamstar (Uncluttered Projectiles)
+                if (Main.myPlayer == player.whoAmI && !Config.Instance.Coins)
+                {
+                    Dust dust;
+                    for (int i = 0; i < Main.maxDustToDraw; i++)
+                    {
+                        dust = Main.dust[i];
+                        if (dust == null || !dust.active) continue;
+
+                        //item type 71 to 74: 
+                        //int type = 244 + item.type - 71;
+                        //-> 244 to 247
+                        if (dust.type == 244 || dust.type == 245 || dust.type == 246 || dust.type == 247)
+                        {
+                            Main.dust[i] = new Dust();
                         }
                     }
                 }

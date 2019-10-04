@@ -66,7 +66,7 @@ namespace ItemMagnetPlus.Items
         public static Dust QuickDust(Vector2 pos, Color color)
         {
             int type = 1;
-            Dust dust = Dust.NewDustDirect(pos, 4, 4, type, 0f, 0f, 120, color, 2f);
+            Dust dust = Dust.NewDustDirect(pos, 4, 4, type, 0f, 0f, 120, color, 1f);
             dust.position = pos;
             dust.velocity = Vector2.Zero;
             dust.fadeIn = 3f;
@@ -138,7 +138,7 @@ namespace ItemMagnetPlus.Items
                     {
                         mPlayer.ActivateMagnet(player);
 
-                        Main.PlaySound(SoundID.MaxMana, player.position, 1);
+                        Main.PlaySound(SoundID.MaxMana, player.Center, 1);
                         mPlayer.magnetActive = 1;
                         mPlayer.UpdateMagnetValues(mPlayer.magnetMinGrabRadius);
                         radius = mPlayer.magnetGrabRadius;
@@ -164,7 +164,7 @@ namespace ItemMagnetPlus.Items
                         if (radius > mPlayer.magnetMaxGrabRadius)
                         {
                             CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet off");
-                            Main.PlaySound(SoundID.MaxMana, player.position, 1);
+                            Main.PlaySound(SoundID.MaxMana, player.Center, 1);
                             mPlayer.DeactivateMagnet(player);
                             return true;
                         }

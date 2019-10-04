@@ -8,7 +8,7 @@ ItemMagnetPlus adds a single item called "Item Magnet" that does the obvious thi
 
 ### Adds:
 Item Magnet (and corresponding buff) that
-* can be crafted with simple materials
+* can be crafted with simple materials (Iron/Lead)
 * works while in your inventory
 * can be toggled on and off
 * has adjustable range and item succ speed
@@ -48,7 +48,7 @@ Ends with: (killing Moonlord)
 ### About the config:
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
 * Held decides if the magnet works only when held
-* Filter function: Presets (hearts, mana stars, coins), blacklist/whitelist
+* Filter function: Presets (hearts, mana stars, coins, pickup effects), blacklist/whitelist
 * Magnet stats are limited to sensible values (Range only goes up to about three screens in any direction)
 * If you increase Vel or Acc too much from those recommended above, items might get "stuck" on you until you deactivate it again
 * Beware of lag when increasing these values, especially range
@@ -56,6 +56,8 @@ Ends with: (killing Moonlord)
 * After you change the values in the config, use the magnet again to take effect
 
 ### Changelog:
+
+ v1.0.1: Added filter for nebula pickup and modded items that have pickup effects (Thorium music notes for example), grabbed coins don't overproduce sparkles
 
  v1.0.0.1 + 2: Fix velocity cap, other stat caps
 

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
 namespace ItemMagnetPlus
@@ -48,6 +49,11 @@ namespace ItemMagnetPlus
         [DefaultValue(false)]
         public bool Coins;
 
+        [Label("[i:3457] Pickup Effect Items")]
+        [Tooltip("Toggle if items like nebula armor boosters or modded items like the music notes from Thorium should be picked up by the magnet")]
+        [DefaultValue(true)]
+        public bool PickupEffect;
+
         //-------------
         [Header("Custom Item Filter")]
 
@@ -70,6 +76,7 @@ namespace ItemMagnetPlus
 
         //-------------
         [Header("General")]
+
         [Label("Buff")]
         [Tooltip("Toggle if having the magnet active gives you a buff")]
         [DefaultValue(true)]
@@ -83,7 +90,6 @@ namespace ItemMagnetPlus
         //-------------
         [Header("Magnet Behavior (Only works ingame)")]
 
-        //[Label("Range")]
         [Tooltip("Base magnet radius in tiles")]
         [Slider]
         [SliderColor(255, 255, 50)]
@@ -92,7 +98,6 @@ namespace ItemMagnetPlus
         [DefaultValue(10)]
         public int Range;
 
-        //[Label("Velocity")]
         [Tooltip("Speed at which items get pulled towards you")]
         [Slider]
         [SliderColor(255, 255, 50)]
@@ -100,7 +105,6 @@ namespace ItemMagnetPlus
         [DefaultValue(8)]
         public int Velocity;
 
-        //[Label("Acceleration")]
         [Tooltip("How fast an item reaches its peak speed")]
         [Slider]
         [SliderColor(255, 255, 50)]
@@ -108,7 +112,6 @@ namespace ItemMagnetPlus
         [DefaultValue(8)]
         public int Acceleration;
 
-        //[Label("Acceleration")]
         [Tooltip("Scaling Mode")]
         [DrawTicks]
         [SliderColor(255, 255, 50)]
@@ -118,6 +121,7 @@ namespace ItemMagnetPlus
 
         //-------------
         [Header("Resulting Magnet stats")]
+
         [Label("Resulting Max Range")]
         [Slider]
         [SliderColor(50, 255, 50)]
@@ -314,37 +318,41 @@ namespace ItemMagnetPlus
 
         public static int[] CoinTypes;
 
-        private static bool CheckIfItemIsInPresetBlacklist(int type)
+        private static bool CheckIfItemIsInPresetBlacklist(Item item, Player player)
         {
-            if (Instance.Hearts && Array.BinarySearch(HeartTypes, type) > -1)
+            if (Instance.Hearts && Array.BinarySearch(HeartTypes, item.type) > -1)
             {
                 return true;
             }
-            if (Instance.ManaStars && Array.BinarySearch(ManaStarTypes, type) > -1)
+            if (Instance.ManaStars && Array.BinarySearch(ManaStarTypes, item.type) > -1)
             {
                 return true;
             }
-            if (Instance.Coins && Array.BinarySearch(CoinTypes, type) > -1)
+            if (Instance.Coins && Array.BinarySearch(CoinTypes, item.type) > -1)
+            {
+                return true;
+            }
+            if (Instance.PickupEffect && (ItemID.Sets.NebulaPickup[item.type] || ItemLoader.ItemSpace(item, player)))
             {
                 return true;
             }
             return false;
         }
 
-        public static bool CanBePulled(int type)
+        public static bool CanBePulled(Item item, Player player)
         {
-            bool can = !CheckIfItemIsInPresetBlacklist(type);
-            ItemDefinition item = new ItemDefinition(type);
+            bool can = !CheckIfItemIsInPresetBlacklist(item, player);
+            ItemDefinition itemDef = new ItemDefinition(item.type);
             if (Instance.ListMode == Config.BlacklistName)
             {
-                if (Instance.Blacklist.Contains(item))
+                if (Instance.Blacklist.Contains(itemDef))
                 {
                     can = false;
                 }
             }
             else if (Instance.ListMode == Config.WhitelistName)
             {
-                can = Instance.Whitelist.Contains(item);
+                can = Instance.Whitelist.Contains(itemDef);
             }
             return can;
         }
