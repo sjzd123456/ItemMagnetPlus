@@ -357,10 +357,7 @@ namespace ItemMagnetPlus
                         //item type 71 to 74: 
                         //int type = 244 + item.type - 71;
                         //-> 244 to 247
-                        if (dust.type == 244 || dust.type == 245 || dust.type == 246 || dust.type == 247)
-                        {
-                            Main.dust[i] = new Dust();
-                        }
+                        if (dust.type >= 244 && dust.type <= 247) Main.dust[i] = new Dust();
                     }
                 }
 

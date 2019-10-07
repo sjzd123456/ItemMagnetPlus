@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using ItemMagnetPlus.Items;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace ItemMagnetPlus.Buffs
@@ -14,7 +15,7 @@ namespace ItemMagnetPlus.Buffs
 
         public override void ModifyBuffTip(ref string tip, ref int rare)
         {
-            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
             string add = "\nCurrent Range: " + mPlayer.magnetGrabRadius;
             mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
             add += "\nCurrent Velocity: " + mPlayer.magnetVelocity;
@@ -24,10 +25,10 @@ namespace ItemMagnetPlus.Buffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.HasItem(mod.ItemType("ItemMagnet")) || player.selectedItem == 58) //when player takes the item out of his inventory
+            if (player.HasItem(ModContent.ItemType<ItemMagnet>()) || player.selectedItem == 58) //when player takes the item out of his inventory
             {
                 player.buffTime[buffIndex] = 2;
-                player.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive = 1;
+                player.GetModPlayer<ItemMagnetPlusPlayer>().magnetActive = 1;
             }
         }
     }

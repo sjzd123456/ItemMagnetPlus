@@ -26,7 +26,7 @@ namespace ItemMagnetPlus.Items
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
 
             string color1 = (new Color(128, 255, 128) * (Main.mouseTextColor / 255f)).Hex3();
             string color2 = (new Color(159, 159, 255) * (Main.mouseTextColor / 255f)).Hex3();
@@ -34,14 +34,14 @@ namespace ItemMagnetPlus.Items
             tooltips.Add(new TooltipLine(mod, "Buffa", "Left Click to " + (Config.Instance.Scale == Config.ScaleModeBosses ? "[c/" + color1 + ":change range ]" : "[c/" + color1 + ":toggle on/off ]")));
             tooltips.Add(new TooltipLine(mod, "Buffb", "Right Click to " + (Config.Instance.Buff ? "[c/" + color2 + ":show current range ]" : "[c/" + color3 + ":turn off ]")));
 
-            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>(mod).magnetActive == 1)
+            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>().magnetActive == 1)
             {
                 mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
                 tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
                 tooltips.Add(new TooltipLine(mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
                 tooltips.Add(new TooltipLine(mod, "Acceleration", "Current Acceleration: " + mPlayer.magnetAcceleration));
             }
-            else if (Main.LocalPlayer.HasItem(mod.ItemType("ItemMagnet")))
+            else if (Main.LocalPlayer.HasItem(item.type))
             {
                 tooltips.Add(new TooltipLine(mod, "Range", "Magnet is off"));
             }
@@ -103,7 +103,7 @@ namespace ItemMagnetPlus.Items
 
         public override bool UseItem(Player player)
         {
-            ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>(mod);
+            ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();
             mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
 
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
