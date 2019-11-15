@@ -34,7 +34,7 @@ namespace ItemMagnetPlus.Items
             tooltips.Add(new TooltipLine(mod, "Buffa", "Left Click to " + (Config.Instance.Scale == Config.ScaleModeBosses ? "[c/" + color1 + ":change range ]" : "[c/" + color1 + ":toggle on/off ]")));
             tooltips.Add(new TooltipLine(mod, "Buffb", "Right Click to " + (Config.Instance.Buff ? "[c/" + color2 + ":show current range ]" : "[c/" + color3 + ":turn off ]")));
 
-            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>().magnetActive == 1)
+            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || mPlayer.magnetActive == 1)
             {
                 mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
                 tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));

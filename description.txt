@@ -36,6 +36,7 @@ Progression: (default config)
  Acceleration = 32
 
  About the config:
+* Contrary to other tModLoader configs, the preset filters have inverted logic on them (filled black dot means "on")
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
 * Held decides if the magnet works only when held
 * Filter function: Presets (hearts, mana stars, coins, pickup effects), blacklist/whitelist
@@ -46,6 +47,8 @@ Progression: (default config)
 * After you change the values in the config, use the magnet again to take effect
 
 Changelog:
+
+ v1.0.1.1: Fixed incompatibility with Jpans Bags of Holding, the "Pickup Effect Items" setting will be ignored with this mod enabled
 
  v1.0.1: Added filter for nebula pickup and modded items that have pickup effects (Thorium music notes for example), grabbed coins don't overproduce sparkles
 

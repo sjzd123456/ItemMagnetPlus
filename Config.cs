@@ -332,9 +332,11 @@ namespace ItemMagnetPlus
             {
                 return true;
             }
-            if (Instance.PickupEffect && (ItemID.Sets.NebulaPickup[item.type] || ItemLoader.ItemSpace(item, player)))
+            if (Instance.PickupEffect)
             {
-                return true;
+                if (ItemID.Sets.NebulaPickup[item.type]) return true;
+                if (ItemMagnetPlus.JPANsLoaded) return false;
+                if (ItemLoader.ItemSpace(item, player)) return true;
             }
             return false;
         }
