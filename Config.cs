@@ -170,7 +170,7 @@ namespace ItemMagnetPlus
         public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message)
         {
             message = "Only the host of this world can change the config! Do so in singleplayer.";
-            return true;
+            return false;
         }
 
         [OnDeserialized]
