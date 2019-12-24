@@ -124,7 +124,7 @@ namespace ItemMagnetPlus.Items
                     }
                     else
                     {
-                        //deactivates
+                        // Deactivates
                         mPlayer.DeactivateMagnet(player);
                         CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet off");
                     }

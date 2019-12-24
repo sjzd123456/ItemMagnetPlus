@@ -10,11 +10,11 @@ using Terraria.ModLoader.Config;
 
 namespace ItemMagnetPlus
 {
+    #pragma warning disable 0649
     class Config : ModConfig
     {
         public override ConfigScope Mode => ConfigScope.ServerSide;
 
-        // Automatically assigned by tmodloader
         public static Config Instance => ModContent.GetInstance<Config>();
 
         public const int RangeMin = 10;
