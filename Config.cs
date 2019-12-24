@@ -15,7 +15,7 @@ namespace ItemMagnetPlus
         public override ConfigScope Mode => ConfigScope.ServerSide;
 
         // Automatically assigned by tmodloader
-        public static Config Instance;
+        public static Config Instance => ModContent.GetInstance<Config>();
 
         public const int RangeMin = 10;
         public const int RangeMax = 240;
@@ -36,22 +36,22 @@ namespace ItemMagnetPlus
 
         [Label("[i:58] Hearts")]
         [Tooltip("Toggle if hearts should be picked up by the magnet")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool Hearts;
 
         [Label("[i:184] Mana Stars")]
         [Tooltip("Toggle if mana stars should be picked up by the magnet")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool ManaStars;
 
         [Label("[i:73] Coins")]
         [Tooltip("Toggle if coins should be picked up by the magnet")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool Coins;
 
         [Label("[i:3457] Pickup Effect Items")]
         [Tooltip("Toggle if items like nebula armor boosters or modded items like the music notes from Thorium should be picked up by the magnet")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool PickupEffect;
 
         //-------------
@@ -320,19 +320,19 @@ namespace ItemMagnetPlus
 
         private static bool CheckIfItemIsInPresetBlacklist(Item item, Player player)
         {
-            if (Instance.Hearts && Array.BinarySearch(HeartTypes, item.type) > -1)
+            if (!Instance.Hearts && Array.BinarySearch(HeartTypes, item.type) > -1)
             {
                 return true;
             }
-            if (Instance.ManaStars && Array.BinarySearch(ManaStarTypes, item.type) > -1)
+            if (!Instance.ManaStars && Array.BinarySearch(ManaStarTypes, item.type) > -1)
             {
                 return true;
             }
-            if (Instance.Coins && Array.BinarySearch(CoinTypes, item.type) > -1)
+            if (!Instance.Coins && Array.BinarySearch(CoinTypes, item.type) > -1)
             {
                 return true;
             }
-            if (Instance.PickupEffect)
+            if (!Instance.PickupEffect)
             {
                 if (ItemID.Sets.NebulaPickup[item.type]) return true;
                 if (ItemMagnetPlus.JPANsLoaded) return false;

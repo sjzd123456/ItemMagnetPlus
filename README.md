@@ -57,6 +57,10 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.0.1.2: tml 0.11.6 update. Fixed unintended config saving in multiplayer, fixed preset filter being inverted
+
+ v1.0.1.1: Fixed incompatibility with Jpans Bags of Holding, the "Pickup Effect Items" setting will be ignored with this mod enabled
+
  v1.0.1: Added filter for nebula pickup and modded items that have pickup effects (Thorium music notes for example), grabbed coins don't overproduce sparkles
 
  v1.0.0.1 + 2: Fix velocity cap, other stat caps
