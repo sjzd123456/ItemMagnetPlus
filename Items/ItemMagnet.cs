@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using ItemMagnetPlus.Buffs;
 
 namespace ItemMagnetPlus.Items
 {
@@ -116,7 +117,7 @@ namespace ItemMagnetPlus.Items
                         // Nothing
                         CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet is off");
                     }
-                    else if(Config.Instance.Buff && player.HasBuff(mod.BuffType("ItemMagnetBuff")))
+                    else if(Config.Instance.Buff && player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()))
                     {
                         // Shows the range
                         DrawRectangle(player, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);

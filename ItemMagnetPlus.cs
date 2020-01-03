@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -40,6 +41,8 @@ namespace ItemMagnetPlus
             bool currentlyActive;
 
             ItemMagnetPlusPlayer mPlayer;
+            //Console.WriteLine("recv: " + msgType);
+            //Main.NewText("recv: " + msgType);
             switch (msgType)
             {
                 case IMPMessageType.SyncPlayer:

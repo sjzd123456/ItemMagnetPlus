@@ -1,4 +1,6 @@
 ﻿using System;
+using ItemMagnetPlus.Buffs;
+using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -71,42 +73,45 @@ namespace ItemMagnetPlus
 
         public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
         {
-            //server sends its config to player
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte)IMPMessageType.SyncPlayer);
-            packet.Write((byte)player.whoAmI);
-            //in addition to sending the server config, send all info about the players
-
-            byte[] indexes = new byte[255];
-            int[] ranges = new int[255];
-            bool[] currentlyActives = new bool[255];
-            byte arrayLength = 0;
-            for (int i = 0; i < 255; i++)
+            if (Main.netMode == NetmodeID.Server)
             {
-                if (Main.player[i].active && i != player.whoAmI)
+                //server sends its config to player
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)IMPMessageType.SyncPlayer);
+                //packet.Write((byte)player.whoAmI);
+                //in addition to sending the server config, send all info about the players
+
+                byte[] indexes = new byte[255];
+                int[] ranges = new int[255];
+                bool[] currentlyActives = new bool[255];
+                byte arrayLength = 0;
+                for (int i = 0; i < 255; i++)
                 {
-                    indexes[arrayLength] = (byte)i;
-                    ranges[arrayLength] = magnetGrabRadius;
-                    currentlyActives[arrayLength++] = currentlyActive;
+                    if (Main.player[i].active && i != player.whoAmI)
+                    {
+                        indexes[arrayLength] = (byte)i;
+                        ranges[arrayLength] = magnetGrabRadius;
+                        currentlyActives[arrayLength++] = currentlyActive;
+                    }
                 }
-            }
 
-            packet.Write((byte)arrayLength);
-            if (arrayLength > 0)
-            {
-                Array.Resize(ref indexes, arrayLength + 1);
-                Array.Resize(ref ranges, arrayLength + 1);
-                Array.Resize(ref currentlyActives, arrayLength + 1);
-
-                for (int i = 0; i < arrayLength; i++)
+                packet.Write((byte)arrayLength);
+                if (arrayLength > 0)
                 {
-                    packet.Write((byte)indexes[i]);
-                    packet.Write((int)ranges[i]);
-                    packet.Write((bool)currentlyActives[i]);
-                }
-            }
+                    Array.Resize(ref indexes, arrayLength + 1);
+                    Array.Resize(ref ranges, arrayLength + 1);
+                    Array.Resize(ref currentlyActives, arrayLength + 1);
 
-            packet.Send(toWho/*, fromWho*/);
+                    for (int i = 0; i < arrayLength; i++)
+                    {
+                        packet.Write((byte)indexes[i]);
+                        packet.Write((int)ranges[i]);
+                        packet.Write((bool)currentlyActives[i]);
+                    }
+                }
+
+                packet.Send(toWho/*, fromWho*/);
+            }
         }
 
         public void ActivateMagnet(Player player)
@@ -117,7 +122,7 @@ namespace ItemMagnetPlus
             }
             else
             {
-                player.AddBuff(mod.BuffType("ItemMagnetBuff"), 60);
+                player.AddBuff(ModContent.BuffType<ItemMagnetBuff>(), 60);
             }
         }
 
@@ -127,7 +132,7 @@ namespace ItemMagnetPlus
             {
                 magnetActive = 0;
             }
-            player.ClearBuff(mod.BuffType("ItemMagnetBuff"));
+            player.ClearBuff(ModContent.BuffType<ItemMagnetBuff>());
         }
 
         public override void OnEnterWorld(Player player)
@@ -141,7 +146,7 @@ namespace ItemMagnetPlus
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (player.HasBuff(mod.BuffType("ItemMagnetBuff")) || magnetActive != 0)
+            if (player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) || magnetActive != 0)
             {
                 hadMagnetActive = true;
             }
@@ -278,8 +283,8 @@ namespace ItemMagnetPlus
         public override void PreUpdate()
         {
             //doing this only client side causes a small "lag" when the item first gets dragged toward the player
-            currentlyActive = Config.Instance.Buff ? player.HasBuff(mod.BuffType("ItemMagnetBuff")) : magnetActive == 1;
-            bool whileHeld = Config.Instance.Held ? player.HeldItem.type == mod.ItemType("ItemMagnet") : true;
+            currentlyActive = Config.Instance.Buff ? player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) : magnetActive == 1;
+            bool whileHeld = Config.Instance.Held ? player.HeldItem.type == ModContent.ItemType<ItemMagnet>() : true;
 
             if (currentlyActive && !player.dead && whileHeld)
             {
