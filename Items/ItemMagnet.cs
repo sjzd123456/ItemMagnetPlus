@@ -20,19 +20,20 @@ namespace ItemMagnetPlus.Items
             item.width = 28;
             item.height = 32;
             item.value = Item.sellPrice(silver: 36);
-            item.rare = 2;
+            item.rare = ItemRarityID.Green;
             item.useAnimation = 10;
             item.useTime = 10;
-            item.useStyle = 4;
+            item.useStyle = ItemUseStyleID.HoldingUp;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
 
-            string color1 = (new Color(128, 255, 128) * (Main.mouseTextColor / 255f)).Hex3();
-            string color2 = (new Color(159, 159, 255) * (Main.mouseTextColor / 255f)).Hex3();
-            string color3 = (new Color(255, 128, 128) * (Main.mouseTextColor / 255f)).Hex3();
+            float alpha = Main.mouseTextColor / 255f;
+            string color1 = (new Color(128, 255, 128) * alpha).Hex3();
+            string color2 = (new Color(159, 159, 255) * alpha).Hex3();
+            string color3 = (new Color(255, 128, 128) * alpha).Hex3();
             tooltips.Add(new TooltipLine(mod, "Buffa", "Left Click to " + (Config.Instance.Scale == Config.ScaleModeBosses ? "[c/" + color1 + ":change range ]" : "[c/" + color1 + ":toggle on/off ]")));
             tooltips.Add(new TooltipLine(mod, "Buffb", "Right Click to " + (Config.Instance.Buff ? "[c/" + color2 + ":show current range ]" : "[c/" + color3 + ":turn off ]")));
 
@@ -67,9 +68,8 @@ namespace ItemMagnetPlus.Items
 
         public static Dust QuickDust(Vector2 pos, Color color)
         {
-            int type = 1;
-            type = ModContent.DustType<ColorableDustAlphaFade>();
-            Dust dust = Dust.NewDustDirect(pos, 4, 4, type, 0f, 0f, 120, color, 1f);
+            int type = ModContent.DustType<ColorableDustAlphaFade>();
+            Dust dust = Dust.NewDustDirect(pos, 4, 4, type, 0f, 0f, 100, color, 1f);
             dust.customData = new InAndOutData(reduceScale: false);
             dust.position = pos;
             dust.velocity = Vector2.Zero;
