@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using ItemMagnetPlus.Buffs;
+using ItemMagnetPlus.Dusts;
 
 namespace ItemMagnetPlus.Items
 {
@@ -67,7 +68,9 @@ namespace ItemMagnetPlus.Items
         public static Dust QuickDust(Vector2 pos, Color color)
         {
             int type = 1;
+            type = ModContent.DustType<ColorableDustAlphaFade>();
             Dust dust = Dust.NewDustDirect(pos, 4, 4, type, 0f, 0f, 120, color, 1f);
+            dust.customData = new InAndOutData(reduceScale: false);
             dust.position = pos;
             dust.velocity = Vector2.Zero;
             dust.fadeIn = 3f;
@@ -86,7 +89,7 @@ namespace ItemMagnetPlus.Items
             }
         }
 
-        private void DrawRectangle(Player player, int radius, Color color)
+        public static void DrawRectangle(Player player, int radius, Color color)
         {
             float fullhdradius = radius * 0.5625f;
 

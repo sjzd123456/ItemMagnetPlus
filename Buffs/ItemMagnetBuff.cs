@@ -15,12 +15,18 @@ namespace ItemMagnetPlus.Buffs
 
         public override void ModifyBuffTip(ref string tip, ref int rare)
         {
-            ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
+            Player player = Main.LocalPlayer;
+            ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();
             string add = "\nCurrent Range: " + mPlayer.magnetGrabRadius;
             mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
             add += "\nCurrent Velocity: " + mPlayer.magnetVelocity;
             add += "\nCurrent Acceleration: " + mPlayer.magnetAcceleration;
             tip += add;
+
+            if (Main.GameUpdateCount % 50 == 0)
+            {
+                ItemMagnet.DrawRectangle(player, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
+            }
         }
 
         public override void Update(Player player, ref int buffIndex)
