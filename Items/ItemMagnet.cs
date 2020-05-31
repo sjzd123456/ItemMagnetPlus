@@ -140,7 +140,7 @@ namespace ItemMagnetPlus.Items
 
                     if (mPlayer.magnetActive == 0)
                     {
-                        mPlayer.ActivateMagnet(player);
+                        mPlayer.ActivateMagnet();
 
                         Main.PlaySound(SoundID.MaxMana, player.Center, 1);
                         mPlayer.magnetActive = 1;

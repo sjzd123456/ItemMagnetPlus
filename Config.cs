@@ -87,6 +87,11 @@ namespace ItemMagnetPlus
         [DefaultValue(false)]
         public bool Held;
 
+        [Label("Activate on enter")]
+        [Tooltip("Toggle if magnet should be automatically activated when entering the world")]
+        [DefaultValue(true)]
+        public bool OnEnter;
+
         //-------------
         [Header("Magnet Behavior (Only works ingame)")]
 

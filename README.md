@@ -57,6 +57,8 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.0.2: Added "Activate on enter" config that allows a magnet in your inventory to automatically activate itself when entering a world
+
  v1.0.1.3: tml 0.11.7 update. Cleaner range indicator, now also shows when mouseovering the buff icon
 
  v1.0.1.2: tml 0.11.6 update. Fixed unintended config saving in multiplayer, fixed preset filter being inverted

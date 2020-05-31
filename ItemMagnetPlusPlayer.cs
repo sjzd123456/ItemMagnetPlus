@@ -114,7 +114,7 @@ namespace ItemMagnetPlus
             }
         }
 
-        public void ActivateMagnet(Player player)
+        public void ActivateMagnet()
         {
             if (!Config.Instance.Buff)
             {
@@ -161,7 +161,7 @@ namespace ItemMagnetPlus
             if (hadMagnetActive)
             {
                 hadMagnetActive = false;
-                ActivateMagnet(player);
+                ActivateMagnet();
             }
         }
 
@@ -280,8 +280,33 @@ namespace ItemMagnetPlus
             }
         }
 
+        private bool entered = false;
+
+        private bool activated = false;
+
+        private void DoEnter()
+        {
+            if (!entered)
+            {
+                entered = true;
+            }
+            else
+            {
+                if (!activated)
+                {
+                    activated = true;
+                    if (Config.Instance.OnEnter && player.HasItem(ModContent.ItemType<ItemMagnet>()))
+                    {
+                        ActivateMagnet();
+                    }
+                }
+            }
+        }
+
         public override void PreUpdate()
         {
+            DoEnter();
+
             //doing this only client side causes a small "lag" when the item first gets dragged toward the player
             currentlyActive = Config.Instance.Buff ? player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) : magnetActive == 1;
             bool whileHeld = Config.Instance.Held ? player.HeldItem.type == ModContent.ItemType<ItemMagnet>() : true;
@@ -295,7 +320,7 @@ namespace ItemMagnetPlus
 
                 int grabbedItems = 0;
 
-                for (int j = 0; j < 400; j++)
+                for (int j = 0; j < Main.maxItems; j++)
                 {
                     Item item = Main.item[j];
                     if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, player) && ItemLoader.CanPickup(item, player) /*&& Main.player[item.owner].ItemSpace(item)*/)
