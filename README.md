@@ -48,6 +48,7 @@ Ends with: (killing Moonlord)
 ### About the config:
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
 * Held decides if the magnet works only when held
+* "Activate on enter" decides if magnet should be automatically activated when entering the world
 * Filter function: Presets (hearts, mana stars, coins, pickup effects), blacklist/whitelist
 * Magnet stats are limited to sensible values (Range only goes up to about three screens in any direction)
 * If you increase Vel or Acc too much from those recommended above, items might get "stuck" on you until you deactivate it again
@@ -57,7 +58,7 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
- v1.0.2: Added "Activate on enter" config that allows a magnet in your inventory to automatically activate itself when entering a world
+ v1.0.2: Added "Activate on enter" setting that allows a magnet in your inventory to automatically activate itself when entering a world
 
  v1.0.1.3: tml 0.11.7 update. Cleaner range indicator, now also shows when mouseovering the buff icon
 
