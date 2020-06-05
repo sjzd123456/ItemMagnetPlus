@@ -58,6 +58,8 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.0.2.1: Fixed the "coin" dust not disappearing properly when grabbing coins
+
  v1.0.2: Added "Activate on enter" setting that allows a magnet in your inventory to automatically activate itself when entering a world
 
  v1.0.1.3: tml 0.11.7 update. Cleaner range indicator, now also shows when mouseovering the buff icon

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ItemMagnetPlus.Buffs;
 using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
@@ -318,12 +319,16 @@ namespace ItemMagnetPlus
                 int grabRadius = magnetGrabRadius * 16; //16 == to world coordinates
                 int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
 
+                Rectangle grabRect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
+
                 int grabbedItems = 0;
+
+                bool grabbingAtleastOneCoin = false;
 
                 for (int j = 0; j < Main.maxItems; j++)
                 {
                     Item item = Main.item[j];
-                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, player) && ItemLoader.CanPickup(item, player) /*&& Main.player[item.owner].ItemSpace(item)*/)
+                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, player) && ItemLoader.CanPickup(item, player) /*&& player.ItemSpace(item)*/)
                     {
                         bool canGrabNetMode = true;
                         //All: item.ownIgnore == -1 && item.keepTime == 0
@@ -333,14 +338,19 @@ namespace ItemMagnetPlus
                             if (item.instanced) canGrabNetMode &= item.owner == player.whoAmI;
                         }
 
-                        Rectangle rect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
-                        if (canGrabNetMode && rect.Intersects(item.getRect()))
+                        if (canGrabNetMode && grabRect.Intersects(item.getRect()))
                         {
                             if (ConfigWrapper.CanBePulled(item, player))
                             {
                                 grabbedItems++;
                                 //so it can go through walls
                                 item.beingGrabbed = true;
+
+                                if (Config.Instance.Coins && Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
+                                {
+                                    grabbingAtleastOneCoin = true;
+                                }
+
                                 //velocity, higher = more speed
                                 float velo = magnetVelocity; //16 ideal
 
@@ -376,13 +386,17 @@ namespace ItemMagnetPlus
 
                 //remove dust from grabbed coins while magnet is enabled
                 //credit to hamstar (Uncluttered Projectiles)
-                if (Main.myPlayer == player.whoAmI && !Config.Instance.Coins)
+                if (Main.netMode != NetmodeID.Server && grabbingAtleastOneCoin)
                 {
                     Dust dust;
                     for (int i = 0; i < Main.maxDustToDraw; i++)
                     {
                         dust = Main.dust[i];
                         if (dust == null || !dust.active) continue;
+
+                        //since items can't be referenced by index, just check if atleast one coin is being grapped, and then also check if the dust associated with it
+                        //is within bounds of the magnet range
+                        if (!grabRect.Contains(new Rectangle((int)dust.position.X, (int)dust.position.Y, 1, 1))) continue;
 
                         //item type 71 to 74: 
                         //int type = 244 + item.type - 71;

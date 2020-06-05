@@ -349,6 +349,8 @@ namespace ItemMagnetPlus
         public static bool CanBePulled(Item item, Player player)
         {
             bool can = !CheckIfItemIsInPresetBlacklist(item, player);
+            if (!can) return false;
+
             ItemDefinition itemDef = new ItemDefinition(item.type);
             if (Instance.ListMode == Config.BlacklistName)
             {
