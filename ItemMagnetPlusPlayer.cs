@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using ItemMagnetPlus.Buffs;
 using ItemMagnetPlus.Items;
@@ -61,9 +61,9 @@ namespace ItemMagnetPlus
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                ModPacket packet = mod.GetPacket();
+                ModPacket packet = Mod.GetPacket();
                 packet.Write((byte)IMPMessageType.SendClientChanges);
-                packet.Write((byte)player.whoAmI);
+                packet.Write((byte)Player.whoAmI);
                 packet.Write((int)magnetGrabRadius);
                 BitsByte variousBooleans = new BitsByte();
                 variousBooleans[0] = currentlyActive;
@@ -77,7 +77,7 @@ namespace ItemMagnetPlus
             if (Main.netMode == NetmodeID.Server)
             {
                 //server sends its config to player
-                ModPacket packet = mod.GetPacket();
+                ModPacket packet = Mod.GetPacket();
                 packet.Write((byte)IMPMessageType.SyncPlayer);
                 //packet.Write((byte)player.whoAmI);
                 //in addition to sending the server config, send all info about the players
@@ -88,7 +88,7 @@ namespace ItemMagnetPlus
                 byte arrayLength = 0;
                 for (int i = 0; i < 255; i++)
                 {
-                    if (Main.player[i].active && i != player.whoAmI)
+                    if (Main.player[i].active && i != Player.whoAmI)
                     {
                         indexes[arrayLength] = (byte)i;
                         ranges[arrayLength] = magnetGrabRadius;
@@ -123,7 +123,7 @@ namespace ItemMagnetPlus
             }
             else
             {
-                player.AddBuff(ModContent.BuffType<ItemMagnetBuff>(), 60);
+                Player.AddBuff(ModContent.BuffType<ItemMagnetBuff>(), 60);
             }
         }
 
@@ -147,7 +147,7 @@ namespace ItemMagnetPlus
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) || magnetActive != 0)
+            if (Player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) || magnetActive != 0)
             {
                 hadMagnetActive = true;
             }
@@ -296,7 +296,7 @@ namespace ItemMagnetPlus
                 if (!activated)
                 {
                     activated = true;
-                    if (Config.Instance.OnEnter && player.HasItem(ModContent.ItemType<ItemMagnet>()))
+                    if (Config.Instance.OnEnter && Player.HasItem(ModContent.ItemType<ItemMagnet>()))
                     {
                         ActivateMagnet();
                     }
@@ -309,17 +309,17 @@ namespace ItemMagnetPlus
             DoEnter();
 
             //doing this only client side causes a small "lag" when the item first gets dragged toward the player
-            currentlyActive = Config.Instance.Buff ? player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) : magnetActive == 1;
-            bool whileHeld = Config.Instance.Held ? player.HeldItem.type == ModContent.ItemType<ItemMagnet>() : true;
+            currentlyActive = Config.Instance.Buff ? Player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) : magnetActive == 1;
+            bool whileHeld = Config.Instance.Held ? Player.HeldItem.type == ModContent.ItemType<ItemMagnet>() : true;
 
-            if (currentlyActive && !player.dead && whileHeld)
+            if (currentlyActive && !Player.dead && whileHeld)
             {
                 UpdateMagnetValues(magnetGrabRadius);
 
                 int grabRadius = magnetGrabRadius * 16; //16 == to world coordinates
                 int fullhdgrabRadius = (int)(grabRadius * 0.5625f);
 
-                Rectangle grabRect = new Rectangle((int)player.position.X - grabRadius, (int)player.position.Y - fullhdgrabRadius, player.width + grabRadius * 2, player.height + fullhdgrabRadius * 2);
+                Rectangle grabRect = new Rectangle((int)Player.position.X - grabRadius, (int)Player.position.Y - fullhdgrabRadius, Player.width + grabRadius * 2, Player.height + fullhdgrabRadius * 2);
 
                 int grabbedItems = 0;
 
@@ -328,19 +328,19 @@ namespace ItemMagnetPlus
                 for (int j = 0; j < Main.maxItems; j++)
                 {
                     Item item = Main.item[j];
-                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, player) && ItemLoader.CanPickup(item, player) /*&& player.ItemSpace(item)*/)
+                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, Player) && ItemLoader.CanPickup(item, Player) /*&& player.ItemSpace(item)*/)
                     {
                         bool canGrabNetMode = true;
                         //All: item.ownIgnore == -1 && item.keepTime == 0
                         //Client: (above) && item.owner != 255 
                         if (Main.netMode != NetmodeID.SinglePlayer)
                         {
-                            if (item.instanced) canGrabNetMode &= item.owner == player.whoAmI;
+                            if (item.instanced) canGrabNetMode &= item.playerIndexTheItemIsReservedFor == Player.whoAmI;
                         }
 
                         if (canGrabNetMode && grabRect.Intersects(item.getRect()))
                         {
-                            if (ConfigWrapper.CanBePulled(item, player))
+                            if (ConfigWrapper.CanBePulled(item, Player))
                             {
                                 grabbedItems++;
                                 //so it can go through walls
@@ -354,7 +354,7 @@ namespace ItemMagnetPlus
                                 //velocity, higher = more speed
                                 float velo = magnetVelocity; //16 ideal
 
-                                Vector2 distance = player.Center - item.Center;
+                                Vector2 distance = Player.Center - item.Center;
                                 Vector2 normalizedDistance = distance;
 
                                 //adjustment term, increases velocity the closer to the player it is (0..2)
@@ -370,7 +370,7 @@ namespace ItemMagnetPlus
 
                                 if (Main.netMode != NetmodeID.Server)
                                 {
-                                    float dustChance = distance.Length() < player.height ? 0.7f / (player.height - distance.Length()) : 0.7f;
+                                    float dustChance = distance.Length() < Player.height ? 0.7f / (Player.height - distance.Length()) : 0.7f;
                                     dustChance *= (11f - grabbedItems) / 10f;
                                     if (Main.rand.NextFloat() < dustChance - 0.02f)
                                     {

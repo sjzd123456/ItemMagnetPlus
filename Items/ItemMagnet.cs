@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using ItemMagnetPlus.Buffs;
 using ItemMagnetPlus.Dusts;
+using Terraria.Audio;
 
 namespace ItemMagnetPlus.Items
 {
@@ -17,13 +18,13 @@ namespace ItemMagnetPlus.Items
 
         public override void SetDefaults()
         {
-            item.width = 28;
-            item.height = 32;
-            item.value = Item.sellPrice(silver: 36);
-            item.rare = ItemRarityID.Green;
-            item.useAnimation = 10;
-            item.useTime = 10;
-            item.useStyle = ItemUseStyleID.HoldingUp;
+            Item.width = 28;
+            Item.height = 32;
+            Item.value = Item.sellPrice(silver: 36);
+            Item.rare = ItemRarityID.Green;
+            Item.useAnimation = 10;
+            Item.useTime = 10;
+            Item.useStyle = ItemUseStyleID.HoldUp;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -34,19 +35,19 @@ namespace ItemMagnetPlus.Items
             string color1 = (new Color(128, 255, 128) * alpha).Hex3();
             string color2 = (new Color(159, 159, 255) * alpha).Hex3();
             string color3 = (new Color(255, 128, 128) * alpha).Hex3();
-            tooltips.Add(new TooltipLine(mod, "Buffa", "Left Click to " + (Config.Instance.Scale == Config.ScaleModeBosses ? "[c/" + color1 + ":change range ]" : "[c/" + color1 + ":toggle on/off ]")));
-            tooltips.Add(new TooltipLine(mod, "Buffb", "Right Click to " + (Config.Instance.Buff ? "[c/" + color2 + ":show current range ]" : "[c/" + color3 + ":turn off ]")));
+            tooltips.Add(new TooltipLine(Mod, "Buffa", "Left Click to " + (Config.Instance.Scale == Config.ScaleModeBosses ? "[c/" + color1 + ":change range ]" : "[c/" + color1 + ":toggle on/off ]")));
+            tooltips.Add(new TooltipLine(Mod, "Buffb", "Right Click to " + (Config.Instance.Buff ? "[c/" + color2 + ":show current range ]" : "[c/" + color3 + ":turn off ]")));
 
-            if (Main.LocalPlayer.HasBuff(mod.BuffType("ItemMagnetBuff")) || mPlayer.magnetActive == 1)
+            if (Main.LocalPlayer.HasBuff(Mod.Find<ModBuff>("ItemMagnetBuff").Type) || mPlayer.magnetActive == 1)
             {
                 mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
-                tooltips.Add(new TooltipLine(mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
-                tooltips.Add(new TooltipLine(mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
-                tooltips.Add(new TooltipLine(mod, "Acceleration", "Current Acceleration: " + mPlayer.magnetAcceleration));
+                tooltips.Add(new TooltipLine(Mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
+                tooltips.Add(new TooltipLine(Mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
+                tooltips.Add(new TooltipLine(Mod, "Acceleration", "Current Acceleration: " + mPlayer.magnetAcceleration));
             }
-            else if (Main.LocalPlayer.HasItem(item.type))
+            else if (Main.LocalPlayer.HasItem(Item.type))
             {
-                tooltips.Add(new TooltipLine(mod, "Range", "Magnet is off"));
+                tooltips.Add(new TooltipLine(Mod, "Range", "Magnet is off"));
             }
             // If player has buff, then he automatically also has the item
             // If player doesn't have the buff, he can still have the item, just not activated
@@ -54,11 +55,7 @@ namespace ItemMagnetPlus.Items
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddRecipeGroup("IronBar", 12);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe(1).AddRecipeGroup("IronBar", 12).AddTile(TileID.Anvils).Register();
         }
 
         public override bool AltFunctionUse(Player player)
@@ -110,7 +107,7 @@ namespace ItemMagnetPlus.Items
             ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();
             mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
 
-            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
+            if (player.whoAmI == Main.myPlayer /*&& player.itemTime == 0*/)
             {
                 // Right click feature only shows the range
                 if (player.altFunctionUse == 2)
@@ -142,7 +139,7 @@ namespace ItemMagnetPlus.Items
                     {
                         mPlayer.ActivateMagnet();
 
-                        Main.PlaySound(SoundID.MaxMana, player.Center, 1);
+                        SoundEngine.PlaySound(SoundID.MaxMana, player.Center, 1);
                         mPlayer.magnetActive = 1;
                         mPlayer.UpdateMagnetValues(mPlayer.magnetMinGrabRadius);
                         radius = mPlayer.magnetGrabRadius;
@@ -168,7 +165,7 @@ namespace ItemMagnetPlus.Items
                         if (radius > mPlayer.magnetMaxGrabRadius)
                         {
                             CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet off");
-                            Main.PlaySound(SoundID.MaxMana, player.Center, 1);
+                            SoundEngine.PlaySound(SoundID.MaxMana, player.Center, 1);
                             mPlayer.DeactivateMagnet(player);
                             return true;
                         }

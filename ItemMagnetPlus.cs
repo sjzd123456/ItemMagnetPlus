@@ -21,7 +21,7 @@ namespace ItemMagnetPlus
 
         public override void PostSetupContent()
         {
-            JPANsLoaded = ModLoader.GetMod("JPANsBagsOfHoldingMod") != null;
+            JPANsLoaded = ModLoader.TryGetMod("JPANsBagsOfHoldingMod", out _);
         }
 
         public override void Unload()
