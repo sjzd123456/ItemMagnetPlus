@@ -97,6 +97,11 @@ namespace ItemMagnetPlus
         [DefaultValue(false)]
         public bool NeedsSpace;
 
+        [Label("Instant")]
+        [Tooltip("Toggle if items should teleport instead of home - This ignores any velocity/acceleration, but not range")]
+        [DefaultValue(false)]
+        public bool Instant;
+
         //-------------
         [Header("Magnet Behavior (Only works ingame)")]
 

@@ -351,6 +351,12 @@ namespace ItemMagnetPlus
                                     grabbingAtleastOneCoin = true;
                                 }
 
+                                if (Config.Instance.Instant)
+                                {
+                                    item.Center = player.Center;
+                                    continue;
+                                }
+
                                 //velocity, higher = more speed
                                 float velo = magnetVelocity; //16 ideal
 
