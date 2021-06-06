@@ -25,6 +25,7 @@ Item Magnet (and corresponding buff) that
 ### Multiplayer:
 * This mod is multiplayer compatible, the config is entirely server side, but the "Buff" is enabled
 * Items that are inbetween two players with magnets will "float"
+* If "Instant" is enabled and multiple players are in range of an item, it will always go to the same player (it is based on join order)
 * Due to the way the "grab delay" is only set in singleplayer, items dropped by the player will instantly latch onto the player, which is normal behavior
 * Items might not get sucked up and turn into a "ghost" with the Auto Trash Mod enabled
 * Lost items due to this bug won't be recovered
@@ -48,19 +49,22 @@ Ends with: (killing Moonlord)
 ### About the config:
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
 * Held decides if the magnet works only when held
-* "Activate on enter" decides if magnet should be automatically activated when entering the world
+* "Activate On Enter" decides if magnet should be automatically activated when entering the world
 * Filter function: Presets (hearts, mana stars, coins, pickup effects), blacklist/whitelist
 * Magnet stats are limited to sensible values (Range only goes up to about three screens in any direction)
 * If you increase Vel or Acc too much from those recommended above, items might get "stuck" on you until you deactivate it again
 * Beware of lag when increasing these values, especially range
 * If the difference between velocity and acceleration is too big, items will go in circles around you or get stuck until you deactivate it
+* "Instant" skips any velocity of acceleration checks and directly teleports the item to your location
 * After you change the values in the config, use the magnet again to take effect
 
 ### Changelog:
 
+ v1.0.3: Added "Needs Space" and "Instant" settings
+
  v1.0.2.1: Fixed the "coin" dust not disappearing properly when grabbing coins
 
- v1.0.2: Added "Activate on enter" setting that allows a magnet in your inventory to automatically activate itself when entering a world
+ v1.0.2: Added "Activate On Enter" setting that allows a magnet in your inventory to automatically activate itself when entering a world
 
  v1.0.1.3: tml 0.11.7 update. Cleaner range indicator, now also shows when mouseovering the buff icon
 
