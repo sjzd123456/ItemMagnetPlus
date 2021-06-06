@@ -328,7 +328,7 @@ namespace ItemMagnetPlus
                 for (int j = 0; j < Main.maxItems; j++)
                 {
                     Item item = Main.item[j];
-                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, player) && ItemLoader.CanPickup(item, player) /*&& player.ItemSpace(item)*/)
+                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, player) && ItemLoader.CanPickup(item, player) && (!Config.Instance.NeedsSpace || player.ItemSpace(item)))
                     {
                         bool canGrabNetMode = true;
                         //All: item.ownIgnore == -1 && item.keepTime == 0

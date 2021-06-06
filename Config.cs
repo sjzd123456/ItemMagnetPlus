@@ -87,10 +87,15 @@ namespace ItemMagnetPlus
         [DefaultValue(false)]
         public bool Held;
 
-        [Label("Activate on enter")]
+        [Label("Activate On Enter")]
         [Tooltip("Toggle if magnet should be automatically activated when entering the world")]
         [DefaultValue(true)]
         public bool OnEnter;
+
+        [Label("Needs Space")]
+        [Tooltip("Toggle if magnet should only work when there is space in the inventory")]
+        [DefaultValue(false)]
+        public bool NeedsSpace;
 
         //-------------
         [Header("Magnet Behavior (Only works ingame)")]
