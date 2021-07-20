@@ -6,7 +6,7 @@ namespace ItemMagnetPlus.Buffs
 {
     public class ItemMagnetBuff : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Item Magnet");
             Description.SetDefault("A magnetic field surrounds you!");
