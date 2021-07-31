@@ -107,15 +107,15 @@ namespace ItemMagnetPlus.Items
             ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();
             mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
 
-            string s = $"{Main.time} {player.itemTime} {player.itemAnimation}";
-            if (Main.netMode == NetmodeID.Server)
-            {
-                System.Console.WriteLine(s);
-            }
-            else
-            {
-                Main.NewText(s);
-            }
+            //string s = $"{Main.time} {player.itemTime} {player.itemAnimation}";
+            //if (Main.netMode == NetmodeID.Server)
+            //{
+            //    System.Console.WriteLine(s);
+            //}
+            //else
+            //{
+            //    Main.NewText(s);
+            //}
 
             if (player.whoAmI == Main.myPlayer /*&& player.itemTime == 0*/)
             {

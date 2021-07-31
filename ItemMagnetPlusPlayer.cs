@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using ItemMagnetPlus.Buffs;
 using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
@@ -328,8 +327,18 @@ namespace ItemMagnetPlus
                 for (int j = 0; j < Main.maxItems; j++)
                 {
                     Item item = Main.item[j];
-                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, Player) && ItemLoader.CanPickup(item, Player) /*&& player.ItemSpace(item)*/)
+                    if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, Player) && ItemLoader.CanPickup(item, Player))
                     {
+                        if (Config.Instance.NeedsSpace)
+                        {
+                            Player.ItemSpaceStatus status = Player.ItemSpace(item);
+                            if (!Player.CanPullItem(item, status))
+                            {
+                                //Checks for encumbering stone
+                                continue;
+                            }
+                        }
+
                         bool canGrabNetMode = true;
                         //All: item.ownIgnore == -1 && item.keepTime == 0
                         //Client: (above) && item.owner != 255 
@@ -349,6 +358,12 @@ namespace ItemMagnetPlus
                                 if (Config.Instance.Coins && Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
                                 {
                                     grabbingAtleastOneCoin = true;
+                                }
+
+                                if (Config.Instance.Instant)
+                                {
+                                    item.Center = Player.Center;
+                                    continue;
                                 }
 
                                 //velocity, higher = more speed

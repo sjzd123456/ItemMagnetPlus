@@ -87,10 +87,20 @@ namespace ItemMagnetPlus
         [DefaultValue(false)]
         public bool Held;
 
-        [Label("Activate on enter")]
+        [Label("Activate On Enter")]
         [Tooltip("Toggle if magnet should be automatically activated when entering the world")]
         [DefaultValue(true)]
         public bool OnEnter;
+
+        [Label("Needs Space")]
+        [Tooltip("Toggle if magnet should only work when there is space in the inventory")]
+        [DefaultValue(false)]
+        public bool NeedsSpace;
+
+        [Label("Instant")]
+        [Tooltip("Toggle if items should teleport instead of home - This ignores any velocity/acceleration, but not range")]
+        [DefaultValue(false)]
+        public bool Instant;
 
         //-------------
         [Header("Magnet Behavior (Only works ingame)")]
@@ -325,6 +335,11 @@ namespace ItemMagnetPlus
 
         private static bool CheckIfItemIsInPresetBlacklist(Item item, Player player)
         {
+            //heart: 58, 184, 1734
+            //mana: 1735, 1867, 1868
+            //nebula: 3453, 3454, 3455
+            //IsAPickup = Factory.CreateBoolSet(58, 184, 1734, 1735, 1867, 1868, 3453, 3454, 3455);
+            //But we want custom filters:
             if (!Instance.Hearts && Array.BinarySearch(HeartTypes, item.type) > -1)
             {
                 return true;
