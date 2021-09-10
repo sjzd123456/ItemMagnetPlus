@@ -57,6 +57,7 @@ Ends with: (killing Moonlord)
 * After you change the values in the config, use the magnet again to take effect
 
 ### Changelog:
+ v1.0.3.2: Update item sprite, make config only editable by the host
 
  v1.1.0.1: port v1.0.3.1 from 1.3
 
