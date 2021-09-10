@@ -233,7 +233,7 @@ namespace ItemMagnetPlus
 
         private void DoEnter()
         {
-            if (Main.myPlayer != player.whoAmI)
+            if (Main.myPlayer != Player.whoAmI)
             {
                 //Only client executes this
                 return;

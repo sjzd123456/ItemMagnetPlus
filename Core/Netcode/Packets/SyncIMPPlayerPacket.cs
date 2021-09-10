@@ -11,7 +11,7 @@ namespace ItemMagnetPlus.Core.Netcode.Packets
 
 		public SyncIMPPlayerPacket() { }
 
-		public SyncIMPPlayerPacket(ItemMagnetPlusPlayer mPlayer) : base(mPlayer.player)
+		public SyncIMPPlayerPacket(ItemMagnetPlusPlayer mPlayer) : base(mPlayer.Player)
 		{
 			magnetGrabRadius = mPlayer.magnetGrabRadius;
 			currentlyActive = mPlayer.currentlyActive;

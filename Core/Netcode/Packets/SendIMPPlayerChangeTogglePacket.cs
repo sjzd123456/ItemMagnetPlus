@@ -10,7 +10,7 @@ namespace ItemMagnetPlus.Core.Netcode.Packets
 
 		public SendIMPPlayerChangeTogglePacket() { }
 
-		public SendIMPPlayerChangeTogglePacket(ItemMagnetPlusPlayer mPlayer) : base(mPlayer.player)
+		public SendIMPPlayerChangeTogglePacket(ItemMagnetPlusPlayer mPlayer) : base(mPlayer.Player)
 		{
 			currentlyActive = mPlayer.currentlyActive;
 		}

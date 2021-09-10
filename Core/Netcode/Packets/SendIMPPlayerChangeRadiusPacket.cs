@@ -11,7 +11,7 @@ namespace ItemMagnetPlus.Core.Netcode.Packets
 
 		public SendIMPPlayerChangeRadiusPacket() { }
 
-		public SendIMPPlayerChangeRadiusPacket(ItemMagnetPlusPlayer mPlayer) : base(mPlayer.player)
+		public SendIMPPlayerChangeRadiusPacket(ItemMagnetPlusPlayer mPlayer) : base(mPlayer.Player)
 		{
 			magnetGrabRadius = mPlayer.magnetGrabRadius;
 		}
