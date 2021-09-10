@@ -60,6 +60,8 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.0.3.1: Update icon, fixed multiplayer desync on joining with players already present (If "Activate On Enter" is on)
+
  v1.0.3: Added "Needs Space" and "Instant" settings
 
  v1.0.2.1: Fixed the "coin" dust not disappearing properly when grabbing coins
