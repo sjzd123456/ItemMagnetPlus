@@ -181,11 +181,33 @@ namespace ItemMagnetPlus
                 return acceleration;
             }
         }
+        public static bool IsPlayerLocalServerOwner(int whoAmI)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                return Netplay.Connection.Socket.GetRemoteAddress().IsLocalHost();
+            }
+
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                RemoteClient client = Netplay.Clients[i];
+                if (client.State == 10 && i == whoAmI && client.Socket.GetRemoteAddress().IsLocalHost())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message)
         {
-            message = "Only the host of this world can change the config! Do so in singleplayer.";
-            return false;
+            if (Main.netMode == NetmodeID.SinglePlayer) return true;
+            else if (!IsPlayerLocalServerOwner(whoAmI))
+            {
+                message = "You are not the server owner so you can not change this config";
+                return false;
+            }
+            return base.AcceptClientChanges(pendingConfig, whoAmI, ref message);
         }
 
         [OnDeserialized]

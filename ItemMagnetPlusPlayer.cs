@@ -1,5 +1,6 @@
 using System;
 using ItemMagnetPlus.Buffs;
+using ItemMagnetPlus.Core.Netcode.Packets;
 using ItemMagnetPlus.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,12 +20,8 @@ namespace ItemMagnetPlus
         public string magnetScale = Config.ScaleModeBosses;
         public int magnetVelocity = Config.VelocityMin;
         public int magnetAcceleration = Config.AccelerationMin;
-        public int[] magnetBlacklist; //only populated when player joins the world, not changed during gameplay
         private bool hadMagnetActive = false;
         public bool currentlyActive = false;
-        //Debug variables
-        //public int counter = 30;
-        //public int clientcounter = 30;
 
         public override void ResetEffects()
         {
@@ -50,68 +47,20 @@ namespace ItemMagnetPlus
         public override void SendClientChanges(ModPlayer clientPlayer)
         {
             ItemMagnetPlusPlayer clone = clientPlayer as ItemMagnetPlusPlayer;
-            if (clone.magnetGrabRadius != magnetGrabRadius || clone.currentlyActive != currentlyActive)
+            if (clone.magnetGrabRadius != magnetGrabRadius)
             {
-                SendClientChangesPacket();
+                new SendIMPPlayerChangeRadiusPacket(this).Send();
             }
-        }
 
-        private void SendClientChangesPacket()
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
+            if (clone.currentlyActive != currentlyActive)
             {
-                ModPacket packet = Mod.GetPacket();
-                packet.Write((byte)IMPMessageType.SendClientChanges);
-                packet.Write((byte)Player.whoAmI);
-                packet.Write((int)magnetGrabRadius);
-                BitsByte variousBooleans = new BitsByte();
-                variousBooleans[0] = currentlyActive;
-                packet.Write((byte)variousBooleans);
-                packet.Send();
+                new SendIMPPlayerChangeTogglePacket(this).Send();
             }
         }
 
         public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
         {
-            if (Main.netMode == NetmodeID.Server)
-            {
-                //server sends its config to player
-                ModPacket packet = Mod.GetPacket();
-                packet.Write((byte)IMPMessageType.SyncPlayer);
-                //packet.Write((byte)player.whoAmI);
-                //in addition to sending the server config, send all info about the players
-
-                byte[] indexes = new byte[255];
-                int[] ranges = new int[255];
-                bool[] currentlyActives = new bool[255];
-                byte arrayLength = 0;
-                for (int i = 0; i < 255; i++)
-                {
-                    if (Main.player[i].active && i != Player.whoAmI)
-                    {
-                        indexes[arrayLength] = (byte)i;
-                        ranges[arrayLength] = magnetGrabRadius;
-                        currentlyActives[arrayLength++] = currentlyActive;
-                    }
-                }
-
-                packet.Write((byte)arrayLength);
-                if (arrayLength > 0)
-                {
-                    Array.Resize(ref indexes, arrayLength + 1);
-                    Array.Resize(ref ranges, arrayLength + 1);
-                    Array.Resize(ref currentlyActives, arrayLength + 1);
-
-                    for (int i = 0; i < arrayLength; i++)
-                    {
-                        packet.Write((byte)indexes[i]);
-                        packet.Write((int)ranges[i]);
-                        packet.Write((bool)currentlyActives[i]);
-                    }
-                }
-
-                packet.Send(toWho/*, fromWho*/);
-            }
+            new SyncIMPPlayerPacket(this).Send(toWho, fromWho);
         }
 
         public void ActivateMagnet()
@@ -132,15 +81,13 @@ namespace ItemMagnetPlus
             {
                 magnetActive = 0;
             }
+
+            //Clear buff either way
             player.ClearBuff(ModContent.BuffType<ItemMagnetBuff>());
         }
 
         public override void OnEnterWorld(Player player)
         {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                SendClientChangesPacket();
-            }
             DeactivateMagnet(player);
         }
 
@@ -286,6 +233,12 @@ namespace ItemMagnetPlus
 
         private void DoEnter()
         {
+            if (Main.myPlayer != player.whoAmI)
+            {
+                //Only client executes this
+                return;
+            }
+
             if (!entered)
             {
                 entered = true;
@@ -308,8 +261,9 @@ namespace ItemMagnetPlus
             DoEnter();
 
             //doing this only client side causes a small "lag" when the item first gets dragged toward the player
-            currentlyActive = Config.Instance.Buff ? Player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) : magnetActive == 1;
-            bool whileHeld = Config.Instance.Held ? Player.HeldItem.type == ModContent.ItemType<ItemMagnet>() : true;
+            Config cfg = Config.Instance;
+            currentlyActive = cfg.Buff ? Player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) : magnetActive == 1;
+            bool whileHeld = cfg.Held ? Player.HeldItem.type == ModContent.ItemType<ItemMagnet>() : true;
 
             if (currentlyActive && !Player.dead && whileHeld)
             {
@@ -355,12 +309,12 @@ namespace ItemMagnetPlus
                                 //so it can go through walls
                                 item.beingGrabbed = true;
 
-                                if (Config.Instance.Coins && Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
+                                if (cfg.Coins && Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
                                 {
                                     grabbingAtleastOneCoin = true;
                                 }
 
-                                if (Config.Instance.Instant)
+                                if (cfg.Instant)
                                 {
                                     item.Center = Player.Center;
                                     continue;
@@ -419,80 +373,7 @@ namespace ItemMagnetPlus
                         if (dust.type >= 244 && dust.type <= 247) Main.dust[i] = new Dust();
                     }
                 }
-
-                //if (Main.time % 90 == 0)
-                //{
-                //    if (Main.netMode == NetmodeID.Server)
-                //    {
-                //            //Console.WriteLine("im here " + Main.time);
-                //            //for (int i = 0; i < magnetBlacklist.Length; i++)
-                //            //{
-                //            //    Console.Write(magnetBlacklist[i] + ", ");
-                //            //}
-                //            //Console.WriteLine("test: " + magnetBlacklist.Length);
-                //            NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server: " + player.name + " currently trying to grab " + grabbedItems + " items"), new Color(255, 25, 25));
-                //    }
-
-                //    if (Main.netMode == NetmodeID.MultiplayerClient)
-                //    {
-                //            Main.NewText("client: " + player.name + " currently trying to grab " + grabbedItems + " items");
-                //    }
-                //}
             }
-
-            //if (Main.netMode == NetmodeID.Server)
-            //{
-            //    if (counter == 0)
-            //    {
-            //        //Console.WriteLine(" " + player.name + " active " + magnetActive);
-            //        //Console.WriteLine(" " + player.name + " grabradius " + magnetGrabRadius);
-            //        //(clientConf.Buff == 1)? player.HasBuff(mod.BuffType("ItemMagnetBuff")) : magnetActive == 1
-            //        //NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server " + player.whoAmI + " " + (clientConf.Buff == 1) + " " + player.HasBuff(mod.BuffType("ItemMagnetBuff")) + " " + (magnetActive == 1)), Color.Green);
-            //        //NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server: " + player.name + ", " + currentlyActive), new Color(255, 25, 25));
-            //        //NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("server: " + player.name + ", active: " + currentlyActive), new Color(255, 25, 25));
-
-            //        counter = 120;
-            //    }
-            //    counter--;
-            //}
-
-            //if (Main.netMode == NetmodeID.MultiplayerClient)
-            //{
-            //    if (clientcounter == 0)
-            //    {
-            //        for (int players = 0; players < Main.player.Length; players++)
-            //        {
-            //            if (Main.player[players].active)
-            //            {
-            //                if (Main.player[players].whoAmI == player.whoAmI)
-            //                {
-            //                    //Main.NewText("SELF: " + currentlyActive);
-            //                    //Main.NewText("active: " + currentlyActive + ", grabradius: " + magnetGrabRadius);
-            //                    if (clientConf.Filter == PENDING) Main.NewText("didn't recieve config from server");
-            //                }
-            //                //else
-            //                //{
-            //                //    Main.NewText("OTHE: " + Main.player[players].GetModPlayer<ItemMagnetPlusPlayer>().currentlyActive);
-            //                //    //Main.NewText(Main.player[players].GetModPlayer<ItemMagnetPlusPlayer>().clientConf);
-            //                //}
-            //            }
-            //        }
-
-            //        clientcounter = 120;
-            //    }
-            //    clientcounter--;
-            //}
-
-            //if (Main.netMode == NetmodeID.SinglePlayer)
-            //{
-            //    if (clientcounter == 0)
-            //    {
-            //        Main.NewText("active " + magnetActive + ", " + "grabradius " + magnetGrabRadius);
-            //        if (clientConf.Filter == PENDING) Main.NewText("didn't recieve config from server");
-            //        clientcounter = 120;
-            //    }
-            //    clientcounter--;
-            //}
         }
     }
 }
