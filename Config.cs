@@ -188,15 +188,7 @@ namespace ItemMagnetPlus
                 return Netplay.Connection.Socket.GetRemoteAddress().IsLocalHost();
             }
 
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                RemoteClient client = Netplay.Clients[i];
-                if (client.State == 10 && i == whoAmI && client.Socket.GetRemoteAddress().IsLocalHost())
-                {
-                    return true;
-                }
-            }
-            return false;
+            return NetMessage.DoesPlayerSlotCountAsAHost(whoAmI);
         }
 
         public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message)
