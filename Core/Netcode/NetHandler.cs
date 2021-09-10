@@ -72,14 +72,14 @@ namespace ItemMagnetPlus.Core.Netcode
 
 				MPPacket packet = Packets[ID];
 
-				if (Main.netMode == NetmodeID.Server)
-                {
-					Console.WriteLine("recv " + packet.GetType().Name);
-                }
-                else
-				{
-					Main.NewText("recv " + packet.GetType().Name);
-				}
+				//if (Main.netMode == NetmodeID.Server)
+				//{
+				//	Console.WriteLine("recv " + packet.GetType().Name);
+				//}
+				//else
+				//{
+				//	Main.NewText("recv " + packet.GetType().Name);
+				//}
 				packet.Receive(reader, sender);
 			}
 			catch (Exception e)
@@ -102,14 +102,14 @@ namespace ItemMagnetPlus.Core.Netcode
 				return;
 			}
 
-			if (Main.netMode == NetmodeID.Server)
-			{
-				Console.WriteLine("send " + packet.GetType().Name);
-			}
-			else
-			{
-				Main.NewText("send " + packet.GetType().Name);
-			}
+			//if (Main.netMode == NetmodeID.Server)
+			//{
+			//	Console.WriteLine("send " + packet.GetType().Name);
+			//}
+			//else
+			//{
+			//	Main.NewText("send " + packet.GetType().Name);
+			//}
 
 			Type type = packet.GetType(); //not typeof(T) as the shortcut exists in the MPPacket class and that doesn't exist anywhere
 			ModPacket modPacket = Mod.GetPacket();
