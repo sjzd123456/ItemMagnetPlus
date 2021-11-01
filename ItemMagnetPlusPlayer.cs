@@ -314,6 +314,8 @@ namespace ItemMagnetPlus
                                     grabbingAtleastOneCoin = true;
                                 }
 
+                                MergeNearbyItems(item, j);
+
                                 if (cfg.Instant)
                                 {
                                     item.Center = Player.Center;
@@ -327,9 +329,13 @@ namespace ItemMagnetPlus
                                 Vector2 normalizedDistance = distance;
 
                                 //adjustment term, increases velocity the closer to the player it is (0..2)
-                                velo += 2 * (1 - (normalizedDistance.Length() / grabRadius));
+                                float length = distance.Length();
+                                velo += 2 * (1 - length / grabRadius);
 
-                                normalizedDistance.Normalize();
+                                if (length > 0)
+                                {
+                                    normalizedDistance /= length;
+                                }
                                 normalizedDistance *= velo;
 
                                 //acceleration, higher = more acceleration
@@ -339,7 +345,7 @@ namespace ItemMagnetPlus
 
                                 if (Main.netMode != NetmodeID.Server)
                                 {
-                                    float dustChance = distance.Length() < Player.height ? 0.7f / (Player.height - distance.Length()) : 0.7f;
+                                    float dustChance = length < Player.height ? 0.7f / (Player.height - length) : 0.7f;
                                     dustChance *= (11f - grabbedItems) / 10f;
                                     if (Main.rand.NextFloat() < dustChance - 0.02f)
                                     {
@@ -371,6 +377,64 @@ namespace ItemMagnetPlus
                         //int type = 244 + item.type - 71;
                         //-> 244 to 247
                         if (dust.type >= 244 && dust.type <= 247) Main.dust[i] = new Dust();
+                    }
+                }
+            }
+        }
+
+        private void MergeNearbyItems(Item item, int itemWhoAmI)
+        {
+            //Copied from the CombineWithNearbyItems. Edited to NOT merge if outside of Player.defaultItemGrabRange range from the player
+            bool canMerge = true;
+            int type = item.type;
+            if (Array.BinarySearch(ConfigWrapper.CoinTypes, type) > -1)
+            {
+                canMerge = false;
+            }
+
+            if (ItemID.Sets.NebulaPickup[type])
+            {
+                canMerge = false;
+            }
+
+            if (!canMerge)
+            {
+                return;
+            }
+
+            if (item.playerIndexTheItemIsReservedFor == Main.myPlayer && item.CanCombineStackInWorld() && item.stack < item.maxStack)
+            {
+                if (Player.DistanceSQ(item.Center) > Player.defaultItemGrabRange * Player.defaultItemGrabRange)
+                {
+                    return;
+                }
+
+                for (int j = itemWhoAmI + 1; j < Main.maxItems; j++)
+                {
+                    Item otherItem = Main.item[j];
+                    if (otherItem.active && otherItem.type == type && otherItem.stack > 0 && otherItem.playerIndexTheItemIsReservedFor == item.playerIndexTheItemIsReservedFor && ItemLoader.CanStackInWorld(item, otherItem) && Math.Abs(item.Center.X - otherItem.Center.X) + Math.Abs(item.Center.Y - otherItem.Center.Y) < 30f)
+                    {
+                        item.position = (item.position + otherItem.position) / 2f;
+                        item.velocity = (item.velocity + otherItem.velocity) / 2f;
+                        int otherStack = otherItem.stack;
+                        if (otherStack > item.maxStack - item.stack)
+                        {
+                            otherStack = item.maxStack - item.stack;
+                        }
+
+                        otherItem.stack -= otherStack;
+                        item.stack += otherStack;
+                        if (otherItem.stack <= 0)
+                        {
+                            otherItem.SetDefaults();
+                            otherItem.active = false;
+                        }
+
+                        if (Main.netMode != NetmodeID.SinglePlayer && item.playerIndexTheItemIsReservedFor == Main.myPlayer)
+                        {
+                            NetMessage.SendData(MessageID.SyncItem, number: itemWhoAmI);
+                            NetMessage.SendData(MessageID.SyncItem, number: j);
+                        }
                     }
                 }
             }
