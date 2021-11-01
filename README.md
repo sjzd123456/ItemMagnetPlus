@@ -57,11 +57,14 @@ Ends with: (killing Moonlord)
 * After you change the values in the config, use the magnet again to take effect
 
 ### Changelog:
- v1.0.3.2: Update item sprite, make config only editable by the host
 
- v1.1.0.1: port v1.0.3.1 from 1.3
+ v1.1.0.1/2/3: port v1.0.3.1/2/3 from 1.3
 
  v1.1: tml 1.4 update
+
+ v1.0.3.3: Reduce lag with full inventory
+
+ v1.0.3.2: Update item sprite, make config only editable by the host
 
  v1.0.3.1: Update icon, fixed multiplayer desync on joining with players already present (If "Activate On Enter" is on)
 
