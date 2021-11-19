@@ -58,6 +58,8 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.1.0.4: Update to changes in tml.
+
  v1.1.0.1/2/3: port v1.0.3.1/2/3 from 1.3
 
  v1.1: tml 1.4 update
