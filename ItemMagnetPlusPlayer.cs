@@ -145,12 +145,17 @@ namespace ItemMagnetPlus
             }
             if (NPC.downedQueenBee)
             {
-                magnetVelocity += 4;
-                magnetAcceleration += 10;
+                magnetVelocity += 2;
+                magnetAcceleration += 4;
             }
             if (NPC.downedBoss3) //Skeletron
             {
                 magnetMaxGrabRadius += 5;
+            }
+            if (NPC.downedDeerclops)
+            {
+                magnetVelocity += 2;
+                magnetAcceleration += 4;
             }
             if (Main.hardMode) //Wall of flesh
             {
@@ -159,7 +164,12 @@ namespace ItemMagnetPlus
                 //Ideal at
                 //magnetMaxGrabRadius = 30; //quarter screen
                 //magnetVelocity = 16;
-                //magnetAcceleration = 20;
+                //magnetAcceleration = 18;
+            }
+            if (NPC.downedQueenSlime)
+            {
+                magnetVelocity += 2;
+                magnetAcceleration += 2;
             }
             if (NPC.downedMechBoss1) //Destroyer
             {
@@ -176,19 +186,23 @@ namespace ItemMagnetPlus
             if (NPC.downedPlantBoss)
             {
                 magnetMaxGrabRadius += 10;
-                magnetVelocity += 4;
+                magnetVelocity += 2;
                 magnetAcceleration += 2;
             }
             if (NPC.downedGolemBoss)
             {
                 magnetMaxGrabRadius += 10;
                 magnetVelocity += 4;
+            }
+            if (NPC.downedEmpressOfLight)
+            {
+                magnetVelocity += 2;
                 magnetAcceleration += 2;
             }
             if (NPC.downedFishron)
             {
                 magnetMaxGrabRadius += 10;
-                magnetVelocity += 4;
+                magnetVelocity += 2;
                 magnetAcceleration += 2;
             }
             if (NPC.downedAncientCultist)
