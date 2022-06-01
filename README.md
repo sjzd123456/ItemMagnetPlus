@@ -58,6 +58,8 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.1.0.8: Fixed bugs due to tml updates
+
  v1.1.0.7: Test workshop tags
 
  v1.1.0.6: Update boss progression for 1.4 bosses

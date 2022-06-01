@@ -149,7 +149,7 @@ namespace ItemMagnetPlus.Items
                     {
                         mPlayer.ActivateMagnet();
 
-                        SoundEngine.PlaySound(SoundID.MaxMana, player.Center, 1);
+                        SoundEngine.PlaySound(SoundID.MaxMana, player.Center);
                         mPlayer.magnetActive = 1;
                         mPlayer.UpdateMagnetValues(mPlayer.magnetMinGrabRadius);
                         radius = mPlayer.magnetGrabRadius;
@@ -175,7 +175,7 @@ namespace ItemMagnetPlus.Items
                         if (radius > mPlayer.magnetMaxGrabRadius)
                         {
                             CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet off");
-                            SoundEngine.PlaySound(SoundID.MaxMana, player.Center, 1);
+                            SoundEngine.PlaySound(SoundID.MaxMana, player.Center);
                             mPlayer.DeactivateMagnet(player);
                             return true;
                         }
