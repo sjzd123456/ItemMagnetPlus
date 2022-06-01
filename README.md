@@ -58,6 +58,8 @@ Ends with: (killing Moonlord)
 
 ### Changelog:
 
+ v1.1.0.9: Fixed bugs due to tml updates
+
  v1.1.0.8: Fixed bugs due to tml updates
 
  v1.1.0.7: Test workshop tags
