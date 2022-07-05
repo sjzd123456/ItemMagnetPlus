@@ -19,13 +19,13 @@ namespace ItemMagnetPlus.Core.Netcode.Packets
 
 		protected override void PostSend(BinaryWriter writer, Player player)
 		{
-			writer.WriteVarInt(magnetGrabRadius);
+			writer.Write7BitEncodedInt(magnetGrabRadius);
 			writer.Write(currentlyActive);
 		}
 
 		protected override void PostReceive(BinaryReader reader, int sender, Player player)
 		{
-			int magnetGrabRadius = reader.ReadVarInt();
+			int magnetGrabRadius = reader.Read7BitEncodedInt();
 			bool currentlyActive = reader.ReadBoolean();
 
 			ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();

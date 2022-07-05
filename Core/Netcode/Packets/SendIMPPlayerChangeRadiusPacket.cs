@@ -18,12 +18,12 @@ namespace ItemMagnetPlus.Core.Netcode.Packets
 
 		protected override void PostSend(BinaryWriter writer, Player player)
 		{
-			writer.WriteVarInt(magnetGrabRadius);
+			writer.Write7BitEncodedInt(magnetGrabRadius);
 		}
 
 		protected override void PostReceive(BinaryReader reader, int sender, Player player)
 		{
-			int magnetGrabRadius = reader.ReadVarInt();
+			int magnetGrabRadius = reader.Read7BitEncodedInt();
 
 			ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();
 
