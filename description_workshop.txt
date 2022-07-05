@@ -1,0 +1,50 @@
+[b]ItemMagnetPlus[/b] adds a single item called "Item Magnet" that does the obvious thing: Sucking in items around you so you don't have to run around and collect them yourself.
+
+[b]Adds:[/b]
+Item Magnet (and corresponding buff) that
+* can be crafted with simple materials (Iron/Lead)
+* works while in your inventory
+* can be toggled on and off
+* has adjustable range and item succ speed
+* has increased stats after killing bosses
+* customizable via config ingame to fit your playstyle
+
+[b]How to use:[/b]
+* Left click cycles through its ranges
+* Right click shows current range (you can always check the stats on the buff tooltip)
+* This right click functionality changes to "turn off" when "Buff" in the config is false
+* Killing bosses improves its stats
+* If you want it to either be on or off, change "Scale" in the config to anything but "Increase With Bosses"
+
+[b]Multiplayer:[/b]
+* This mod is multiplayer compatible, the config is entirely server side, but the buff flag is forced to 1
+* Items that are inbetween two players with magnets will "float"
+* If "Instant" is enabled and multiple players are in range of an item, it will always go to the same player (it is based on join order)
+* Due to the way the "grab delay" is only set in singleplayer, items dropped by the player will instantly latch onto the player, which is normal behavior
+* Items might not get sucked up and turn into a "ghost" with the Auto Trash Mod enabled
+* Lost items due to this bug won't be recovered
+* Report any bugs in the forum thread (please)
+
+[b]Progression: (default config)[/b]
+ Starts with:
+ Range = 10 (blocks in each direction)
+ Velocity = 8
+ Acceleration = 8
+
+ Ends with: (killing Moonlord)
+ Range = 120 (one and a half screens)
+ Velocity = 32
+ Acceleration = 32
+
+[hr][/hr] 
+[b]About the config:[/b]
+* Buff decides if it gives you a corresponding buff icon to show the status of the magnet
+* Held decides if the magnet works only when held
+* "Activate On Enter" decides if magnet should be automatically activated when entering the world
+* Filter function: Presets (hearts, mana stars, coins, pickup effects), blacklist/whitelist
+* Magnet stats are limited to sensible values (Range only goes up to about three screens in any direction)
+* If you increase velocity or acceleration too much from those recommended above, items might get "stuck" on you until you deactivate it again
+* Beware of lag when increasing these values, especially range
+* If the difference between velocity and acceleration is too big, items will go in circles around you or get stuck until you deactivate it
+* "Instant" skips any velocity or acceleration checks and directly teleports the item to your location
+* After you change the values in the config, use the magnet again to take effect
