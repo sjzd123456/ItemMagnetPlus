@@ -24,6 +24,7 @@ namespace ItemMagnetPlus
         public const int AccelerationMin = 1;
         public const int AccelerationMax = 40;
 
+        //TODO localize eventually
         public const string BlacklistName = "Blacklist";
         public const string WhitelistName = "Whitelist";
 
@@ -32,43 +33,29 @@ namespace ItemMagnetPlus
         public const string ScaleModeOnlyConfig = "Custom + Max Range";
 
         //-------------
-        [Header("Preset Item Blacklist")]
+        [Header("PresetItemBlacklist")]
 
-        [Label("[i:58] Hearts")]
-        [Tooltip("Toggle if hearts should be picked up by the magnet")]
         [DefaultValue(false)]
         public bool Hearts;
 
-        [Label("[i:184] Mana Stars")]
-        [Tooltip("Toggle if mana stars should be picked up by the magnet")]
         [DefaultValue(false)]
         public bool ManaStars;
 
-        [Label("[i:73] Coins")]
-        [Tooltip("Toggle if coins should be picked up by the magnet")]
         [DefaultValue(true)]
         public bool Coins;
 
-        [Label("[i:3457] Pickup Effect Items")]
-        [Tooltip("Toggle if items like nebula armor boosters or modded items like the music notes from Thorium should be picked up by the magnet")]
         [DefaultValue(false)]
         public bool PickupEffect;
 
         //-------------
-        [Header("Custom Item Filter")]
+        [Header("CustomItemFilter")]
 
-        [Label("Magnet Blacklist")]
-        [Tooltip("Customize which items the magnet should never pick up")]
         [BackgroundColor(30, 30, 30)]
         public List<ItemDefinition> Blacklist = new List<ItemDefinition>();
 
-        [Label("Magnet Whitelist")]
-        [Tooltip("Customize which items the magnet should always pick up")]
         [BackgroundColor(220, 220, 220)]
         public List<ItemDefinition> Whitelist = new List<ItemDefinition>();
 
-        [Label("List Mode Toggle")]
-        [Tooltip("Change to select which list will be used for the item filter")]
         [DrawTicks]
         [OptionStrings(new string[] { BlacklistName, WhitelistName })]
         [DefaultValue(BlacklistName)]
@@ -77,35 +64,24 @@ namespace ItemMagnetPlus
         //-------------
         [Header("General")]
 
-        [Label("Buff")]
-        [Tooltip("Toggle if having the magnet active gives you a buff")]
         [DefaultValue(true)]
         public bool Buff;
 
-        [Label("Held")]
-        [Tooltip("Toggle if magnet should only work when you hold it (instead of being in the inventory)")]
         [DefaultValue(false)]
         public bool Held;
 
-        [Label("Activate On Enter")]
-        [Tooltip("Toggle if magnet should be automatically activated when entering the world")]
         [DefaultValue(true)]
         public bool OnEnter;
 
-        [Label("Needs Space")]
-        [Tooltip("Toggle if magnet should only work when there is space in the inventory")]
         [DefaultValue(false)]
         public bool NeedsSpace;
 
-        [Label("Instant")]
-        [Tooltip("Toggle if items should teleport instead of home - This ignores any velocity/acceleration, but not range")]
         [DefaultValue(false)]
         public bool Instant;
 
         //-------------
-        [Header("Magnet Behavior (Only works ingame)")]
+        [Header("MagnetBehavior")]
 
-        [Tooltip("Base magnet radius in tiles")]
         [Slider]
         [SliderColor(255, 255, 50)]
         [Range(RangeMin, RangeMax)]
@@ -113,21 +89,18 @@ namespace ItemMagnetPlus
         [DefaultValue(10)]
         public int Range;
 
-        [Tooltip("Speed at which items get pulled towards you")]
         [Slider]
         [SliderColor(255, 255, 50)]
         [Range(VelocityMin, VelocityMax)]
         [DefaultValue(8)]
         public int Velocity;
 
-        [Tooltip("How fast an item reaches its peak speed")]
         [Slider]
         [SliderColor(255, 255, 50)]
         [Range(AccelerationMin, AccelerationMax)]
         [DefaultValue(8)]
         public int Acceleration;
 
-        [Tooltip("Scaling Mode")]
         [DrawTicks]
         [SliderColor(255, 255, 50)]
         [OptionStrings(new string[] { ScaleModeBosses, ScaleModeAlwaysMaxRange, ScaleModeOnlyConfig })]
@@ -135,12 +108,12 @@ namespace ItemMagnetPlus
         public string Scale;
 
         //-------------
-        [Header("Resulting Magnet stats")]
+        [Header("ResultingMagnetStats")]
 
-        [Label("Resulting Max Range")]
         [Slider]
         [SliderColor(50, 255, 50)]
         [JsonIgnore]
+        [ShowDespiteJsonIgnore]
         [Range(RangeMin, RangeMax + 110)]
         public int CurrentMaxRange
         {
@@ -152,10 +125,10 @@ namespace ItemMagnetPlus
             }
         }
 
-        [Label("Resulting Velocity")]
         [Slider]
         [SliderColor(50, 255, 50)]
         [JsonIgnore]
+        [ShowDespiteJsonIgnore]
         [Range(VelocityMin, VelocityMax)]
         public int CurrentVelocity
         {
@@ -167,10 +140,10 @@ namespace ItemMagnetPlus
             }
         }
 
-        [Label("Resulting Acceleration")]
         [Slider]
         [SliderColor(50, 255, 50)]
         [JsonIgnore]
+        [ShowDespiteJsonIgnore]
         [Range(AccelerationMin, AccelerationMax)]
         public int CurrentAcceleration
         {
@@ -196,7 +169,7 @@ namespace ItemMagnetPlus
             if (Main.netMode == NetmodeID.SinglePlayer) return true;
             else if (!IsPlayerLocalServerOwner(whoAmI))
             {
-                message = "You are not the server owner so you can not change this config";
+                message = ItemMagnetPlus.AcceptClientChangesText.ToString();
                 return false;
             }
             return base.AcceptClientChanges(pendingConfig, whoAmI, ref message);

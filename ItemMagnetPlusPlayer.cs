@@ -37,7 +37,7 @@ namespace ItemMagnetPlus
             magnetAcceleration = Config.AccelerationMin;
         }
 
-        public override void clientClone(ModPlayer clientClone)
+        public override void CopyClientState(ModPlayer clientClone)/* tModPorter Suggestion: Replace Item.Clone usages with Item.CopyNetStateTo */
         {
             ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
             clone.magnetGrabRadius = magnetGrabRadius;
@@ -86,9 +86,9 @@ namespace ItemMagnetPlus
             player.ClearBuff(ModContent.BuffType<ItemMagnetBuff>());
         }
 
-        public override void OnEnterWorld(Player player)
+        public override void OnEnterWorld()
         {
-            DeactivateMagnet(player);
+            DeactivateMagnet(Player);
         }
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
@@ -103,7 +103,7 @@ namespace ItemMagnetPlus
             }
         }
 
-        public override void OnRespawn(Player player)
+        public override void OnRespawn()
         {
             if (hadMagnetActive)
             {

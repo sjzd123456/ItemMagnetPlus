@@ -1,5 +1,6 @@
 using ItemMagnetPlus.Core.Netcode;
 using System.IO;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace ItemMagnetPlus
@@ -7,6 +8,8 @@ namespace ItemMagnetPlus
     class ItemMagnetPlus : Mod
     {
         public static bool JPANsLoaded = false;
+
+        public static LocalizedText AcceptClientChangesText { get; private set; }
 
         // Mod Helpers compat
         public static string GithubUserName { get { return "direwolf420"; } }
@@ -16,6 +19,9 @@ namespace ItemMagnetPlus
         {
             ConfigWrapper.Load();
             NetHandler.Load();
+
+            string category = $"Configs.Common.";
+            AcceptClientChangesText ??= Language.GetOrRegister(this.GetLocalizationKey($"{category}AcceptClientChanges"));
         }
 
         public override void PostSetupContent()

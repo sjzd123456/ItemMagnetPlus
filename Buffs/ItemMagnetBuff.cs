@@ -8,12 +8,10 @@ namespace ItemMagnetPlus.Buffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Item Magnet");
-            Description.SetDefault("A magnetic field surrounds you!");
             Main.buffNoTimeDisplay[Type] = true;
         }
 
-        public override void ModifyBuffTip(ref string tip, ref int rare)
+        public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
         {
             Player player = Main.LocalPlayer;
             ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();

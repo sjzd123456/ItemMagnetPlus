@@ -48,8 +48,7 @@ Progression: (default config)
 * "Instant" skips any velocity of acceleration checks and directly teleports the item to your location
 * After you change the values in the config, use the magnet again to take effect
 
-Changelog:
- v1.1.0.9: Fixed bugs due to tml updates
-
- v1.1.0.8: Fixed bugs due to tml updates
-
+Localization:
+If you want to add support for different languages, you are welcome to contribute localizations here: https://github.com/direwolf420/ItemMagnetPlus
+List of localization contributors:
+* None!

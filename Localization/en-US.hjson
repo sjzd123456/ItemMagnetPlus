@@ -1,0 +1,123 @@
+Mods: {
+	ItemMagnetPlus: {
+		Buffs: {
+			ItemMagnetBuff: {
+				DisplayName: Item Magnet
+				Description: A magnetic field surrounds you!
+			}
+		}
+
+		Items.ItemMagnet.DisplayName: Item Magnet
+
+		Configs: {
+			Config: {
+				DisplayName: Config
+
+				Headers: {
+					PresetItemBlacklist: Preset Item Blacklist
+					CustomItemFilter: Custom Item Filter
+					General: General
+					MagnetBehavior: Magnet Behavior (Only works ingame)
+					ResultingMagnetStats: Resulting Magnet Stats
+				}
+
+				Hearts: {
+					Label: "[i:58] Hearts"
+					Tooltip: Toggle if hearts should be picked up by the magnet
+				}
+
+				ManaStars: {
+					Label: "[i:184] Mana Stars"
+					Tooltip: Toggle if mana stars should be picked up by the magnet
+				}
+
+				Coins: {
+					Label: "[i:73] Coins"
+					Tooltip: Toggle if coins should be picked up by the magnet
+				}
+
+				PickupEffect: {
+					Label: "[i:3457] Pickup Effect Items"
+					Tooltip: Toggle if items like nebula armor boosters or modded items like the music notes from Thorium should be picked up by the magnet
+				}
+
+				Blacklist: {
+					Label: Magnet Blacklist
+					Tooltip: Customize which items the magnet should never pick up
+				}
+
+				Whitelist: {
+					Label: Magnet Whitelist
+					Tooltip: Customize which items the magnet should always pick up
+				}
+
+				ListMode: {
+					Label: List Mode Toggle
+					Tooltip: Change to select which list will be used for the item filter
+				}
+
+				Buff: {
+					Label: Buff
+					Tooltip: Toggle if having the magnet active gives you a buff
+				}
+
+				Held: {
+					Label: Held
+					Tooltip: Toggle if magnet should only work when you hold it (instead of being in the inventory)
+				}
+
+				OnEnter: {
+					Label: Activate On Enter
+					Tooltip: Toggle if magnet should be automatically activated when entering the world
+				}
+
+				NeedsSpace: {
+					Label: Needs Space
+					Tooltip: Toggle if magnet should only work when there is space in the inventory
+				}
+
+				Instant: {
+					Label: Instant
+					Tooltip: Toggle if items should teleport instead of home - This ignores any velocity/acceleration, but not range
+				}
+
+				Range: {
+					Label: Range
+					Tooltip: Base magnet radius in tiles
+				}
+
+				Velocity: {
+					Label: Velocity
+					Tooltip: Speed at which items get pulled towards you
+				}
+
+				Acceleration: {
+					Label: Acceleration
+					Tooltip: How fast an item reaches its peak speed
+				}
+
+				Scale: {
+					Label: Scale
+					Tooltip: Scaling Mode
+				}
+
+				CurrentMaxRange: {
+					Label: Resulting Max Range
+					Tooltip: ""
+				}
+
+				CurrentVelocity: {
+					Label: Resulting Velocity
+					Tooltip: ""
+				}
+
+				CurrentAcceleration: {
+					Label: Resulting Acceleration
+					Tooltip: ""
+				}
+			}
+
+			Common.AcceptClientChanges: Only the host of this world can change the config! Do so in singleplayer.
+		}
+	}
+}

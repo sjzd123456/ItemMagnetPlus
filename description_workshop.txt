@@ -48,3 +48,8 @@ Item Magnet (and corresponding buff) that
 * If the difference between velocity and acceleration is too big, items will go in circles around you or get stuck until you deactivate it
 * "Instant" skips any velocity or acceleration checks and directly teleports the item to your location
 * After you change the values in the config, use the magnet again to take effect
+[hr][/hr]
+[b]Localization:[/b]
+If you want to add support for different languages, you are welcome to contribute localizations here: [b][url=https://github.com/direwolf420/ItemMagnetPlus]GitHub[/url][/b]
+List of localization contributors:
+* None!

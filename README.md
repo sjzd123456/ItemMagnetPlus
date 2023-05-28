@@ -1,6 +1,6 @@
 # ItemMagnetPlus
 
-![Banner](https://raw.githubusercontent.com/direwolf420/ItemMagnetPlus/master/banner.png)
+![Banner](https://raw.githubusercontent.com/direwolf420/ItemMagnetPlus/1.4/banner.png)
 
 Terraria Forum link: https://forums.terraria.org/index.php?threads/itemmagnetplus-customizable-item-magnet.74425/
 
@@ -56,74 +56,10 @@ Ends with: (killing Moonlord)
 * If the difference between velocity and acceleration is too big, items will go in circles around you or get stuck until you deactivate it
 * After you change the values in the config, use the magnet again to take effect
 
-### Changelog:
+## Localization
+If you wish to contribute translations, visit the [tML wiki page](https://github.com/tModLoader/tModLoader/wiki/Localization) on that.
+This mod uses `.hjson` files in the `Localization` folder.
+Translate things that are in english and commented out (either via `//` or `/* */`, remove the comment markers after translating)
 
- v1.1.0.9: Fixed bugs due to tml updates
-
- v1.1.0.8: Fixed bugs due to tml updates
-
- v1.1.0.7: Test workshop tags
-
- v1.1.0.6: Update boss progression for 1.4 bosses
-
- v1.1.0.4/5: Updates to changes in tml
-
- v1.1.0.1/2/3: port v1.0.3.1/2/3 from 1.3
-
- v1.1: tml 1.4 update
-
- v1.0.3.3: Reduce lag with full inventory
-
- v1.0.3.2: Update item sprite, make config only editable by the host
-
- v1.0.3.1: Update icon, fixed multiplayer desync on joining with players already present (If "Activate On Enter" is on)
-
- v1.0.3: Added "Needs Space" and "Instant" settings
-
- v1.0.2.1: Fixed the "coin" dust not disappearing properly when grabbing coins
-
- v1.0.2: Added "Activate on enter" setting that allows a magnet in your inventory to automatically activate itself when entering a world
-
- v1.0.1.3: tml 0.11.7 update. Cleaner range indicator, now also shows when mouseovering the buff icon
-
- v1.0.1.2: tml 0.11.6 update. Fixed unintended config saving in multiplayer, fixed preset filter being inverted
-
- v1.0.1.1: Fixed incompatibility with Jpans Bags of Holding, the "Pickup Effect Items" setting will be ignored with this mod enabled
-
- v1.0.1: Added filter for nebula pickup and modded items that have pickup effects (Thorium music notes for example), grabbed coins don't overproduce sparkles
-
- v1.0.0.1 + 2: Fix velocity cap, other stat caps
-
- v1.0: updated to tml 0.11.4. Fixed multiplayer, updated to ingame config, fixed coin filter, added custom black/whitelist
-
- v0.2: Updated to ingame config, fixed coin filter
-
- v0.1.11: Added config flag to have the magnet work either from inside the inventory or only when held
-
- v0.1.10: Scale spark rate on pulled items, fixed some desync bugs in MP, fixed grab bags being pulled in by all players
-
- v0.1.9: Fixed desync bug with more than two players in MP
-
- v0.1.8: Made config entirely server side now, the mod is stable in MP
-
- v0.1.7: Made config entirely client side now
-
- v0.1.6.2: Reverted hotfix
-
- v0.1.6.1: Hotfix bug where items get deleted very rarely when opening crate-like things (now you won't attract items with a full inventory)
-
- v0.1.6: Added persistency: Magnet now keeps its state when you respawn! (Also switched scale mode 0 and 2 around, check your config)
- 
- v0.1.5: Added new scale config mode: Keep all the buffs from killing bosses but don't shuffle through each range again upon activation
-
- v0.1.4.1 + 2 + 3 + 4: Filter hotfix, fix stuck range when using magnet inside inventory, another filter hotfix
- 
- v0.1.4: Added blacklist "filter" to be able to filter hearts, mana stars and coins (for now)
-
- v0.1.3: Added config flag "buff" to be able to decide if a buff should be applied while the magnet is active
-
- v0.1.2: Added Buff- and Tooltip to show range, updated icons (Thanks to Harblesnargits!)
-
- v0.1.1: Fixed incompatibility with Even More Modifiers, changed acceleration values (updating will set it back to default)
-
- v0.1: Initial release
+List of localization contributors:
+* None!

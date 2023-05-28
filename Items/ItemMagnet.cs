@@ -6,14 +6,17 @@ using System.Collections.Generic;
 using ItemMagnetPlus.Buffs;
 using ItemMagnetPlus.Dusts;
 using Terraria.Audio;
+using Terraria.Localization;
 
 namespace ItemMagnetPlus.Items
 {
     public class ItemMagnet : ModItem
     {
+        public override LocalizedText Tooltip => LocalizedText.Empty;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Item Magnet");
+
         }
 
         public override void SetDefaults()
