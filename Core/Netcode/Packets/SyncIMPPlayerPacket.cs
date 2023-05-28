@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Terraria;
-using Terraria.ModLoader.IO;
 
 namespace ItemMagnetPlus.Core.Netcode.Packets
 {

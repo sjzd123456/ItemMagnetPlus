@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader.IO;
 
 namespace ItemMagnetPlus.Core.Netcode.Packets
 {
@@ -30,9 +29,9 @@ namespace ItemMagnetPlus.Core.Netcode.Packets
 			mPlayer.magnetGrabRadius = magnetGrabRadius;
 
 			if (Main.netMode == NetmodeID.Server)
-            {
+			{
 				new SendIMPPlayerChangeRadiusPacket(mPlayer).Send(-1, sender);
-            }
+			}
 		}
 	}
 }
