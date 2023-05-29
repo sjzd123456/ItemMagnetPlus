@@ -1,24 +1,33 @@
 ﻿using ItemMagnetPlus.Items;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace ItemMagnetPlus.Buffs
 {
 	public class ItemMagnetBuff : ModBuff
 	{
+		public static LocalizedText CurrentRangeText { get; private set; }
+		public static LocalizedText CurrentVelocityText { get; private set; }
+		public static LocalizedText CurrentAccelerationText { get; private set; }
+
 		public override void SetStaticDefaults()
 		{
 			Main.buffNoTimeDisplay[Type] = true;
+
+			CurrentRangeText = this.GetLocalization("CurrentRange");
+			CurrentVelocityText = this.GetLocalization("CurrentVelocity");
+			CurrentAccelerationText = this.GetLocalization("CurrentAcceleration");
 		}
 
 		public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
 		{
 			Player player = Main.LocalPlayer;
 			ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();
-			string add = "\nCurrent Range: " + mPlayer.magnetGrabRadius;
+			string add = $"\n{CurrentRangeText.Format(mPlayer.magnetGrabRadius)}";
 			mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
-			add += "\nCurrent Velocity: " + mPlayer.magnetVelocity;
-			add += "\nCurrent Acceleration: " + mPlayer.magnetAcceleration;
+			add += $"\n{CurrentVelocityText.Format(mPlayer.magnetVelocity)}";
+			add += $"\n{CurrentAccelerationText.Format(mPlayer.magnetAcceleration)}";
 			tip += add;
 
 			if (Main.GameUpdateCount % 50 == 0)

@@ -4,17 +4,36 @@ Mods: {
 			ItemMagnetBuff: {
 				DisplayName: Item Magnet
 				Description: A magnetic field surrounds you!
+				CurrentRange: Current Range: {0}
+				CurrentVelocity: Current Velocity: {0}
+				CurrentAcceleration: Current Acceleration: {0}
 			}
 		}
 
-		Items.ItemMagnet.DisplayName: Item Magnet
+		Items: {
+			ItemMagnet: {
+				DisplayName: Item Magnet
+				CurrentRange: "{$Buffs.ItemMagnetBuff.CurrentRange}"
+				CurrentVelocity: "{$Buffs.ItemMagnetBuff.CurrentVelocity}"
+				CurrentAcceleration: "{$Buffs.ItemMagnetBuff.CurrentAcceleration}"
+				LeftClickToChangeRange: Left Click to [c/{0}:change range]
+				LeftClickToToggle: Left Click to [c/{0}:toggle on/off]
+				RightClickToShowCurrentRange: Right Click to [c/{0}:show current range]
+				RightClickToTurnOff: Right Click to [c/{0}:turn off]
+				MagnetIsOff: Magnet is off
+				MagnetOff: Magnet off
+				Off: off
+				Range: range: {0}
+				NextRange: | next: {0}
+			}
+		}
 
 		Configs: {
 			Config: {
 				DisplayName: Config
 
 				Headers: {
-					PresetItemBlacklist: Preset Item Blacklist
+					PresetItemWhitelist: Preset Item Whitelist
 					CustomItemFilter: Custom Item Filter
 					General: General
 					MagnetBehavior: Magnet Behavior (Only works ingame)
@@ -37,7 +56,7 @@ Mods: {
 				}
 
 				PickupEffect: {
-					Label: "[i:3457] Pickup Effect Items"
+					Label: "[i:FragmentNebula] Pickup Effect Items"
 					Tooltip: Toggle if items like nebula armor boosters or modded items like the music notes from Thorium should be picked up by the magnet
 				}
 

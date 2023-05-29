@@ -1,2 +1,3 @@
 * Updated to 1.4.4 tml
+* Presets now override black/whitelist, meaning you can have whitelist enabled and still pick up things from the presets
 * Now localizable. Read the mod description for more info

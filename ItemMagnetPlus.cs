@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace ItemMagnetPlus
 {
-	class ItemMagnetPlus : Mod
+	public class ItemMagnetPlus : Mod
 	{
 		public static bool JPANsLoaded = false;
 
@@ -17,21 +17,15 @@ namespace ItemMagnetPlus
 
 		public override void Load()
 		{
-			ConfigWrapper.Load();
 			NetHandler.Load();
+			JPANsLoaded = ModLoader.HasMod("JPANsBagsOfHoldingMod");
 
 			string category = $"Configs.Common.";
 			AcceptClientChangesText ??= Language.GetOrRegister(this.GetLocalizationKey($"{category}AcceptClientChanges"));
 		}
 
-		public override void PostSetupContent()
-		{
-			JPANsLoaded = ModLoader.TryGetMod("JPANsBagsOfHoldingMod", out _);
-		}
-
 		public override void Unload()
 		{
-			ConfigWrapper.Unload();
 			NetHandler.Unload();
 		}
 
@@ -41,3 +35,4 @@ namespace ItemMagnetPlus
 		}
 	}
 }
+

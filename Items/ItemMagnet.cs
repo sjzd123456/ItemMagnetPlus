@@ -12,16 +12,44 @@ namespace ItemMagnetPlus.Items
 {
 	public class ItemMagnet : ModItem
 	{
+		public static LocalizedText CurrentRangeText { get; private set; }
+		public static LocalizedText CurrentVelocityText { get; private set; }
+		public static LocalizedText CurrentAccelerationText { get; private set; }
+
+		public static LocalizedText LeftClickToChangeRangeText { get; private set; }
+		public static LocalizedText LeftClickToToggleText { get; private set; }
+		public static LocalizedText RightClickToShowCurrentRangeText { get; private set; }
+		public static LocalizedText RightClickToTurnOffText { get; private set; }
+		public static LocalizedText MagnetIsOffText { get; private set; }
+
+		public static LocalizedText RangeText { get; private set; }
+		public static LocalizedText NextRangeText { get; private set; }
+		public static LocalizedText MagnetOffText { get; private set; }
+		public static LocalizedText OffText { get; private set; }
+
 		public override LocalizedText Tooltip => LocalizedText.Empty;
 
 		public override void SetStaticDefaults()
 		{
+			CurrentRangeText = this.GetLocalization("CurrentRange");
+			CurrentVelocityText = this.GetLocalization("CurrentVelocity");
+			CurrentAccelerationText = this.GetLocalization("CurrentAcceleration");
 
+			LeftClickToChangeRangeText = this.GetLocalization("LeftClickToChangeRange");
+			LeftClickToToggleText = this.GetLocalization("LeftClickToToggle");
+			RightClickToShowCurrentRangeText = this.GetLocalization("RightClickToShowCurrentRange");
+			RightClickToTurnOffText = this.GetLocalization("RightClickToTurnOff");
+			MagnetIsOffText = this.GetLocalization("MagnetIsOff");
+
+			RangeText = this.GetLocalization("Range");
+			NextRangeText = this.GetLocalization("NextRange");
+			MagnetOffText = this.GetLocalization("MagnetOff");
+			OffText = this.GetLocalization("Off");
 		}
 
 		public override void SetDefaults()
 		{
-			Item.width = 28;
+			Item.width = 32;
 			Item.height = 32;
 			Item.value = Item.sellPrice(silver: 36);
 			Item.rare = ItemRarityID.Green;
@@ -32,25 +60,26 @@ namespace ItemMagnetPlus.Items
 
 		public override void ModifyTooltips(List<TooltipLine> tooltips)
 		{
-			ItemMagnetPlusPlayer mPlayer = Main.LocalPlayer.GetModPlayer<ItemMagnetPlusPlayer>();
+			Player player = Main.LocalPlayer;
+			ItemMagnetPlusPlayer mPlayer = player.GetModPlayer<ItemMagnetPlusPlayer>();
 
 			float alpha = Main.mouseTextColor / 255f;
 			string color1 = (new Color(128, 255, 128) * alpha).Hex3();
 			string color2 = (new Color(159, 159, 255) * alpha).Hex3();
 			string color3 = (new Color(255, 128, 128) * alpha).Hex3();
-			tooltips.Add(new TooltipLine(Mod, "Buffa", "Left Click to " + (Config.Instance.Scale == Config.ScaleModeBosses ? "[c/" + color1 + ":change range ]" : "[c/" + color1 + ":toggle on/off ]")));
-			tooltips.Add(new TooltipLine(Mod, "Buffb", "Right Click to " + (Config.Instance.Buff ? "[c/" + color2 + ":show current range ]" : "[c/" + color3 + ":turn off ]")));
+			tooltips.Add(new TooltipLine(Mod, "Buffa", (Config.Instance.Scale == Config.ScaleModeBosses ? LeftClickToChangeRangeText : LeftClickToToggleText).Format(color1)));
+			tooltips.Add(new TooltipLine(Mod, "Buffb", Config.Instance.Buff ? RightClickToShowCurrentRangeText.Format(color2) : RightClickToTurnOffText.Format(color3)));
 
-			if (Main.LocalPlayer.HasBuff(Mod.Find<ModBuff>("ItemMagnetBuff").Type) || mPlayer.magnetActive == 1)
+			if (player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) || mPlayer.magnetActive == 1)
 			{
 				mPlayer.UpdateMagnetValues(mPlayer.magnetGrabRadius);
-				tooltips.Add(new TooltipLine(Mod, "Range", "Current Range: " + mPlayer.magnetGrabRadius));
-				tooltips.Add(new TooltipLine(Mod, "Velocity", "Current Velocity: " + mPlayer.magnetVelocity));
-				tooltips.Add(new TooltipLine(Mod, "Acceleration", "Current Acceleration: " + mPlayer.magnetAcceleration));
+				tooltips.Add(new TooltipLine(Mod, "Range", CurrentRangeText.Format(mPlayer.magnetGrabRadius)));
+				tooltips.Add(new TooltipLine(Mod, "Velocity", CurrentVelocityText.Format(mPlayer.magnetVelocity)));
+				tooltips.Add(new TooltipLine(Mod, "Acceleration", CurrentAccelerationText.Format(mPlayer.magnetAcceleration)));
 			}
-			else if (Main.LocalPlayer.HasItem(Item.type))
+			else if (player.HasItem(Item.type))
 			{
-				tooltips.Add(new TooltipLine(Mod, "Range", "Magnet is off"));
+				tooltips.Add(new TooltipLine(Mod, "Range", MagnetIsOffText.ToString()));
 			}
 			// If player has buff, then he automatically also has the item
 			// If player doesn't have the buff, he can still have the item, just not activated
@@ -58,7 +87,7 @@ namespace ItemMagnetPlus.Items
 
 		public override void AddRecipes()
 		{
-			CreateRecipe(1).AddRecipeGroup("IronBar", 12).AddTile(TileID.Anvils).Register();
+			CreateRecipe(1).AddRecipeGroup(RecipeGroupID.IronBar, 12).AddTile(TileID.Anvils).Register();
 		}
 
 		public override bool AltFunctionUse(Player player)
@@ -128,19 +157,19 @@ namespace ItemMagnetPlus.Items
 					if (mPlayer.magnetActive == 0)
 					{
 						// Nothing
-						CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet is off");
+						CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, MagnetIsOffText.ToString());
 					}
 					else if (Config.Instance.Buff && player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()))
 					{
 						// Shows the range
 						DrawRectangle(player, mPlayer.magnetGrabRadius * 16, CombatText.HealMana);
-						CombatText.NewText(player.getRect(), CombatText.HealMana, "range:" + mPlayer.magnetGrabRadius);
+						CombatText.NewText(player.getRect(), CombatText.HealMana, RangeText.Format(mPlayer.magnetGrabRadius));
 					}
 					else
 					{
 						// Deactivates
 						mPlayer.DeactivateMagnet(player);
-						CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet off");
+						CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, MagnetOffText.ToString());
 					}
 				}
 				else //if (player.altFunctionUse != 2)
@@ -159,16 +188,9 @@ namespace ItemMagnetPlus.Items
 						divider = (Main.hardMode || mPlayer.magnetGrabRadius >= mPlayer.magnetScreenRadius) ? 10 : 5; //duplicate because need updated value
 						DrawRectangle(player, mPlayer.magnetGrabRadius * 16, new Color(200, 255, 200));
 
-						string ranges = "range:" + radius;
-						if (radius + divider > mPlayer.magnetMaxGrabRadius)
-						{
-							ranges += "| next:off";
-						}
-						else
-						{
-							ranges += "| next:" + (radius + divider);
-						}
-
+						int shownRadius = radius + divider;
+						string shownRadiusStr = shownRadius > mPlayer.magnetMaxGrabRadius ? OffText.ToString() : shownRadius.ToString();
+						string ranges = $"{RangeText.Format(radius)}{NextRangeText.Format(shownRadiusStr)}";
 						CombatText.NewText(player.getRect(), CombatText.HealLife, ranges);
 					}
 					else
@@ -177,7 +199,7 @@ namespace ItemMagnetPlus.Items
 
 						if (radius > mPlayer.magnetMaxGrabRadius)
 						{
-							CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, "magnet off");
+							CombatText.NewText(player.getRect(), CombatText.DamagedFriendly, MagnetOffText.ToString());
 							SoundEngine.PlaySound(SoundID.MaxMana, player.Center);
 							mPlayer.DeactivateMagnet(player);
 							return true;
@@ -187,15 +209,10 @@ namespace ItemMagnetPlus.Items
 						DrawRectangle(player, mPlayer.magnetGrabRadius * 16, new Color(200, 255, 200));
 
 						// Here radius is already + divider
-						string ranges = "range:" + radius;
-						if (radius + divider > mPlayer.magnetMaxGrabRadius)
-						{
-							ranges += "| next:off";
-						}
-						else
-						{
-							ranges += "| next:" + (radius + divider);
-						}
+
+						int shownRadius = radius + divider;
+						string shownRadiusStr = shownRadius > mPlayer.magnetMaxGrabRadius ? OffText.ToString() : shownRadius.ToString();
+						string ranges = $"{RangeText.Format(radius)}{NextRangeText.Format(shownRadiusStr)}";
 						CombatText.NewText(player.getRect(), new Color(128, 255, 128), ranges);
 					}
 				}

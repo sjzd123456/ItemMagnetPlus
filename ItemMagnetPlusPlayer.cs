@@ -323,7 +323,7 @@ namespace ItemMagnetPlus
 								//so it can go through walls
 								item.beingGrabbed = true;
 
-								if (cfg.Coins && Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
+								if (Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
 								{
 									grabbingAtleastOneCoin = true;
 								}

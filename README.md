@@ -49,7 +49,7 @@ Ends with: (killing Moonlord)
 * Buff decides if it gives you a corresponding buff icon to show the status of the magnet
 * Held decides if the magnet works only when held
 * "Activate on enter" decides if magnet should be automatically activated when entering the world
-* Filter function: Presets (hearts, mana stars, coins, pickup effects), blacklist/whitelist
+* Filter function: Presets (hearts, mana stars, coins, pickup effects), blacklist/whitelist. Presets override black/whitelist
 * Magnet stats are limited to sensible values (Range only goes up to about three screens in any direction)
 * If you increase Vel or Acc too much from those recommended above, items might get "stuck" on you until you deactivate it again
 * Beware of lag when increasing these values, especially range

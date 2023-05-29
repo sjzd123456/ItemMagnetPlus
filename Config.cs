@@ -11,7 +11,7 @@ using Terraria.ModLoader.Config;
 namespace ItemMagnetPlus
 {
 #pragma warning disable 0649
-	class Config : ModConfig
+	public class Config : ModConfig
 	{
 		public override ConfigScope Mode => ConfigScope.ServerSide;
 
@@ -32,8 +32,7 @@ namespace ItemMagnetPlus
 		public const string ScaleModeAlwaysMaxRange = "Bosses + Max Range";
 		public const string ScaleModeOnlyConfig = "Custom + Max Range";
 
-		//-------------
-		[Header("PresetItemBlacklist")]
+		[Header("PresetItemWhitelist")]
 
 		[DefaultValue(false)]
 		public bool Hearts;
@@ -47,7 +46,6 @@ namespace ItemMagnetPlus
 		[DefaultValue(false)]
 		public bool PickupEffect;
 
-		//-------------
 		[Header("CustomItemFilter")]
 
 		[BackgroundColor(30, 30, 30)]
@@ -61,7 +59,6 @@ namespace ItemMagnetPlus
 		[DefaultValue(BlacklistName)]
 		public string ListMode;
 
-		//-------------
 		[Header("General")]
 
 		[DefaultValue(true)]
@@ -79,7 +76,6 @@ namespace ItemMagnetPlus
 		[DefaultValue(false)]
 		public bool Instant;
 
-		//-------------
 		[Header("MagnetBehavior")]
 
 		[Slider]
@@ -107,7 +103,6 @@ namespace ItemMagnetPlus
 		[DefaultValue(ScaleModeAlwaysMaxRange)]
 		public string Scale;
 
-		//-------------
 		[Header("ResultingMagnetStats")]
 
 		[Slider]
@@ -310,76 +305,90 @@ namespace ItemMagnetPlus
 		}
 	}
 
-	static class ConfigWrapper
+	public class ConfigWrapper : ModSystem
 	{
-		public static Config Instance;
+		public static Config Instance { get; private set; }
 
-		public static int[] HeartTypes;
+		public static int[] HeartTypes { get; private set; }
 
-		public static int[] ManaStarTypes;
+		public static int[] ManaStarTypes { get; private set; }
 
-		public static int[] CoinTypes;
+		public static int[] CoinTypes { get; private set; }
 
-		private static bool CheckIfItemIsInPresetBlacklist(Item item, Player player)
+		/// <summary>
+		/// If something matches the presets, then let the configuration control the status, otherwise fall back to white/blacklist
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="player"></param>
+		/// <returns></returns>
+		private static bool? CheckIfItemIsInPresetWhitelist(Item item, Player player)
 		{
 			//heart: 58, 184, 1734
 			//mana: 1735, 1867, 1868
 			//nebula: 3453, 3454, 3455
 			//IsAPickup = Factory.CreateBoolSet(58, 184, 1734, 1735, 1867, 1868, 3453, 3454, 3455);
 			//But we want custom filters:
-			if (!Instance.Hearts && Array.BinarySearch(HeartTypes, item.type) > -1)
+			if (Array.BinarySearch(HeartTypes, item.type) > -1)
 			{
-				return true;
+				return Instance.Hearts;
 			}
-			if (!Instance.ManaStars && Array.BinarySearch(ManaStarTypes, item.type) > -1)
+			if (Array.BinarySearch(ManaStarTypes, item.type) > -1)
 			{
-				return true;
+				return Instance.ManaStars;
 			}
-			if (!Instance.Coins && Array.BinarySearch(CoinTypes, item.type) > -1)
+			if (Array.BinarySearch(CoinTypes, item.type) > -1)
 			{
-				return true;
+				return Instance.Coins;
 			}
-			if (!Instance.PickupEffect)
+			if (ItemID.Sets.NebulaPickup[item.type] || ItemMagnetPlus.JPANsLoaded && ItemLoader.ItemSpace(item, player))
 			{
-				if (ItemID.Sets.NebulaPickup[item.type]) return true;
-				if (ItemMagnetPlus.JPANsLoaded) return false;
-				if (ItemLoader.ItemSpace(item, player)) return true;
+				return Instance.PickupEffect;
 			}
-			return false;
+			return null;
 		}
 
 		public static bool CanBePulled(Item item, Player player)
 		{
-			bool can = !CheckIfItemIsInPresetBlacklist(item, player);
-			if (!can) return false;
+			if (CheckIfItemIsInPresetWhitelist(item, player) is bool presetValue) return presetValue;
 
 			ItemDefinition itemDef = new ItemDefinition(item.type);
 			if (Instance.ListMode == Config.BlacklistName)
 			{
-				if (Instance.Blacklist.Contains(itemDef))
-				{
-					can = false;
-				}
+				return !Instance.Blacklist.Contains(itemDef);
 			}
 			else if (Instance.ListMode == Config.WhitelistName)
 			{
-				can = Instance.Whitelist.Contains(itemDef);
+				return Instance.Whitelist.Contains(itemDef);
 			}
-			return can;
+			return false; //Technically unreachable
 		}
 
-		public static void Load()
+		public override void Load()
 		{
 			Instance = Config.Instance;
+		}
+
+		public override void PostSetupContent()
+		{
 			HeartTypes = new int[] { ItemID.Heart, ItemID.CandyApple, ItemID.CandyCane };
 			ManaStarTypes = new int[] { ItemID.Star, ItemID.SoulCake, ItemID.SugarPlum };
-			CoinTypes = new int[] { ItemID.CopperCoin, ItemID.SilverCoin, ItemID.GoldCoin, ItemID.PlatinumCoin };
+
+			var list = new List<int>();
+			for (int i = 0; i < ItemLoader.ItemCount; i++)
+			{
+				if (ItemID.Sets.CommonCoin[i])
+				{
+					list.Add(i);
+				}
+			}
+			CoinTypes = list.ToArray();
+
 			Array.Sort(HeartTypes);
 			Array.Sort(ManaStarTypes);
 			Array.Sort(CoinTypes);
 		}
 
-		public static void Unload()
+		public override void Unload()
 		{
 			Instance = null;
 			HeartTypes = null;
