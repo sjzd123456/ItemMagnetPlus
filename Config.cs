@@ -213,7 +213,7 @@ namespace ItemMagnetPlus
 			value = value < min ? min : (value > max ? max : value);
 		}
 
-		public void Update(string scale, ref int range, ref int velocity, ref int acceleration)
+		public static void Update(string scale, ref int range, ref int velocity, ref int acceleration)
 		{
 			// Input as default values into here
 			if (scale == ScaleModeOnlyConfig)
@@ -241,12 +241,17 @@ namespace ItemMagnetPlus
 			}
 			if (NPC.downedQueenBee)
 			{
-				velocity += 4;
-				acceleration += 10;
+				velocity += 2;
+				acceleration += 4;
 			}
 			if (NPC.downedBoss3) //Skeletron
 			{
 				range += 5;
+			}
+			if (NPC.downedDeerclops)
+			{
+				velocity += 2;
+				acceleration += 4;
 			}
 			if (Main.hardMode) //Wall of flesh
 			{
@@ -254,8 +259,13 @@ namespace ItemMagnetPlus
 
 				//Ideal at
 				//range = 30; //quarter screen
-				//velocity = 16;
-				//acceleration = 20;
+				//velocity = 18;
+				//acceleration = 18;
+			}
+			if (NPC.downedQueenSlime)
+			{
+				velocity += 2;
+				acceleration += 2;
 			}
 			if (NPC.downedMechBoss1) //Destroyer
 			{
@@ -272,19 +282,23 @@ namespace ItemMagnetPlus
 			if (NPC.downedPlantBoss)
 			{
 				range += 10;
-				velocity += 4;
+				velocity += 2;
 				acceleration += 2;
 			}
 			if (NPC.downedGolemBoss)
 			{
 				range += 10;
-				velocity += 4;
+				velocity += 2;
+			}
+			if (NPC.downedEmpressOfLight)
+			{
+				velocity += 2;
 				acceleration += 2;
 			}
 			if (NPC.downedFishron)
 			{
 				range += 10;
-				velocity += 4;
+				velocity += 2;
 				acceleration += 2;
 			}
 			if (NPC.downedAncientCultist)

@@ -120,105 +120,12 @@ namespace ItemMagnetPlus
 			magnetVelocity = Config.Instance.Velocity;
 			magnetAcceleration = Config.Instance.Acceleration;
 
+			Config.Update(magnetScale, ref magnetMaxGrabRadius, ref magnetVelocity, ref magnetAcceleration);
+
 			if (magnetScale == Config.ScaleModeOnlyConfig)
 			{
 				magnetGrabRadius = magnetMaxGrabRadius;
 				return;
-			}
-			if (NPC.downedSlimeKing)
-			{
-				//Starts at
-				//magnetMaxGrabRadius = 10;
-				//magnetVelocity = 8;
-				//magnetAcceleration = 8;
-
-				magnetVelocity += 4;
-				magnetAcceleration += 2;
-			}
-			if (NPC.downedBoss1) //Eye of Cthulhu
-			{
-				magnetMaxGrabRadius += 5;
-			}
-			if (NPC.downedBoss2) //Eater/Brain
-			{
-				magnetMaxGrabRadius += 5;
-			}
-			if (NPC.downedQueenBee)
-			{
-				magnetVelocity += 2;
-				magnetAcceleration += 4;
-			}
-			if (NPC.downedBoss3) //Skeletron
-			{
-				magnetMaxGrabRadius += 5;
-			}
-			if (NPC.downedDeerclops)
-			{
-				magnetVelocity += 2;
-				magnetAcceleration += 4;
-			}
-			if (Main.hardMode) //Wall of flesh
-			{
-				magnetMaxGrabRadius += 5;
-
-				//Ideal at
-				//magnetMaxGrabRadius = 30; //quarter screen
-				//magnetVelocity = 16;
-				//magnetAcceleration = 18;
-			}
-			if (NPC.downedQueenSlime)
-			{
-				magnetVelocity += 2;
-				magnetAcceleration += 2;
-			}
-			if (NPC.downedMechBoss1) //Destroyer
-			{
-				magnetMaxGrabRadius += 10;
-			}
-			if (NPC.downedMechBoss2) //Twins
-			{
-				magnetMaxGrabRadius += 10;
-			}
-			if (NPC.downedMechBoss3) //Skeletron prime
-			{
-				magnetMaxGrabRadius += 10;
-			}
-			if (NPC.downedPlantBoss)
-			{
-				magnetMaxGrabRadius += 10;
-				magnetVelocity += 2;
-				magnetAcceleration += 2;
-			}
-			if (NPC.downedGolemBoss)
-			{
-				magnetMaxGrabRadius += 10;
-				magnetVelocity += 4;
-			}
-			if (NPC.downedEmpressOfLight)
-			{
-				magnetVelocity += 2;
-				magnetAcceleration += 2;
-			}
-			if (NPC.downedFishron)
-			{
-				magnetMaxGrabRadius += 10;
-				magnetVelocity += 2;
-				magnetAcceleration += 2;
-			}
-			if (NPC.downedAncientCultist)
-			{
-				magnetMaxGrabRadius += 10;
-			}
-			if (NPC.downedMoonlord)
-			{
-				magnetMaxGrabRadius += 20;
-				magnetVelocity += 4;
-				magnetAcceleration += 6;
-
-				//Final at
-				//magnetMaxGrabRadius = 120; //one screen
-				//magnetVelocity = 32;
-				//magnetAcceleration = 32;
 			}
 
 			Config.Clamp(ref magnetMaxGrabRadius, Config.RangeMin, Config.RangeMax);
