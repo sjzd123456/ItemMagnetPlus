@@ -17,7 +17,7 @@ namespace ItemMagnetPlus
 		public int magnetGrabRadius = Config.RangeMin;
 		public int magnetMinGrabRadius = Config.RangeMin;
 		public int magnetMaxGrabRadius = Config.RangeMin; //60 half a screen radius
-		public string magnetScale = Config.ScaleModeBosses;
+		public Config.ScaleModeType magnetScaleMode = Config.ScaleModeType.AlwaysMaxRange;
 		public int magnetVelocity = Config.VelocityMin;
 		public int magnetAcceleration = Config.AccelerationMin;
 		private bool hadMagnetActive = false;
@@ -32,7 +32,7 @@ namespace ItemMagnetPlus
 			//these are changed by config
 			//starting values
 			magnetMaxGrabRadius = Config.RangeMin;
-			magnetScale = Config.ScaleModeBosses;
+			magnetScaleMode = Config.ScaleModeType.AlwaysMaxRange;
 			magnetVelocity = Config.VelocityMin;
 			magnetAcceleration = Config.AccelerationMin;
 		}
@@ -116,13 +116,13 @@ namespace ItemMagnetPlus
 		{
 			//currentRadius is for creating steps between min and max range, and setting it accordingly
 			magnetMaxGrabRadius = Config.Instance.Range;
-			magnetScale = Config.Instance.Scale;
+			magnetScaleMode = Config.Instance.ScaleMode;
 			magnetVelocity = Config.Instance.Velocity;
 			magnetAcceleration = Config.Instance.Acceleration;
 
-			Config.Update(magnetScale, ref magnetMaxGrabRadius, ref magnetVelocity, ref magnetAcceleration);
+			Config.Update(magnetScaleMode, ref magnetMaxGrabRadius, ref magnetVelocity, ref magnetAcceleration);
 
-			if (magnetScale == Config.ScaleModeOnlyConfig)
+			if (magnetScaleMode == Config.ScaleModeType.OnlyConfig)
 			{
 				magnetGrabRadius = magnetMaxGrabRadius;
 				return;
@@ -132,7 +132,7 @@ namespace ItemMagnetPlus
 			Config.Clamp(ref magnetVelocity, Config.VelocityMin, Config.VelocityMax);
 			Config.Clamp(ref magnetAcceleration, Config.AccelerationMin, Config.AccelerationMax);
 
-			if (magnetScale != Config.ScaleModeBosses)
+			if (magnetScaleMode != Config.ScaleModeType.Bosses)
 			{
 				magnetGrabRadius = magnetMaxGrabRadius;
 				return;

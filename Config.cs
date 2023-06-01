@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,13 +25,16 @@ namespace ItemMagnetPlus
 		public const int AccelerationMin = 1;
 		public const int AccelerationMax = 40;
 
-		//TODO localize eventually
-		public const string BlacklistName = "Blacklist";
-		public const string WhitelistName = "Whitelist";
+		//Old data and names for reference
+		[JsonExtensionData]
+		private IDictionary<string, JToken> _additionalData = new Dictionary<string, JToken>();
+		
+		public const string OldBlacklistName = "Blacklist";
+		public const string OldWhitelistName = "Whitelist";
 
-		public const string ScaleModeBosses = "Increase With Bosses";
-		public const string ScaleModeAlwaysMaxRange = "Bosses + Max Range";
-		public const string ScaleModeOnlyConfig = "Custom + Max Range";
+		public const string OldScaleModeBosses = "Increase With Bosses";
+		public const string OldScaleModeAlwaysMaxRange = "Bosses + Max Range";
+		public const string OldScaleModeOnlyConfig = "Custom + Max Range";
 
 		[Header("PresetItemWhitelist")]
 
@@ -54,10 +58,14 @@ namespace ItemMagnetPlus
 		[BackgroundColor(220, 220, 220)]
 		public List<ItemDefinition> Whitelist = new List<ItemDefinition>();
 
-		[DrawTicks]
-		[OptionStrings(new string[] { BlacklistName, WhitelistName })]
-		[DefaultValue(BlacklistName)]
-		public string ListMode;
+		public enum FilterListModeType : byte
+		{
+			Blacklist = 0,
+			Whitelist = 1
+		}
+
+		[DefaultValue(FilterListModeType.Blacklist)]
+		public FilterListModeType FilterListMode;
 
 		[Header("General")]
 
@@ -97,11 +105,16 @@ namespace ItemMagnetPlus
 		[DefaultValue(8)]
 		public int Acceleration;
 
-		[DrawTicks]
+		public enum ScaleModeType : byte
+		{
+			Bosses = 0,
+			AlwaysMaxRange = 1,
+			OnlyConfig = 2
+		}
+
 		[SliderColor(255, 255, 50)]
-		[OptionStrings(new string[] { ScaleModeBosses, ScaleModeAlwaysMaxRange, ScaleModeOnlyConfig })]
-		[DefaultValue(ScaleModeAlwaysMaxRange)]
-		public string Scale;
+		[DefaultValue(ScaleModeType.AlwaysMaxRange)]
+		public ScaleModeType ScaleMode;
 
 		[Header("ResultingMagnetStats")]
 
@@ -173,9 +186,46 @@ namespace ItemMagnetPlus
 		[OnDeserialized]
 		internal void OnDeserializedMethod(StreamingContext context)
 		{
-			// Correct invalid names
-			if (ListMode != BlacklistName && ListMode != WhitelistName) ListMode = BlacklistName;
-			if (Scale != ScaleModeBosses && Scale != ScaleModeAlwaysMaxRange && Scale != ScaleModeOnlyConfig) Scale = ScaleModeBosses;
+			//port "ListMode": "Whitelist"
+			//and "Scale": "Increase With Bosses"
+			//from strings to enums, which requires (!) a member rename aswell
+			JToken token;
+			if (_additionalData.TryGetValue("ListMode", out token))
+			{
+				var oldListMode = token.ToObject<string>();
+				if (oldListMode == OldWhitelistName)
+				{
+					FilterListMode = FilterListModeType.Whitelist;
+				}
+				else
+				{
+					FilterListMode = FilterListModeType.Blacklist;
+				}
+			}
+
+			if (_additionalData.TryGetValue("Scale", out token))
+			{
+				var oldScale = token.ToObject<string>();
+				if (oldScale == OldScaleModeBosses)
+				{
+					ScaleMode = ScaleModeType.Bosses;
+				}
+				else if (oldScale == OldScaleModeOnlyConfig)
+				{
+					ScaleMode = ScaleModeType.OnlyConfig;
+				}
+				else
+				{
+					ScaleMode = ScaleModeType.AlwaysMaxRange;
+				}
+			}
+
+			//Correct invalid values to default fallback
+			EnumFallback(ref FilterListMode, FilterListModeType.Blacklist);
+			EnumFallback(ref ScaleMode, ScaleModeType.AlwaysMaxRange);
+
+			_additionalData.Clear(); // Clear this or it'll crash.
+
 			// Clamp
 			Clamp(ref Range, RangeMin, RangeMax);
 			Clamp(ref Velocity, VelocityMin, VelocityMax);
@@ -183,12 +233,20 @@ namespace ItemMagnetPlus
 			if (Main.netMode == NetmodeID.Server) Buff = true; // Enforce buff in multiplayer
 		}
 
+		private static void EnumFallback<T>(ref T value, T defaultValue) where T : Enum
+		{
+			if (!Enum.IsDefined(typeof(T), value))
+			{
+				value = defaultValue;
+			}
+		}
+
 		// This is stupid don't do this
 		public void UpdateRange(ref int range)
 		{
 			int a = 0;
 			int b = 0;
-			Update(Scale, ref range, ref a, ref b);
+			Update(ScaleMode, ref range, ref a, ref b);
 			Clamp(ref range, RangeMin, RangeMax + 110);
 		}
 
@@ -196,7 +254,7 @@ namespace ItemMagnetPlus
 		{
 			int a = 0;
 			int b = 0;
-			Update(Scale, ref a, ref velocity, ref b);
+			Update(ScaleMode, ref a, ref velocity, ref b);
 			Clamp(ref velocity, VelocityMin, VelocityMax);
 		}
 
@@ -204,7 +262,7 @@ namespace ItemMagnetPlus
 		{
 			int a = 0;
 			int b = 0;
-			Update(Scale, ref a, ref b, ref acceleration);
+			Update(ScaleMode, ref a, ref b, ref acceleration);
 			Clamp(ref acceleration, AccelerationMin, AccelerationMax);
 		}
 
@@ -213,10 +271,10 @@ namespace ItemMagnetPlus
 			value = value < min ? min : (value > max ? max : value);
 		}
 
-		public static void Update(string scale, ref int range, ref int velocity, ref int acceleration)
+		public static void Update(ScaleModeType scale, ref int range, ref int velocity, ref int acceleration)
 		{
 			// Input as default values into here
-			if (scale == ScaleModeOnlyConfig)
+			if (scale == ScaleModeType.OnlyConfig)
 			{
 				//magnetGrabRadius = range;
 				return;
@@ -366,11 +424,11 @@ namespace ItemMagnetPlus
 			if (CheckIfItemIsInPresetWhitelist(item, player) is bool presetValue) return presetValue;
 
 			ItemDefinition itemDef = new ItemDefinition(item.type);
-			if (Instance.ListMode == Config.BlacklistName)
+			if (Instance.FilterListMode == Config.FilterListModeType.Blacklist)
 			{
 				return !Instance.Blacklist.Contains(itemDef);
 			}
-			else if (Instance.ListMode == Config.WhitelistName)
+			else if (Instance.FilterListMode == Config.FilterListModeType.Whitelist)
 			{
 				return Instance.Whitelist.Contains(itemDef);
 			}

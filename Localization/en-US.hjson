@@ -70,7 +70,7 @@ Mods: {
 					Tooltip: Customize which items the magnet should always pick up
 				}
 
-				ListMode: {
+				FilterListMode: {
 					Label: List Mode Toggle
 					Tooltip: Change to select which list will be used for the item filter
 				}
@@ -115,7 +115,7 @@ Mods: {
 					Tooltip: How fast an item reaches its peak speed
 				}
 
-				Scale: {
+				ScaleMode: {
 					Label: Scale
 					Tooltip: Scaling Mode
 				}
@@ -134,6 +134,19 @@ Mods: {
 					Label: Resulting Acceleration
 					Tooltip: ""
 				}
+			}
+
+			FilterListModeType: {
+				Tooltip: ""
+				Blacklist.Label: Blacklist
+				Whitelist.Label: Whitelist
+			}
+
+			ScaleModeType: {
+				Tooltip: ""
+				Bosses.Label: Increase With Bosses
+				AlwaysMaxRange.Label: Bosses + Max Range
+				OnlyConfig.Label: Custom + Max Range
 			}
 
 			Common.AcceptClientChanges: Only the host of this world can change the config! Do so in singleplayer.

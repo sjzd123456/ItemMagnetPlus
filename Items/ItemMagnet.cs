@@ -67,7 +67,7 @@ namespace ItemMagnetPlus.Items
 			string color1 = (new Color(128, 255, 128) * alpha).Hex3();
 			string color2 = (new Color(159, 159, 255) * alpha).Hex3();
 			string color3 = (new Color(255, 128, 128) * alpha).Hex3();
-			tooltips.Add(new TooltipLine(Mod, "Buffa", (Config.Instance.Scale == Config.ScaleModeBosses ? LeftClickToChangeRangeText : LeftClickToToggleText).Format(color1)));
+			tooltips.Add(new TooltipLine(Mod, "Buffa", (Config.Instance.ScaleMode == Config.ScaleModeType.Bosses ? LeftClickToChangeRangeText : LeftClickToToggleText).Format(color1)));
 			tooltips.Add(new TooltipLine(Mod, "Buffb", Config.Instance.Buff ? RightClickToShowCurrentRangeText.Format(color2) : RightClickToTurnOffText.Format(color3)));
 
 			if (player.HasBuff(ModContent.BuffType<ItemMagnetBuff>()) || mPlayer.magnetActive == 1)
