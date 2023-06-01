@@ -64,6 +64,7 @@ namespace ItemMagnetPlus
 			Whitelist = 1
 		}
 
+		[DrawTicks]
 		[DefaultValue(FilterListModeType.Blacklist)]
 		public FilterListModeType FilterListMode;
 
@@ -113,6 +114,7 @@ namespace ItemMagnetPlus
 		}
 
 		[SliderColor(255, 255, 50)]
+		[DrawTicks]
 		[DefaultValue(ScaleModeType.AlwaysMaxRange)]
 		public ScaleModeType ScaleMode;
 
