@@ -37,7 +37,7 @@ namespace ItemMagnetPlus
 			magnetAcceleration = Config.AccelerationMin;
 		}
 
-		public override void CopyClientState(ModPlayer clientClone)/* tModPorter Suggestion: Replace Item.Clone usages with Item.CopyNetStateTo */
+		public override void CopyClientState(ModPlayer clientClone)
 		{
 			ItemMagnetPlusPlayer clone = clientClone as ItemMagnetPlusPlayer;
 			clone.magnetGrabRadius = magnetGrabRadius;
