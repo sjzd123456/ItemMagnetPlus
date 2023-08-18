@@ -41,17 +41,17 @@ Mods: {
 				}
 
 				Hearts: {
-					Label: "[i:58] Serca"
+					Label: "[i:Heart] Serca"
 					Tooltip: Przełącz, jeśli magnes ma przyciągać serca.
 				}
 
 				ManaStars: {
-					Label: "[i:184] Gwiazdy Many"
+					Label: "[i:Star] Gwiazdy Many"
 					Tooltip: Przełącz, jeśli magnes ma przyciągać gwiazdy many.
 				}
 
 				Coins: {
-					Label: "[i:73] Monety"
+					Label: "[i:GoldCoin] Monety"
 					Tooltip: Przełącz, jeśli magnes ma przyciągać monety.
 				}
 

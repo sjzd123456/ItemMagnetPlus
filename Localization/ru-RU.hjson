@@ -41,17 +41,17 @@ Mods: {
 				}
 
 				Hearts: {
-					// Label: "[i:58] Hearts"
+					// Label: "[i:Heart] Hearts"
 					// Tooltip: Toggle if hearts should be picked up by the magnet
 				}
 
 				ManaStars: {
-					// Label: "[i:184] Mana Stars"
+					// Label: "[i:Star] Mana Stars"
 					// Tooltip: Toggle if mana stars should be picked up by the magnet
 				}
 
 				Coins: {
-					// Label: "[i:73] Coins"
+					// Label: "[i:GoldCoin] Coins"
 					// Tooltip: Toggle if coins should be picked up by the magnet
 				}
 
