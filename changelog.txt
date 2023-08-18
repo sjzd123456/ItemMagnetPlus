@@ -1,1 +1,2 @@
 * Fixed shimmered item interaction
+* Added polish localization, thanks Taco!
