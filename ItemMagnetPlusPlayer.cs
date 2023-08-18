@@ -202,78 +202,81 @@ namespace ItemMagnetPlus
 				for (int j = 0; j < Main.maxItems; j++)
 				{
 					Item item = Main.item[j];
-					if (item.active && item.noGrabDelay == 0 && !ItemLoader.GrabStyle(item, Player) && ItemLoader.CanPickup(item, Player))
+					if (!item.active || item.shimmerTime != 0f || item.noGrabDelay != 0 || (item.shimmered && item.velocity.LengthSquared() >= 0.2f * 0.2f) || ItemLoader.GrabStyle(item, Player) || !ItemLoader.CanPickup(item, Player))
 					{
-						if (Config.Instance.NeedsSpace)
+						continue;
+					}
+
+					if (Config.Instance.NeedsSpace)
+					{
+						Player.ItemSpaceStatus status = Player.ItemSpace(item);
+						if (!Player.CanPullItem(item, status))
 						{
-							Player.ItemSpaceStatus status = Player.ItemSpace(item);
-							if (!Player.CanPullItem(item, status))
+							//Checks for encumbering stone
+							continue;
+						}
+					}
+
+					bool canGrabNetMode = true;
+					//All: item.ownIgnore == -1 && item.keepTime == 0
+					//Client: (above) && item.owner != 255 
+					if (Main.netMode != NetmodeID.SinglePlayer)
+					{
+						if (item.instanced) canGrabNetMode &= item.playerIndexTheItemIsReservedFor == Player.whoAmI;
+					}
+
+					if (canGrabNetMode && grabRect.Intersects(item.getRect()))
+					{
+						if (ConfigWrapper.CanBePulled(item, Player))
+						{
+							grabbedItems++;
+							//so it can go through walls
+							item.beingGrabbed = true;
+							item.shimmered = false;
+
+							if (Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
 							{
-								//Checks for encumbering stone
+								grabbingAtleastOneCoin = true;
+							}
+
+							MergeNearbyItems(item, j);
+
+							if (cfg.Instant)
+							{
+								item.Center = Player.Center;
 								continue;
 							}
-						}
 
-						bool canGrabNetMode = true;
-						//All: item.ownIgnore == -1 && item.keepTime == 0
-						//Client: (above) && item.owner != 255 
-						if (Main.netMode != NetmodeID.SinglePlayer)
-						{
-							if (item.instanced) canGrabNetMode &= item.playerIndexTheItemIsReservedFor == Player.whoAmI;
-						}
+							//velocity, higher = more speed
+							float velo = magnetVelocity; //16 ideal
 
-						if (canGrabNetMode && grabRect.Intersects(item.getRect()))
-						{
-							if (ConfigWrapper.CanBePulled(item, Player))
+							Vector2 distance = Player.Center - item.Center;
+							Vector2 normalizedDistance = distance;
+
+							//adjustment term, increases velocity the closer to the player it is (0..2)
+							float length = distance.Length();
+							velo += 2 * (1 - length / grabRadius);
+
+							if (length > 0)
 							{
-								grabbedItems++;
-								//so it can go through walls
-								item.beingGrabbed = true;
+								normalizedDistance /= length;
+							}
+							normalizedDistance *= velo;
 
-								if (Array.BinarySearch(ConfigWrapper.CoinTypes, item.type) > -1)
+							//acceleration, higher = more acceleration
+							int accel = -(magnetAcceleration - 41); //20 ideal
+
+							item.velocity = (item.velocity * (accel - 1) + normalizedDistance) / (float)accel;
+
+							if (Main.netMode != NetmodeID.Server)
+							{
+								float dustChance = length < Player.height ? 0.7f / (Player.height - length) : 0.7f;
+								dustChance *= (11f - grabbedItems) / 10f;
+								if (Main.rand.NextFloat() < dustChance - 0.02f)
 								{
-									grabbingAtleastOneCoin = true;
-								}
-
-								MergeNearbyItems(item, j);
-
-								if (cfg.Instant)
-								{
-									item.Center = Player.Center;
-									continue;
-								}
-
-								//velocity, higher = more speed
-								float velo = magnetVelocity; //16 ideal
-
-								Vector2 distance = Player.Center - item.Center;
-								Vector2 normalizedDistance = distance;
-
-								//adjustment term, increases velocity the closer to the player it is (0..2)
-								float length = distance.Length();
-								velo += 2 * (1 - length / grabRadius);
-
-								if (length > 0)
-								{
-									normalizedDistance /= length;
-								}
-								normalizedDistance *= velo;
-
-								//acceleration, higher = more acceleration
-								int accel = -(magnetAcceleration - 41); //20 ideal
-
-								item.velocity = (item.velocity * (accel - 1) + normalizedDistance) / (float)accel;
-
-								if (Main.netMode != NetmodeID.Server)
-								{
-									float dustChance = length < Player.height ? 0.7f / (Player.height - length) : 0.7f;
-									dustChance *= (11f - grabbedItems) / 10f;
-									if (Main.rand.NextFloat() < dustChance - 0.02f)
-									{
-										Dust dust = Dust.NewDustDirect(item.position, item.width, item.height, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f);
-										dust.noGravity = true;
-										dust.noLight = true;
-									}
+									Dust dust = Dust.NewDustDirect(item.position, item.width, item.height, 204, 0f, 0f, 0, new Color(255, 255, 255), 0.8f);
+									dust.noGravity = true;
+									dust.noLight = true;
 								}
 							}
 						}
