@@ -1,2 +1,1 @@
-* Fixed shimmered item interaction
-* Added polish localization, thanks Taco!
+* Added russian localization, thanks GodHybrid!

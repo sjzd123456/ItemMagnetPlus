@@ -53,3 +53,4 @@ Item Magnet (and corresponding buff) that
 If you want to add support for different languages, you are welcome to contribute localizations here: [b][url=https://github.com/direwolf420/ItemMagnetPlus]GitHub[/url][/b]
 List of localization contributors:
 * Polish: [b]Taco[/b]
+* Russian: [b]GodHybrid[/b]

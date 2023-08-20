@@ -23,7 +23,7 @@ Mods: {
 				MagnetIsOff: Магнит отключён
 				MagnetOff: Магнит отключён
 				Off: отключить
-				Range: Дистанция: {0} 
+				Range: Дистанция: {0}
 				NextRange: | Затем: {0}
 			}
 		}
