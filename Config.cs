@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
@@ -174,12 +175,12 @@ namespace ItemMagnetPlus
 			return NetMessage.DoesPlayerSlotCountAsAHost(whoAmI);
 		}
 
-		public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message)
+		public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref NetworkText message)
 		{
 			if (Main.netMode == NetmodeID.SinglePlayer) return true;
 			else if (!IsPlayerLocalServerOwner(whoAmI))
 			{
-				message = ItemMagnetPlus.AcceptClientChangesText.ToString();
+				message = NetworkText.FromKey("tModLoader.ModConfigRejectChangesNotHost");
 				return false;
 			}
 			return base.AcceptClientChanges(pendingConfig, whoAmI, ref message);

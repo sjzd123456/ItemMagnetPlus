@@ -148,8 +148,6 @@ Mods: {
 				// AlwaysMaxRange.Label: Bosses + Max Range
 				// OnlyConfig.Label: Custom + Max Range
 			}
-
-			// Common.AcceptClientChanges: Only the host of this world can change the config! Do so in singleplayer.
 		}
 	}
 }
