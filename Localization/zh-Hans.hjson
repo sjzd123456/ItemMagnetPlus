@@ -71,8 +71,8 @@ Mods: {
 				}
 
 				FilterListMode: {
-					Label: 列表模式切换
-					Tooltip: 更改以选择将用于物品筛选的列表
+					Label: 筛选列表
+					Tooltip: 选择物品筛选列表
 				}
 
 				Buff: {
@@ -81,8 +81,8 @@ Mods: {
 				}
 
 				Held: {
-					Label: 持有
-					Tooltip: 磁铁是否仅在持有它时才起作用（而不是在物品栏中）
+					Label: 物品栏模式
+					Tooltip: 磁铁是否仅在物品栏时才起作用（而不是在背包中）
 				}
 
 				OnEnter: {
@@ -92,17 +92,17 @@ Mods: {
 
 				NeedsSpace: {
 					Label: 需要空间
-					Tooltip: 磁铁是否仅在物品栏有空位时才起作用
+					Tooltip: 磁铁是否仅在背包有空位时才起作用
 				}
 
 				Instant: {
-					Label: 立即
-					Tooltip: 物品是否应该瞬间传送而不是移动到家- 这会忽略任何速度/加速度，但不忽略范围
+					Label: 瞬移
+					Tooltip: 被吸取的物品是否瞬移而不是移动- 这会忽略任何速度/加速度，但不忽略范围
 				}
 
 				Range: {
 					Label: 范围
-					Tooltip: 以瓷砖为单位的基础磁铁半径
+					Tooltip: 以格为单位的基础磁铁半径
 				}
 
 				Velocity: {
@@ -112,7 +112,7 @@ Mods: {
 
 				Acceleration: {
 					Label: 加速度
-					Tooltip: 物品达到其峰值速度的速度
+					Tooltip: 物品多快加到最高速度
 				}
 
 				ScaleMode: {
@@ -121,17 +121,17 @@ Mods: {
 				}
 
 				CurrentMaxRange: {
-					Label: 生成的最大范围
+					Label: 最终的最大范围
 					Tooltip: ""
 				}
 
 				CurrentVelocity: {
-					Label: 生成的速度
+					Label: 最终的速度
 					Tooltip: ""
 				}
 
 				CurrentAcceleration: {
-					Label: 生成的加速度
+					Label: 最终的加速度
 					Tooltip: ""
 				}
 			}
@@ -144,7 +144,7 @@ Mods: {
 
 			ScaleModeType: {
 				Tooltip: ""
-				Bosses.Label: 随Boss增加
+				Bosses.Label: 随Boss进度增加
 				AlwaysMaxRange.Label: Boss + 最大范围
 				OnlyConfig.Label: 自定义 + 最大范围
 			}
